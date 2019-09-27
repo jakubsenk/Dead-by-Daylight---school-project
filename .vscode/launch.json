@@ -2,9 +2,10 @@
   "configurations": [
     {
       "type": "java",
-      "name": "CodeLens (Launch) - HelloWorld",
+      "name": "CodeLens (Launch) - Launcher",
       "request": "launch",
-      "mainClass": "HelloWorld"
+      "mainClass": "com.senkgang.dbd.Launcher",
+      "projectName": "Dead-by-Daylight-school-project"
     }
   ]
 }
