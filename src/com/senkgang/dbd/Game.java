@@ -1,7 +1,9 @@
 package com.senkgang.dbd;
 
 import com.senkgang.dbd.display.Display;
-import com.senkgang.dbd.player.Player;
+import com.senkgang.dbd.input.InputManager;
+import com.senkgang.dbd.screens.Screen;
+import com.senkgang.dbd.screens.TestScreen;
 
 import java.awt.image.BufferStrategy;
 import java.awt.Graphics;
@@ -9,8 +11,8 @@ import java.awt.Color;
 
 public class Game implements Runnable {
 
-  private int width;
-  private int height;
+  public final int width;
+  public final int height;
 
   private int fps;
 
@@ -21,35 +23,40 @@ public class Game implements Runnable {
   private BufferStrategy bs;
   private Graphics gr;
 
-  private Player p;
+  private Screen screen;
 
-  int x = 0;
+  private InputManager inputMgr;
 
   public Game(int width, int height) {
     this.width = width;
     this.height = height;
+    inputMgr = new InputManager();
+  }
+
+  public InputManager getInputManager()
+  {
+    return inputMgr;
   }
 
   private void init() {
     display = new Display(width, height);
-    p = new Player();
-    p.setPos(width / 2, height / 2);
+    display.getJFrame().addKeyListener(inputMgr);
+
+    screen = new TestScreen(this);
+    Screen.setScreen(screen);
   }
 
   private void update() {
-    x++;
-    if (x > 600)
+    if (Screen.getScreen() != null)
     {
-      x = 5;
+      Screen.getScreen().update();
     }
-    p.setPos(x, x);
-    p.update();
   }
 
   private void draw() {
-    bs = display.canvas().getBufferStrategy();
+    bs = display.getCanvas().getBufferStrategy();
     if (bs == null) {
-      display.canvas().createBufferStrategy(2);
+      display.getCanvas().createBufferStrategy(2);
       return;
     }
     gr = bs.getDrawGraphics();
@@ -60,8 +67,11 @@ public class Game implements Runnable {
 
     gr.setColor(Color.black);
     gr.drawString("FPS: " + fps, 0, 10);
-    gr.fillRect(x, 10, 10, 10);
-    p.draw(gr);
+    gr.fillRect(20, 20, 10, 10);
+
+    if (Screen.getScreen() != null) {
+      Screen.getScreen().draw(gr);
+    }
 
     // #endregion
 
