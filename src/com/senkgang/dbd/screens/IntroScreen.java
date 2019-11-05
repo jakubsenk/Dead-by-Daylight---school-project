@@ -1,6 +1,5 @@
 package com.senkgang.dbd.screens;
 
-import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Handler;
 
 import java.awt.*;

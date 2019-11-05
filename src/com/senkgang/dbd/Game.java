@@ -1,6 +1,7 @@
 package com.senkgang.dbd;
 
 import com.senkgang.dbd.display.Display;
+import com.senkgang.dbd.display.GameCamera;
 import com.senkgang.dbd.input.InputManager;
 import com.senkgang.dbd.input.MouseManager;
 import com.senkgang.dbd.screens.IntroScreen;
@@ -12,8 +13,8 @@ import java.awt.Color;
 
 public class Game implements Runnable
 {
-	public final int width;
-	public final int height;
+	private final int width;
+	private final int height;
 
 	private int fps;
 
@@ -31,21 +32,14 @@ public class Game implements Runnable
 
 	private Handler handler;
 
+	private GameCamera camera;
+
 	public Game(int width, int height)
 	{
 		this.width = width;
 		this.height = height;
 		inputMgr = new InputManager();
 		mouseMgr = new MouseManager();
-	}
-
-	public InputManager getInputManager()
-	{
-		return inputMgr;
-	}
-	public MouseManager getMouseManager()
-	{
-		return mouseMgr;
 	}
 
 	private void init()
@@ -59,8 +53,35 @@ public class Game implements Runnable
 
 		handler = new Handler(this);
 
+		camera = new GameCamera(handler, 0, 0);
+
 		screen = new IntroScreen(handler);
 		Screen.setScreen(screen);
+	}
+
+	public InputManager getInputManager()
+	{
+		return inputMgr;
+	}
+
+	public MouseManager getMouseManager()
+	{
+		return mouseMgr;
+	}
+
+	public GameCamera getGameCamera()
+	{
+		return camera;
+	}
+
+	public int getWidth()
+	{
+		return width;
+	}
+
+	public int getHeight()
+	{
+		return height;
 	}
 
 	private void update()
@@ -129,7 +150,8 @@ public class Game implements Runnable
 
 			if (timer >= 1000000000)
 			{
-				Launcher.logger.Trace("Frames per second: " + ticks);
+				if (ticks < 55) Launcher.logger.Warning("Frames per second droped to: " + ticks);
+				else if (ticks < 59) Launcher.logger.Trace("Frames per second droped to: " + ticks);
 				fps = ticks;
 				ticks = 0;
 				timer = 0;

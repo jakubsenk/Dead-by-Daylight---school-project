@@ -13,10 +13,6 @@ public class Display {
   private int width;
   private int height;
 
-  public Display() {
-    this(1280, 720);
-  }
-
   public Display(int width, int height) {
     this.width = width;
     this.height = height;

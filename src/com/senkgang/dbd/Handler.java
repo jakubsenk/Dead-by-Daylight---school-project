@@ -1,5 +1,6 @@
 package com.senkgang.dbd;
 
+import com.senkgang.dbd.display.GameCamera;
 import com.senkgang.dbd.input.InputManager;
 import com.senkgang.dbd.input.MouseManager;
 
@@ -19,12 +20,12 @@ public class Handler
 
 	public int getScreenWidth()
 	{
-		return g.width;
+		return g.getWidth();
 	}
 
 	public int getScreenHeight()
 	{
-		return g.height;
+		return g.getHeight();
 	}
 
 	public InputManager getInputManager()
@@ -35,5 +36,10 @@ public class Handler
 	public MouseManager getMouseManager()
 	{
 		return g.getMouseManager();
+	}
+
+	public GameCamera getGameCamera()
+	{
+		return g.getGameCamera();
 	}
 }

@@ -28,8 +28,18 @@ public abstract class Entity
 		this.y = y;
 	}
 
+	public double getX()
+	{
+		return x;
+	}
+
+	public double getY()
+	{
+		return y;
+	}
+
 	public abstract void update();
 
-	public abstract void draw(Graphics g);
+	public abstract void draw(Graphics g, int camX, int camY);
 
 }

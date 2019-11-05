@@ -2,30 +2,31 @@ package com.senkgang.dbd.screens;
 
 import java.awt.Graphics;
 
-import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Handler;
-import com.senkgang.dbd.entities.Player;
-import com.senkgang.dbd.entities.player.TestPlayer;;
+import com.senkgang.dbd.map.Map;
+import com.senkgang.dbd.map.maps.TestMap;
 
 public class TestScreen extends Screen
 {
-	private Player p;
+	private Map map;
+	private Handler handler;
 
 	public TestScreen(Handler h)
 	{
-		p = new TestPlayer(h, 100, 100);
+		handler = h;
+		map = new TestMap(handler, 2500, 1500);
 	}
 
 	@Override
 	public void update()
 	{
-		p.update();
+		map.update();
 	}
 
 	@Override
 	public void draw(Graphics g)
 	{
-		p.draw(g);
+		map.draw(g, handler.getGameCamera().getxOffset(), handler.getGameCamera().getyOffset());
 	}
 
 }

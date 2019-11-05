@@ -22,8 +22,8 @@ public class TestPlayer extends Player
 
 	private double getAngle()
 	{
-		int mX = handler.getMouseManager().getMouseX();
-		int mY = handler.getMouseManager().getMouseY();
+		int mX = handler.getMouseManager().getMouseX() + handler.getGameCamera().getxOffset();
+		int mY = handler.getMouseManager().getMouseY() + handler.getGameCamera().getyOffset();
 		double dx = mX - x;
 		// Minus to correct for coord re-mapping
 		double dy = mY - y;
@@ -61,12 +61,12 @@ public class TestPlayer extends Player
 	}
 
 	@Override
-	public void draw(Graphics g)
+	public void draw(Graphics g, int camX, int camY)
 	{
-		super.draw(g);
+		super.draw(g, camX, camY);
 		g.setColor(c);
-		g.fillOval((int) x - 25, (int) y - 25, 50, 50);
+		g.fillOval((int) x - 25 - camX, (int) y - 25 - camY, 50, 50);
 		g.setColor(Color.black);
-		g.drawLine((int) x, (int) y, (int) endX, (int) endY);
+		g.drawLine((int) x - camX, (int) y - camY, (int) endX - camX, (int) endY - camY);
 	}
 }

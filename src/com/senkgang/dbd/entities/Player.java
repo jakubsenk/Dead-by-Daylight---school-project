@@ -1,6 +1,5 @@
 package com.senkgang.dbd.entities;
 
-import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Handler;
 
 import java.awt.*;
@@ -40,7 +39,7 @@ public abstract class Player extends Entity
 	}
 
 	@Override
-	public void draw(Graphics g)
+	public void draw(Graphics g, int camX, int camY)
 	{
 
 	}
