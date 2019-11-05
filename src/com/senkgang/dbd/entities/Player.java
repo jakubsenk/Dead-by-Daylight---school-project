@@ -1,38 +1,47 @@
 package com.senkgang.dbd.entities;
 
 import com.senkgang.dbd.Game;
+import com.senkgang.dbd.Handler;
+
+import java.awt.*;
 
 public abstract class Player extends Entity
 {
 
-	private Game game;
+	private Handler handler;
 
 	private int speed = 3;
 
-	public Player(Game game, double x, double y)
+	public Player(Handler h, double x, double y)
 	{
 		super(x, y);
-		this.game = game;
+		handler = h;
 	}
 
 	@Override
 	public void update()
 	{
-		if (game.getInputManager().up)
+		if (handler.getInputManager().up)
 		{
 			y -= speed;
 		}
-		if (game.getInputManager().down)
+		if (handler.getInputManager().down)
 		{
 			y += speed;
 		}
-		if (game.getInputManager().left)
+		if (handler.getInputManager().left)
 		{
 			x -= speed;
 		}
-		if (game.getInputManager().right)
+		if (handler.getInputManager().right)
 		{
 			x += speed;
 		}
+	}
+
+	@Override
+	public void draw(Graphics g)
+	{
+
 	}
 }

@@ -2,8 +2,9 @@ package com.senkgang.dbd;
 
 import com.senkgang.dbd.display.Display;
 import com.senkgang.dbd.input.InputManager;
+import com.senkgang.dbd.input.MouseManager;
+import com.senkgang.dbd.screens.IntroScreen;
 import com.senkgang.dbd.screens.Screen;
-import com.senkgang.dbd.screens.TestScreen;
 
 import java.awt.image.BufferStrategy;
 import java.awt.Graphics;
@@ -26,25 +27,39 @@ public class Game implements Runnable
 	private Screen screen;
 
 	private InputManager inputMgr;
+	private MouseManager mouseMgr;
+
+	private Handler handler;
 
 	public Game(int width, int height)
 	{
 		this.width = width;
 		this.height = height;
 		inputMgr = new InputManager();
+		mouseMgr = new MouseManager();
 	}
 
 	public InputManager getInputManager()
 	{
 		return inputMgr;
 	}
+	public MouseManager getMouseManager()
+	{
+		return mouseMgr;
+	}
 
 	private void init()
 	{
 		display = new Display(width, height);
 		display.getJFrame().addKeyListener(inputMgr);
+		display.getJFrame().addMouseListener(mouseMgr);
+		display.getJFrame().addMouseMotionListener(mouseMgr);
+		display.getCanvas().addMouseListener(mouseMgr);
+		display.getCanvas().addMouseMotionListener(mouseMgr);
 
-		screen = new TestScreen(this);
+		handler = new Handler(this);
+
+		screen = new IntroScreen(handler);
 		Screen.setScreen(screen);
 	}
 
@@ -72,7 +87,6 @@ public class Game implements Runnable
 
 		gr.setColor(Color.black);
 		gr.drawString("FPS: " + fps, 0, 10);
-		gr.fillRect(20, 20, 10, 10);
 
 		if (Screen.getScreen() != null)
 		{
