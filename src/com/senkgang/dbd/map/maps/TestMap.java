@@ -1,9 +1,10 @@
 package com.senkgang.dbd.map.maps;
 
 import com.senkgang.dbd.Handler;
+import com.senkgang.dbd.entities.CollidableEntity;
 import com.senkgang.dbd.entities.Entity;
 import com.senkgang.dbd.entities.Player;
-import com.senkgang.dbd.entities.TestObject;
+import com.senkgang.dbd.entities.Wall;
 import com.senkgang.dbd.entities.player.TestPlayer;
 import com.senkgang.dbd.map.Map;
 
@@ -13,22 +14,23 @@ import java.util.Random;
 
 public class TestMap extends Map
 {
-	private ArrayList<Entity> entities;
+	private ArrayList<CollidableEntity> entities;
 	private Player player;
 	private Handler handler;
+
 
 	public TestMap(Handler h, int width, int height)
 	{
 		super(width, height);
 		handler = h;
-		entities = new ArrayList<Entity>();
+		entities = new ArrayList<CollidableEntity>();
 		Random r = new Random();
-		for (int i = 0; i < 1000; i++)
+		for (int i = 0; i < 100; i++)
 		{
-			entities.add(new TestObject(r.nextInt(width), r.nextInt(height)));
+			entities.add(new Wall(r.nextInt(width), r.nextInt(height), 30, 30));
 		}
 
-		player = new TestPlayer(handler, 200, 200);
+		player = new TestPlayer(handler, 200, 200, entities);
 	}
 
 	@Override

@@ -24,7 +24,6 @@ public class InputManager implements KeyListener
 	@Override
 	public void keyPressed(KeyEvent e)
 	{
-		Launcher.logger.Info("key pressed");
 		switch (e.getKeyCode())
 		{
 			case KeyEvent.VK_A:

@@ -6,6 +6,7 @@ import com.senkgang.dbd.logger.ILogger;
 public class Launcher
 {
 	public static ILogger logger = new ConsoleLogger();
+	public static final boolean isDebug = true;
 
 	public static void main(String[] args)
 	{

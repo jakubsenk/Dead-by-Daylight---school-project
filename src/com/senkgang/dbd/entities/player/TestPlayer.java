@@ -1,10 +1,11 @@
 package com.senkgang.dbd.entities.player;
 
 import com.senkgang.dbd.Handler;
+import com.senkgang.dbd.entities.CollidableEntity;
 import com.senkgang.dbd.entities.Player;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
+import java.util.ArrayList;
 
 public class TestPlayer extends Player
 {
@@ -13,33 +14,11 @@ public class TestPlayer extends Player
 	private double endY;
 	private Handler handler;
 
-	public TestPlayer(Handler h, double x, double y)
+	public TestPlayer(Handler h, double x, double y, ArrayList<CollidableEntity> entities)
 	{
-		super(h, x, y);
+		super(h, x, y, entities);
 		c = Color.gray;
 		handler = h;
-	}
-
-	private double getAngle()
-	{
-		int mX = handler.getMouseManager().getMouseX() + handler.getGameCamera().getxOffset();
-		int mY = handler.getMouseManager().getMouseY() + handler.getGameCamera().getyOffset();
-		double dx = mX - x;
-		// Minus to correct for coord re-mapping
-		double dy = mY - y;
-
-		double inRads = Math.atan2(dy, dx);
-
-		// We need to map to coord system when 0 degree is at 3 O'clock, 270 at 12 O'clock
-		if (inRads < 0)
-		{
-			inRads = Math.abs(inRads);
-		}
-		else
-		{
-			inRads = 2 * Math.PI - inRads;
-		}
-		return inRads + Math.PI / 2;
 	}
 
 	@Override
@@ -68,5 +47,11 @@ public class TestPlayer extends Player
 		g.fillOval((int) x - 25 - camX, (int) y - 25 - camY, 50, 50);
 		g.setColor(Color.black);
 		g.drawLine((int) x - camX, (int) y - camY, (int) endX - camX, (int) endY - camY);
+	}
+
+	@Override
+	public Rectangle getBounds()
+	{
+		return new Rectangle((int)x - 25, (int)y - 25, 50, 50);
 	}
 }
