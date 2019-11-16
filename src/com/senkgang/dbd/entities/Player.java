@@ -84,6 +84,16 @@ public abstract class Player extends CollidableEntity
 			g.setColor(Color.CYAN);
 			Rectangle r = getBounds();
 			g.drawRect(r.x - camX, r.y - camY, r.width, r.height);
+			double endX = x + 350 * Math.sin(getAngle());
+			double endY = y + 350 * Math.cos(getAngle());
+			double endLeftX = x + 350 * Math.sin(getAngle() + Math.PI / 4);
+			double endLeftY = y + 350 * Math.cos(getAngle() + Math.PI / 4);
+			double endRightX = x + 350 * Math.sin(getAngle() - Math.PI / 4);
+			double endRightY = y + 350 * Math.cos(getAngle() - Math.PI / 4);
+
+			g.drawLine((int) x - camX, (int) y - camY, (int) endX - camX, (int) endY - camY);
+			g.drawLine((int) x - camX, (int) y - camY, (int) endLeftX - camX, (int) endLeftY - camY);
+			g.drawLine((int) x - camX, (int) y - camY, (int) endRightX - camX, (int) endRightY - camY);
 		}
 	}
 
