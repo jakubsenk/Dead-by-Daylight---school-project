@@ -3,8 +3,6 @@ package com.senkgang.dbd.input;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import com.senkgang.dbd.Launcher;
-
 public class InputManager implements KeyListener
 {
 	public boolean up, down, left, right;

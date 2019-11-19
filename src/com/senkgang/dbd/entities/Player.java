@@ -12,17 +12,19 @@ public abstract class Player extends CollidableEntity
 
 	private Handler handler;
 	private ArrayList<CollidableEntity> entities;
+	protected ArrayList<ISightBlocker> sightBlockers;
 
 	private int speed = 3;
 
-	public Player(Handler h, double x, double y, ArrayList<CollidableEntity> entities)
+	public Player(Handler h, double x, double y, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
 	{
 		super(x, y);
 		handler = h;
 		this.entities = entities;
+		this.sightBlockers = sightBlocker;
 	}
 
-	protected double getAngle()
+	public double getAngle()
 	{
 		int mX = handler.getMouseManager().getMouseX() + handler.getGameCamera().getxOffset();
 		int mY = handler.getMouseManager().getMouseY() + handler.getGameCamera().getyOffset();

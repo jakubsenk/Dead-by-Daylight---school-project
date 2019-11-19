@@ -2,21 +2,21 @@ package com.senkgang.dbd.entities.player;
 
 import com.senkgang.dbd.Handler;
 import com.senkgang.dbd.entities.CollidableEntity;
-import com.senkgang.dbd.entities.Player;
+import com.senkgang.dbd.entities.ISightBlocker;
 
 import java.awt.*;
 import java.util.ArrayList;
 
-public class TestPlayer extends Player
+public class TestSurvivor extends Survivor
 {
 	private Color c;
 	private double endX;
 	private double endY;
 	private Handler handler;
 
-	public TestPlayer(Handler h, double x, double y, ArrayList<CollidableEntity> entities)
+	public TestSurvivor(Handler h, double x, double y, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlockers)
 	{
-		super(h, x, y, entities);
+		super(h, x, y, entities, sightBlockers);
 		c = Color.gray;
 		handler = h;
 	}
