@@ -1,47 +1,47 @@
 package com.senkgang.dbd.fov;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class Algorithm
 {
 	private final int scanLineLength;
+	private final int scanLineCount;
 
 	public Algorithm()
 	{
-		this(200);
+		this(200, 500);
 	}
 
 	public Algorithm(int scanLineLength)
 	{
-		this.scanLineLength = scanLineLength;
+		this(scanLineLength, 500);
 	}
 
-	/**
-	 * Sweep around the given circle with the given distance and create the scan lines
-	 *
-	 * @param startX
-	 * @param startY
-	 * @return
-	 */
+	public Algorithm(int scanLineLength, int scanLineCount)
+	{
+		this.scanLineLength = scanLineLength;
+		this.scanLineCount = scanLineCount;
+	}
+
 	public ArrayList<Line> createScanLines(double startX, double startY)
 	{
 		ArrayList<Line> scanLines;
 
 		double angleStart = 0;
 		double angleEnd = Math.PI * 2;
-		double step = Math.PI / Settings.get().getScanLineCount();
+		double step = Math.PI / scanLineCount;
 
 		scanLines = new ArrayList<>();
 
-		Vector scanLine = new Vector(startX, startY);
+		Point scanLine = new Point((int) startX, (int) startY);
 
 		for (double angle = angleStart; angle < angleEnd; angle += step)
 		{
-
 			double x = scanLine.x + Math.cos(angle) * scanLineLength;
 			double y = scanLine.y + Math.sin(angle) * scanLineLength;
 
-			Line line = new Line(scanLine, new Vector(x, y));
+			Line line = new Line(scanLine, new Point((int) x, (int) y));
 
 			scanLines.add(line);
 
@@ -50,22 +50,13 @@ public class Algorithm
 		return scanLines;
 	}
 
-	/**
-	 * Get all the intersecting points for the given scan lines and the given scene lines.
-	 *
-	 * @param scanLines
-	 * @param sceneLines
-	 * @return
-	 */
-	public ArrayList<Vector> getIntersectionPoints(ArrayList<Line> scanLines, ArrayList<Line> sceneLines)
+	public ArrayList<Point> getIntersectionPoints(ArrayList<Line> scanLines, ArrayList<Line> sceneLines)
 	{
-
-		ArrayList<Vector> points = new ArrayList<>();
+		ArrayList<Point> points = new ArrayList<>();
 
 		for (Line scanLine : scanLines)
 		{
-
-			ArrayList<Vector> intersections = getIntersections(scanLine, sceneLines);
+			ArrayList<Point> intersections = getIntersections(scanLine, sceneLines);
 
 			double x = 0;
 			double y = 0;
@@ -74,11 +65,9 @@ public class Algorithm
 			// find the intersection that is closest to the scanline
 			if (intersections.size() > 0)
 			{
-
-				for (Vector item : intersections)
+				for (Point item : intersections)
 				{
-
-					double currDist = scanLine.getStart().dist(item);
+					double currDist = dist(scanLine.getStart(), item);
 
 					if (currDist < dist)
 					{
@@ -86,68 +75,48 @@ public class Algorithm
 						y = item.y;
 
 						dist = currDist;
-
 					}
 				}
 
-				points.add(new Vector(x, y));
+				points.add(new Point((int) x, (int) y));
 			}
-
 		}
 
 		return points;
 	}
 
-	/**
-	 * Find intersecting lines
-	 *
-	 * @param scanLine
-	 * @param sceneLines
-	 * @return
-	 */
-	public ArrayList<Vector> getIntersections(Line scanLine, ArrayList<Line> sceneLines)
+	public ArrayList<Point> getIntersections(Line scanLine, ArrayList<Line> sceneLines)
 	{
+		ArrayList<Point> list = new ArrayList<>();
 
-		ArrayList<Vector> list = new ArrayList<>();
-
-		Vector intersection;
+		Point intersection;
 
 		for (Line line : sceneLines)
 		{
-
 			// check if 2 lines intersect
 			intersection = getLineIntersection(scanLine, line);
 
 			// lines intersect => we have an end point
-			Vector end = null;
+			Point end = null;
 			if (intersection != null)
 			{
-
-				end = new Vector(intersection.x, intersection.y);
-
+				end = new Point(intersection.x, intersection.y);
 			}
 
-			// check if the intersection area should be limited to a visible area
-			if (Settings.get().isLimitToScanLineLength())
+			Point start = scanLine.getStart();
+
+			// no intersection found => full scan line length
+			if (end == null)
 			{
-
-				Vector start = scanLine.getStart();
-
-				// no intersection found => full scan line length
-				if (end == null)
-				{
-
-					end = new Vector(scanLine.getEnd().x, scanLine.getEnd().y);
-
-				}
-				// intersection found => limit to scan line length
-				else if (start.dist(end) > scanLineLength)
-				{
-
-					end.normalize();
-					end.mult(scanLineLength);
-				}
+				end = new Point(scanLine.getEnd().x, scanLine.getEnd().y);
 			}
+			// intersection found => limit to scan line length
+			else if (dist(start, end) > scanLineLength)
+			{
+				end = normalize(end);
+				end = mult(end, scanLineLength);
+			}
+
 
 			// we have a valid line end, either an intersection with another line or we have the scan line limit
 			if (end != null)
@@ -158,12 +127,7 @@ public class Algorithm
 		return list;
 	}
 
-	// find intersection point of 2 line segments
-	//
-	// http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
-	// http://www.openprocessing.org/sketch/135314
-	// http://www-cs.ccny.cuny.edu/~wolberg/capstone/intersection/Intersection%20point%20of%20two%20lines.html
-	private Vector getLineIntersection(Line lineA, Line lineB)
+	private Point getLineIntersection(Line lineA, Line lineB)
 	{
 		double x1 = lineA.getStart().x;
 		double y1 = lineA.getStart().y;
@@ -193,7 +157,38 @@ public class Algorithm
 		double u = (cx * ay - cy * ax) / denominator;
 		if (u < 0 || u > 1) return null;
 
-		return new Vector(x1 + t * ax, y1 + t * ay);
+		return new Point((int) (x1 + t * ax), (int) (y1 + t * ay));
 	}
 
+	private double dist(Point v1, Point v2)
+	{
+		double dx = v1.x - v2.x;
+		double dy = v1.y - v2.y;
+		return Math.sqrt(dx * dx + dy * dy);
+	}
+
+	private Point mult(Point v, double n)
+	{
+		return new Point((int) (v.x * n), (int) (v.y * n));
+	}
+
+	public Point normalize(Point p)
+	{
+		double m = mag(p);
+		if (m != 0 && m != 1)
+		{
+			return div(p, m);
+		}
+		return p;
+	}
+
+	private double mag(Point p)
+	{
+		return (double) Math.sqrt(p.x * p.x + p.y * p.y);
+	}
+
+	private Point div(Point v, double n)
+	{
+		return new Point((int) (v.x / n), (int) (v.y / n));
+	}
 }

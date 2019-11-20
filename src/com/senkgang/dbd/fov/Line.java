@@ -1,32 +1,34 @@
 package com.senkgang.dbd.fov;
 
+import java.awt.*;
+
 public class Line
 {
-	Vector start;
-	Vector end;
+	Point start;
+	Point end;
 
-	public Line(Vector start, Vector end)
+	public Line(Point start, Point end)
 	{
 		this.start = start;
 		this.end = end;
 	}
 
-	public Vector getStart()
+	public Point getStart()
 	{
 		return start;
 	}
 
-	public void setStart(Vector start)
+	public void setStart(Point start)
 	{
 		this.start = start;
 	}
 
-	public Vector getEnd()
+	public Point getEnd()
 	{
 		return end;
 	}
 
-	public void setEnd(Vector end)
+	public void setEnd(Point end)
 	{
 		this.end = end;
 	}

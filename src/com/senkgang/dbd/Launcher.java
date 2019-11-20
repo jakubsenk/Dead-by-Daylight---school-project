@@ -11,7 +11,7 @@ public class Launcher
 	public static void main(String[] args)
 	{
 		logger.Trace("Main started");
-		Game g = new Game(1280, 720);
+		Game g = new Game(1600, 900);
 		g.start();
 	}
 }

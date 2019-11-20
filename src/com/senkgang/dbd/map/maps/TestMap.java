@@ -2,7 +2,9 @@ package com.senkgang.dbd.map.maps;
 
 import com.senkgang.dbd.Handler;
 import com.senkgang.dbd.entities.*;
+import com.senkgang.dbd.entities.player.Killer;
 import com.senkgang.dbd.entities.player.Survivor;
+import com.senkgang.dbd.entities.player.TestKiller;
 import com.senkgang.dbd.entities.player.TestSurvivor;
 import com.senkgang.dbd.map.Map;
 
@@ -14,10 +16,11 @@ public class TestMap extends Map
 {
 	private ArrayList<CollidableEntity> entities;
 	private ArrayList<ISightBlocker> sightBlockers;
-	private Survivor player;
+	private Survivor survivor;
+	private Killer killer;
 	private Handler handler;
 
-	private ArrayList<ArrayList<FogOfWar>> fows;
+	private FogOfWar fow;
 
 	public TestMap(Handler h, int width, int height)
 	{
@@ -46,18 +49,9 @@ public class TestMap extends Map
 			sightBlockers.add(w);
 		}
 
-		player = new TestSurvivor(handler, 200, 200, entities, sightBlockers);
-
-		fows = new ArrayList<>();
-		for (int i = 0; i < width / 10; i++)
-		{
-			ArrayList<FogOfWar> row = new ArrayList<>();
-			for (int j = 0; j < height / 10; j++)
-			{
-				row.add(new FogOfWar(i * 10, j * 10, player));
-			}
-			fows.add(row);
-		}
+		survivor = new TestSurvivor(handler, 200, 200, entities, sightBlockers);
+		killer = new TestKiller(handler, 300, 300, entities, sightBlockers);
+		fow = new FogOfWar(killer, handler);
 	}
 
 	@Override
@@ -67,15 +61,9 @@ public class TestMap extends Map
 		{
 			e.update();
 		}
-		player.update();
-		handler.getGameCamera().followEntity(player);
-		for (int i = 0; i < width / 10; i++)
-		{
-			for (int j = 0; j < height / 10; j++)
-			{
-				fows.get(i).get(j).update();
-			}
-		}
+		survivor.update();
+		killer.update();
+		handler.getGameCamera().followEntity(killer);
 	}
 
 	@Override
@@ -90,13 +78,8 @@ public class TestMap extends Map
 		{
 			e.draw(g, camX, camY);
 		}
-		player.draw(g, camX, camY);
-		for (int i = 0; i < width / 10; i++)
-		{
-			for (int j = 0; j < height / 10; j++)
-			{
-				fows.get(i).get(j).draw(g, camX, camY);
-			}
-		}
+		killer.draw(g, camX, camY);
+		fow.draw(g, camX, camY);
+		survivor.draw(g, camX, camY);
 	}
 }

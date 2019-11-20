@@ -11,17 +11,19 @@ import com.senkgang.dbd.fov.Line;
 import java.awt.*;
 import java.util.ArrayList;
 
-public abstract class Survivor extends Player
+public abstract class Killer extends Player
 {
-	private Algorithm algorithm = new Algorithm(450);
+	private Algorithm algorithm = new Algorithm(600);
 	private ArrayList<Point> points = new ArrayList<>();
 	private ArrayList<Line> sceneLines = new ArrayList<>();
 	private ArrayList<Line> scanLines = new ArrayList<>();
 	private Polygon viewPolygon;
 
-	public Survivor(Handler h, double x, double y, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlockers)
+	protected int fov = 90;
+
+	public Killer(Handler h, double x, double y, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
 	{
-		super(h, x, y, entities, sightBlockers);
+		super(h, x, y, entities, sightBlocker);
 	}
 
 	public Polygon getViewPolygon()
@@ -41,6 +43,14 @@ public abstract class Survivor extends Player
 		{
 			sceneLines.addAll(sb.getSightBlockingLines());
 		}
+
+		double endLeftX = getX() + 500 * Math.sin(getAngle() + Math.toRadians(fov / 2));
+		double endLeftY = getY() + 500 * Math.cos(getAngle() + Math.toRadians(fov / 2));
+		double endRightX = getX() + 500 * Math.sin(getAngle() - Math.toRadians(fov / 2));
+		double endRightY = getY() + 500 * Math.cos(getAngle() - Math.toRadians(fov / 2));
+
+		sceneLines.add(new Line(new Point((int) (getX() - 5 * Math.sin(getAngle())), (int) (getY() - 5 * Math.cos(getAngle()))), new Point((int) endLeftX, (int) endLeftY)));
+		sceneLines.add(new Line(new Point((int) (getX() - 5 * Math.sin(getAngle())), (int) (getY() - 5 * Math.cos(getAngle()))), new Point((int) endRightX, (int) endRightY)));
 
 		points = algorithm.getIntersectionPoints(scanLines, sceneLines);
 
@@ -66,7 +76,6 @@ public abstract class Survivor extends Player
 			}
 			((Graphics2D) g).setStroke(new BasicStroke(5));
 			g.drawPolygon(p);
-			((Graphics2D) g).setStroke(new BasicStroke());
 		}
 	}
 }
