@@ -2,32 +2,18 @@ package com.senkgang.dbd.map.maps;
 
 import com.senkgang.dbd.Handler;
 import com.senkgang.dbd.entities.*;
-import com.senkgang.dbd.entities.player.Killer;
 import com.senkgang.dbd.entities.player.Survivor;
-import com.senkgang.dbd.entities.player.TestKiller;
-import com.senkgang.dbd.entities.player.TestSurvivor;
 import com.senkgang.dbd.map.Map;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Random;
 
 public class TestMap extends Map
 {
-	private ArrayList<CollidableEntity> entities;
-	private ArrayList<ISightBlocker> sightBlockers;
-	private Survivor survivor;
-	private Killer killer;
-	private Handler handler;
-
-	private FogOfWar fow;
-
 	public TestMap(Handler h, int width, int height)
 	{
-		super(width, height);
-		handler = h;
-		entities = new ArrayList<CollidableEntity>();
-		sightBlockers = new ArrayList<ISightBlocker>();
+		super(h, width, height);
+
 		int wallDefinitions[][] = new int[10][];
 		Random r = new Random();
 		for (int i = 0; i < 10; i++)
@@ -48,10 +34,6 @@ public class TestMap extends Map
 			entities.add(w);
 			sightBlockers.add(w);
 		}
-
-		survivor = new TestSurvivor(handler, 200, 200, entities, sightBlockers);
-		killer = new TestKiller(handler, 300, 300, entities, sightBlockers);
-		fow = new FogOfWar(killer, handler);
 	}
 
 	@Override
@@ -61,9 +43,26 @@ public class TestMap extends Map
 		{
 			e.update();
 		}
-		survivor.update();
+		for (Survivor s : survivors)
+		{
+			s.update();
+		}
+		if (newSurvivors.size() > 0) // dont iterate to prevent java.util.ConcurrentModificationException
+		{
+			Survivor s = newSurvivors.get(0);
+			survivors.add(s);
+			newSurvivors.remove(s);
+		}
 		killer.update();
-		handler.getGameCamera().followEntity(killer);
+		handler.getGameCamera().followEntity(controlledPlayer);
+		if (handler.isKiller)
+		{
+			if (survivors.size() > 0) handler.server.send();
+		}
+		else
+		{
+			handler.client.send();
+		}
 	}
 
 	@Override
@@ -79,7 +78,11 @@ public class TestMap extends Map
 			e.draw(g, camX, camY);
 		}
 		killer.draw(g, camX, camY);
+		for (Survivor s : survivors)
+		{
+			s.draw(g, camX, camY);
+		}
+
 		fow.draw(g, camX, camY);
-		survivor.draw(g, camX, camY);
 	}
 }

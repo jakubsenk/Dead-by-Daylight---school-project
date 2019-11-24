@@ -21,11 +21,12 @@ public abstract class Killer extends Player
 
 	protected int fov = 90;
 
-	public Killer(Handler h, double x, double y, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
+	public Killer(int playerID, Handler h, double x, double y, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
 	{
-		super(h, x, y, entities, sightBlocker);
+		super(playerID, h, x, y, playerControlled, entities, sightBlocker);
 	}
 
+	@Override
 	public Polygon getViewPolygon()
 	{
 		return viewPolygon;

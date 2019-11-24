@@ -14,9 +14,9 @@ public class TestSurvivor extends Survivor
 	private double endY;
 	private Handler handler;
 
-	public TestSurvivor(Handler h, double x, double y, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlockers)
+	public TestSurvivor(int survivorID, Handler h, double x, double y, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlockers)
 	{
-		super(h, x, y, entities, sightBlockers);
+		super(survivorID, h, x, y, playerControlled, entities, sightBlockers);
 		c = Color.gray;
 		handler = h;
 	}
@@ -52,6 +52,6 @@ public class TestSurvivor extends Survivor
 	@Override
 	public Rectangle getBounds()
 	{
-		return new Rectangle((int)x - 25, (int)y - 25, 50, 50);
+		return new Rectangle((int) x - 25, (int) y - 25, 50, 50);
 	}
 }

@@ -6,18 +6,16 @@ import java.awt.*;
 
 public class IntroScreen extends Screen
 {
-	private Handler handler;
-
 	public IntroScreen(Handler h)
 	{
-		this.handler = h;
+		super(h);
 	}
 
 	@Override
 	public void update()
 	{
 		if (handler.getMouseManager().leftButtonPressed())
-			Screen.setScreen(new TestScreen(handler));
+			Screen.setScreen(new PlayerSelectScreen(handler));
 	}
 
 	@Override

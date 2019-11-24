@@ -1,43 +1,29 @@
 package com.senkgang.dbd.entities;
 
 import com.senkgang.dbd.Handler;
-import com.senkgang.dbd.entities.player.Killer;
-import com.senkgang.dbd.entities.player.Survivor;
 
 import java.awt.*;
 
 public class FogOfWar
 {
-	private Survivor s;
-	private Killer k;
+	private Player pl;
 	private Polygon p = new Polygon();
 	private Handler h;
 
-	public FogOfWar(Survivor s, Handler h)
+	public FogOfWar(Player p, Handler h)
 	{
-		this.s = s;
-		this.h = h;
-	}
-
-	public FogOfWar(Killer k, Handler h)
-	{
-		this.k = k;
+		this.pl = p;
 		this.h = h;
 	}
 
 	public void draw(Graphics g, int camX, int camY)
 	{
-
+		if (pl == null) return;
 		g.setColor(new Color(50, 50, 50, 100));
 		Polygon pol;
-		if (s != null)
-		{
-			pol = s.getViewPolygon();
-		}
-		else
-		{
-			pol = k.getViewPolygon();
-		}
+
+		pol = pl.getViewPolygon();
+
 		if (pol == null) return;
 
 		p = new Polygon();

@@ -90,6 +90,10 @@ public class Game implements Runnable
 		{
 			Screen.getScreen().update();
 		}
+		if (inputMgr.quit)
+		{
+			stop();
+		}
 	}
 
 	private void draw()
@@ -150,15 +154,16 @@ public class Game implements Runnable
 
 			if (timer >= 1000000000)
 			{
-				if (ticks < 55) Launcher.logger.Warning("Frames per second droped to: " + ticks);
+				if (ticks < 55)
+				{
+					Launcher.logger.Warning("Frames per second droped to: " + ticks);
+				}
 				else if (ticks < 59) Launcher.logger.Trace("Frames per second droped to: " + ticks);
 				fps = ticks;
 				ticks = 0;
 				timer = 0;
 			}
 		}
-
-		stop();
 	}
 
 	public synchronized void start()
@@ -183,7 +188,11 @@ public class Game implements Runnable
 		running = false;
 		try
 		{
-			thread.join();
+			handler.server.stop();
+			Launcher.logger.Info("Stopping game...");
+			display.close();
+			thread.join(3000);
+			Launcher.logger.Info("Game stopped.");
 		}
 		catch (InterruptedException e)
 		{

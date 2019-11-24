@@ -18,8 +18,9 @@ public class GameCamera
 
 	public void followEntity(Entity entity)
 	{
-		xOffset = (int)entity.getX() - handler.getScreenWidth() / 2;
-		yOffset = (int)entity.getY() - handler.getScreenHeight() / 2;
+		if (entity == null) return;
+		xOffset = (int) entity.getX() - handler.getScreenWidth() / 2;
+		yOffset = (int) entity.getY() - handler.getScreenHeight() / 2;
 	}
 
 	public void moveCamera(int x, int y)

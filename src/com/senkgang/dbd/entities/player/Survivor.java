@@ -19,11 +19,12 @@ public abstract class Survivor extends Player
 	private ArrayList<Line> scanLines = new ArrayList<>();
 	private Polygon viewPolygon;
 
-	public Survivor(Handler h, double x, double y, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlockers)
+	public Survivor(int playerID, Handler h, double x, double y, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlockers)
 	{
-		super(h, x, y, entities, sightBlockers);
+		super(playerID, h, x, y, playerControlled, entities, sightBlockers);
 	}
 
+	@Override
 	public Polygon getViewPolygon()
 	{
 		return viewPolygon;

@@ -12,16 +12,16 @@ public class TestKiller extends Killer
 	private double endX;
 	private double endY;
 
-	public TestKiller(Handler h, double x, double y, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
+	public TestKiller(int playerID, Handler h, double x, double y, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
 	{
-		super(h, x, y, entities, sightBlocker);
+		super(playerID, h, x, y, playerControlled, entities, sightBlocker);
 		fov = 130;
 	}
 
 	@Override
 	public Rectangle getBounds()
 	{
-		return new Rectangle((int)x - 25, (int)y - 25, 50, 50);
+		return new Rectangle((int) x - 25, (int) y - 25, 50, 50);
 	}
 
 	@Override

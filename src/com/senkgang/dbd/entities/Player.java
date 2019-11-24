@@ -10,24 +10,47 @@ import java.util.ArrayList;
 public abstract class Player extends CollidableEntity
 {
 
-	private Handler handler;
+	protected Handler handler;
 	private ArrayList<CollidableEntity> entities;
 	protected ArrayList<ISightBlocker> sightBlockers;
+	protected boolean canControl;
+
+	private double customAngle = -100;
 
 	private int speed = 3;
 
-	public Player(Handler h, double x, double y, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
+	private double lastPosX;
+	private double lastPosY;
+	private double lastAngle;
+
+	private int playerID;
+
+	public Player(int playerID, Handler h, double x, double y, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
 	{
 		super(x, y);
 		handler = h;
+		lastPosX = x;
+		lastPosY = y;
+		lastAngle = getAngle();
 		this.entities = entities;
 		this.sightBlockers = sightBlocker;
+		canControl = playerControlled;
+		this.playerID = playerID;
 	}
 
 	public double getAngle()
 	{
-		int mX = handler.getMouseManager().getMouseX() + handler.getGameCamera().getxOffset();
-		int mY = handler.getMouseManager().getMouseY() + handler.getGameCamera().getyOffset();
+		if (customAngle != -100) return customAngle;
+		return getAngle(handler.getMouseManager().getMouseX() + handler.getGameCamera().getxOffset(), handler.getMouseManager().getMouseY() + handler.getGameCamera().getyOffset());
+	}
+
+	public void setAngle(double angle)
+	{
+		customAngle = angle;
+	}
+
+	public double getAngle(int mX, int mY)
+	{
 		double dx = mX - x;
 		// Minus to correct for coord re-mapping
 		double dy = mY - y;
@@ -46,9 +69,16 @@ public abstract class Player extends CollidableEntity
 		return inRads + Math.PI / 2;
 	}
 
+	public int getPlayerID()
+	{
+		return playerID;
+	}
+
 	@Override
 	public void update()
 	{
+		if (!canControl) return;
+
 		double deltaX = 0;
 		double deltaY = 0;
 		if (handler.getInputManager().up)
@@ -76,6 +106,22 @@ public abstract class Player extends CollidableEntity
 		if (!rest.contains(MovementRestriction.XNegative) && deltaX < 0) x += deltaX;
 		if (!rest.contains(MovementRestriction.YPositive) && deltaY > 0) y += deltaY;
 		if (!rest.contains(MovementRestriction.YNegative) && deltaY < 0) y += deltaY;
+
+		double curAngle = getAngle();
+		if (lastPosX != x || lastPosY != y || lastAngle != curAngle && canControl)
+		{
+			if (handler.isKiller)
+			{
+				handler.server.addData("Position update:0;" + x + "," + y + "," + curAngle);
+			}
+			else
+			{
+				handler.client.addData("Position update:" + playerID + ";" + x + "," + y + "," + curAngle);
+			}
+		}
+		lastPosX = x;
+		lastPosY = y;
+		lastAngle = curAngle;
 	}
 
 	@Override
@@ -134,4 +180,6 @@ public abstract class Player extends CollidableEntity
 		}
 		return result;
 	}
+
+	public abstract Polygon getViewPolygon();
 }

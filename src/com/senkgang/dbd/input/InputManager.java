@@ -6,6 +6,7 @@ import java.awt.event.KeyListener;
 public class InputManager implements KeyListener
 {
 	public boolean up, down, left, right;
+	public boolean quit;
 
 	public InputManager()
 	{
@@ -36,6 +37,9 @@ public class InputManager implements KeyListener
 			case KeyEvent.VK_S:
 				down = true;
 				break;
+			case KeyEvent.VK_ESCAPE:
+				quit = true;
+				break;
 		}
 	}
 
@@ -55,6 +59,9 @@ public class InputManager implements KeyListener
 				break;
 			case KeyEvent.VK_S:
 				down = false;
+				break;
+			case KeyEvent.VK_ESCAPE:
+				quit = false;
 				break;
 		}
 	}

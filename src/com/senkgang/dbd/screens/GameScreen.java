@@ -6,14 +6,13 @@ import com.senkgang.dbd.Handler;
 import com.senkgang.dbd.map.Map;
 import com.senkgang.dbd.map.maps.TestMap;
 
-public class TestScreen extends Screen
+public class GameScreen extends Screen
 {
 	private Map map;
-	private Handler handler;
 
-	public TestScreen(Handler h)
+	public GameScreen(Handler h)
 	{
-		handler = h;
+		super(h);
 		map = new TestMap(handler, 2500, 1500);
 	}
 
@@ -29,4 +28,8 @@ public class TestScreen extends Screen
 		map.draw(g, handler.getGameCamera().getxOffset(), handler.getGameCamera().getyOffset());
 	}
 
+	public Map getMap()
+	{
+		return map;
+	}
 }
