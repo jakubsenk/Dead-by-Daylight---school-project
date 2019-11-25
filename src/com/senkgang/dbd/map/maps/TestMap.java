@@ -15,6 +15,7 @@ public class TestMap extends Map
 		super(h, width, height);
 
 		int wallDefinitions[][] = new int[10][];
+		int genDefinitions[][] = new int[2][];
 		Random r = new Random();
 		for (int i = 0; i < 10; i++)
 		{
@@ -33,6 +34,18 @@ public class TestMap extends Map
 			Wall w = new Wall(r.nextInt(width), r.nextInt(height), wallDefinitions[i][0], wallDefinitions[i][1]);
 			entities.add(w);
 			sightBlockers.add(w);
+		}
+		for (int i = 0; i < 2; i++)
+		{
+
+				genDefinitions[i] = new int[]{50, 50};
+
+		}
+		for (int i = 0; i < 2; i++)
+		{
+			Generator gen= new Generator(r.nextInt(width), r.nextInt(height), genDefinitions[i][0], genDefinitions[i][1]);
+			entities.add(gen);
+			sightBlockers.add(gen);
 		}
 	}
 
