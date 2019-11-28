@@ -35,15 +35,10 @@ public class TestMap extends Map
 			entities.add(w);
 			sightBlockers.add(w);
 		}
-		for (int i = 0; i < 2; i++)
-		{
 
-				genDefinitions[i] = new int[]{50, 50};
-
-		}
-		for (int i = 0; i < 2; i++)
+		for (int i = 0; i < 10; i++)
 		{
-			Generator gen= new Generator(r.nextInt(width), r.nextInt(height), genDefinitions[i][0], genDefinitions[i][1]);
+			Generator gen = new Generator(r.nextInt(width), r.nextInt(height));
 			entities.add(gen);
 			sightBlockers.add(gen);
 		}
