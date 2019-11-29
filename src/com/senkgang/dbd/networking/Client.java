@@ -90,7 +90,7 @@ public class Client implements Runnable
 		try
 		{
 			Launcher.logger.Info("Stopping client...");
-			thread.join(3000);
+			if (thread != null) thread.join(3000);
 			Launcher.logger.Info("Client stopped.");
 		}
 		catch (InterruptedException e)

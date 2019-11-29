@@ -4,12 +4,15 @@ import com.senkgang.dbd.display.Display;
 import com.senkgang.dbd.display.GameCamera;
 import com.senkgang.dbd.input.InputManager;
 import com.senkgang.dbd.input.MouseManager;
+import com.senkgang.dbd.resources.Assets;
 import com.senkgang.dbd.screens.IntroScreen;
 import com.senkgang.dbd.screens.Screen;
 
+import javax.swing.*;
 import java.awt.image.BufferStrategy;
 import java.awt.Graphics;
 import java.awt.Color;
+import java.io.IOException;
 
 public class Game implements Runnable
 {
@@ -42,9 +45,9 @@ public class Game implements Runnable
 		mouseMgr = new MouseManager();
 	}
 
-	private void init()
+	private void init() throws IOException
 	{
-		display = new Display(width, height);
+		display = new Display(width, height, this);
 		display.getJFrame().addKeyListener(inputMgr);
 		display.getJFrame().addMouseListener(mouseMgr);
 		display.getJFrame().addMouseMotionListener(mouseMgr);
@@ -52,6 +55,8 @@ public class Game implements Runnable
 		display.getCanvas().addMouseMotionListener(mouseMgr);
 
 		handler = new Handler(this);
+
+		Assets.init();
 
 		camera = new GameCamera(handler, 0, 0);
 
@@ -127,7 +132,17 @@ public class Game implements Runnable
 	@Override
 	public void run()
 	{
-		init();
+		try
+		{
+			init();
+		}
+		catch (IOException e)
+		{
+			Launcher.logger.Exception(e);
+			JOptionPane.showMessageDialog(null, e, "ERROR initializing assets", JOptionPane.ERROR_MESSAGE);
+			stop();
+			return;
+		}
 
 		int targetFps = 60;
 		double timePerTick = 1000000000 / targetFps;
