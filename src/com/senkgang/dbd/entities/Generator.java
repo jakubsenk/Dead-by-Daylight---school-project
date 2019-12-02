@@ -56,10 +56,14 @@ public class Generator extends CollidableEntity implements ISightBlocker
 	public ArrayList<Line> getSightBlockingLines()
 	{
 		ArrayList<Line> ret = new ArrayList<>();
-		ret.add(new Line(new Point((int) (x - width / 2), (int) (y - height / 2)), new Point((int) (x - width / 2), (int) (y + height / 2))));
-		ret.add(new Line(new Point((int) (x - width / 2), (int) (y - height / 2)), new Point((int) (x + width / 2), (int) (y - height / 2))));
-		ret.add(new Line(new Point((int) (x + width / 2), (int) (y - height / 2)), new Point((int) (x + width / 2), (int) (y + height / 2))));
-		ret.add(new Line(new Point((int) (x - width / 2), (int) (y + height / 2)), new Point((int) (x + width / 2), (int) (y + height / 2))));
+
+		ret.add(new Line(new Point((int) (x - width / 2 + 4), (int) (y + height / 2 - 12)), new Point((int) (x - width / 2 + 4), (int) (y - height / 2 + 10))));
+		ret.add(new Line(new Point((int) (x - width / 2 + 4), (int) (y - height / 2 + 10)), new Point((int) (x + width / 2 - 28), (int) (y - height / 2 + 1))));
+		ret.add(new Line(new Point((int) (x + width / 2 - 28), (int) (y - height / 2 + 1)), new Point((int) (x + width / 2 - 4), (int) (y - height / 2 + 13))));
+		ret.add(new Line(new Point((int) (x + width / 2 - 4), (int) (y - height / 2 + 13)), new Point((int) (x + width / 2 - 4), (int) (y + height / 2 - 12))));
+		ret.add(new Line(new Point((int) (x + width / 2 - 4), (int) (y + height / 2 - 12)), new Point((int) (x - width / 2 + 25), (int) (y + height / 2 - 2))));
+		ret.add(new Line(new Point((int) (x - width / 2 + 25), (int) (y + height / 2 - 2)), new Point((int) (x - width / 2 + 4), (int) (y + height / 2 - 12))));
+
 		return ret;
 	}
 }
