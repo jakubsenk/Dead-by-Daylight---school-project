@@ -1,6 +1,6 @@
 package com.senkgang.dbd.entities;
 
-import java.awt.Graphics;
+import javafx.scene.canvas.GraphicsContext;
 
 public abstract class Entity
 {
@@ -40,6 +40,6 @@ public abstract class Entity
 
 	public abstract void update();
 
-	public abstract void draw(Graphics g, int camX, int camY);
+	public abstract void draw(GraphicsContext g, int camX, int camY);
 
 }

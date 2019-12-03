@@ -1,7 +1,6 @@
 package com.senkgang.dbd;
 
 import com.senkgang.dbd.display.GameCamera;
-import com.senkgang.dbd.input.InputManager;
 import com.senkgang.dbd.input.MouseManager;
 import com.senkgang.dbd.map.Map;
 import com.senkgang.dbd.networking.Client;
@@ -33,11 +32,6 @@ public class Handler
 		return g.getHeight();
 	}
 
-	public InputManager getInputManager()
-	{
-		return g.getInputManager();
-	}
-
 	public MouseManager getMouseManager()
 	{
 		return g.getMouseManager();
@@ -51,7 +45,9 @@ public class Handler
 	public Map getCurrentMap()
 	{
 		if (Screen.getScreen().getClass().getSimpleName().equals("GameScreen"))
-			return ((GameScreen)Screen.getScreen()).getMap();
+		{
+			return ((GameScreen) Screen.getScreen()).getMap();
+		}
 		return null;
 	}
 

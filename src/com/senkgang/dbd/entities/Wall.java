@@ -1,8 +1,10 @@
 package com.senkgang.dbd.entities;
 
 import com.senkgang.dbd.fov.Line;
+import javafx.geometry.Point2D;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.shape.Rectangle;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public class Wall extends CollidableEntity implements ISightBlocker
@@ -30,7 +32,7 @@ public class Wall extends CollidableEntity implements ISightBlocker
 	}
 
 	@Override
-	public void draw(Graphics g, int camX, int camY)
+	public void draw(GraphicsContext g, int camX, int camY)
 	{
 		g.fillRect((int) x - width / 2 - camX, (int) y - height / 2 - camY, width, height);
 	}
@@ -39,10 +41,10 @@ public class Wall extends CollidableEntity implements ISightBlocker
 	public ArrayList<Line> getSightBlockingLines()
 	{
 		ArrayList<Line> ret = new ArrayList<>();
-		ret.add(new Line(new Point((int) (x - width / 2), (int) (y - height / 2)), new Point((int) (x - width / 2), (int) (y + height / 2))));
-		ret.add(new Line(new Point((int) (x - width / 2), (int) (y - height / 2)), new Point((int) (x + width / 2), (int) (y - height / 2))));
-		ret.add(new Line(new Point((int) (x + width / 2), (int) (y - height / 2)), new Point((int) (x + width / 2), (int) (y + height / 2))));
-		ret.add(new Line(new Point((int) (x - width / 2), (int) (y + height / 2)), new Point((int) (x + width / 2), (int) (y + height / 2))));
+		ret.add(new Line(new Point2D(x - width / 2, y - height / 2), new Point2D(x - width / 2, y + height / 2)));
+		ret.add(new Line(new Point2D(x - width / 2, y - height / 2), new Point2D(x + width / 2, y - height / 2)));
+		ret.add(new Line(new Point2D(x + width / 2, y - height / 2), new Point2D(x + width / 2, y + height / 2)));
+		ret.add(new Line(new Point2D(x - width / 2, y + height / 2), new Point2D(x + width / 2, y + height / 2)));
 		return ret;
 	}
 }

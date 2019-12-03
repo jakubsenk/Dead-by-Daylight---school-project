@@ -1,60 +1,63 @@
 package com.senkgang.dbd.screens;
 
 import com.senkgang.dbd.Handler;
+import com.senkgang.dbd.Launcher;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 
-import java.awt.*;
 
-public class PlayerSelectScreen extends Screen
+public class PlayerSelectScreen extends GUIScreen
 {
-	private boolean leftHovered = false;
-	private boolean rightHovered = false;
-
-	private boolean clickHold = true;
+	Button bk = new Button("Play as killer");
+	Button bs = new Button("Play as survivor");
 
 	public PlayerSelectScreen(Handler h)
 	{
 		super(h);
+		Launcher.pane.getChildren().add(bk);
+		Launcher.pane.getChildren().add(bs);
+
+		bk.relocate(300, 400);
+		bs.relocate(1200, 400);
+
+		bk.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent actionEvent)
+			{
+				handler.isKiller = true;
+				Screen.setScreen(new GameScreen(handler));
+			}
+		});
+		bs.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent actionEvent)
+			{
+				handler.isKiller = false;
+				Screen.setScreen(new GameScreen(handler));
+			}
+		});
 	}
 
 	@Override
 	public void update()
 	{
-		leftHovered = handler.getMouseManager().getMouseX() < handler.getScreenWidth() / 2;
-		rightHovered = handler.getMouseManager().getMouseX() > handler.getScreenWidth() / 2;
 
-		if (handler.getMouseManager().leftButtonPressed() && !clickHold)
-		{
-			if (leftHovered)
-			{
-				handler.isKiller = true;
-			}
-			else
-			{
-				handler.isKiller = false;
-			}
-			Screen.setScreen(new GameScreen(handler));
-		}
-		else if (!handler.getMouseManager().leftButtonPressed() && clickHold)
-		{
-			clickHold = false;
-		}
 	}
 
 	@Override
-	public void draw(Graphics g)
+	public void draw(GraphicsContext g)
 	{
-		if (leftHovered)
-		{
-			g.setColor(Color.yellow);
-			g.fillRect(0, 0, handler.getScreenWidth() / 2, handler.getScreenHeight());
-		}
-		if (rightHovered)
-		{
-			g.setColor(Color.yellow);
-			g.fillRect(handler.getScreenWidth() / 2, 0, handler.getScreenWidth() / 2, handler.getScreenHeight());
-		}
-		g.setColor(Color.black);
-		g.drawString("Play as Killer", handler.getScreenWidth() / 3, handler.getScreenHeight() / 2);
-		g.drawString("Play as survivor", handler.getScreenWidth() / 3 * 2, handler.getScreenHeight() / 2);
+
+	}
+
+	@Override
+	public void disposeUIComponents()
+	{
+		Launcher.pane.getChildren().remove(bk);
+		Launcher.pane.getChildren().remove(bs);
 	}
 }

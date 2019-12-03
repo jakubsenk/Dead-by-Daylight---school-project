@@ -1,7 +1,7 @@
 package com.senkgang.dbd.entities;
 
 
-import java.awt.Rectangle;
+import javafx.scene.shape.Rectangle;
 
 public abstract class CollidableEntity extends Entity
 {

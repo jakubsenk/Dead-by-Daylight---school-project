@@ -1,10 +1,10 @@
 package com.senkgang.dbd.screens;
 
-import java.awt.Graphics;
-
 import com.senkgang.dbd.Handler;
 import com.senkgang.dbd.map.Map;
 import com.senkgang.dbd.map.maps.TestMap;
+
+import javafx.scene.canvas.GraphicsContext;
 
 public class GameScreen extends Screen
 {
@@ -23,7 +23,7 @@ public class GameScreen extends Screen
 	}
 
 	@Override
-	public void draw(Graphics g)
+	public void draw(GraphicsContext g)
 	{
 		map.draw(g, handler.getGameCamera().getxOffset(), handler.getGameCamera().getyOffset());
 	}

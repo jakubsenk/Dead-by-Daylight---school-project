@@ -1,8 +1,9 @@
 package com.senkgang.dbd.screens;
 
 import com.senkgang.dbd.Handler;
+import com.senkgang.dbd.Launcher;
+import javafx.scene.canvas.GraphicsContext;
 
-import java.awt.Graphics;
 
 public abstract class Screen
 {
@@ -17,6 +18,10 @@ public abstract class Screen
 
 	public static void setScreen(Screen s)
 	{
+		if (currentScreen instanceof GUIScreen)
+		{
+			((GUIScreen) currentScreen).disposeUIComponents();
+		}
 		currentScreen = s;
 	}
 
@@ -27,6 +32,6 @@ public abstract class Screen
 
 	public abstract void update();
 
-	public abstract void draw(Graphics g);
+	public abstract void draw(GraphicsContext g);
 
 }

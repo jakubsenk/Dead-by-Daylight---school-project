@@ -3,8 +3,12 @@ package com.senkgang.dbd.entities;
 import com.senkgang.dbd.Handler;
 import com.senkgang.dbd.Launcher;
 import com.senkgang.dbd.enums.MovementRestriction;
+import com.senkgang.dbd.input.InputManager;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public abstract class Player extends CollidableEntity
@@ -81,22 +85,22 @@ public abstract class Player extends CollidableEntity
 
 		double deltaX = 0;
 		double deltaY = 0;
-		if (handler.getInputManager().up)
+		if (InputManager.up)
 		{
 			deltaX += speed * Math.sin(getAngle());
 			deltaY += speed * Math.cos(getAngle());
 		}
-		if (handler.getInputManager().down)
+		if (InputManager.down)
 		{
 			deltaX -= speed * Math.sin(getAngle());
 			deltaY -= speed * Math.cos(getAngle());
 		}
-		if (handler.getInputManager().left)
+		if (InputManager.left)
 		{
 			deltaX += speed * Math.sin(getAngle() + Math.PI / 2);
 			deltaY += speed * Math.cos(getAngle() + Math.PI / 2);
 		}
-		if (handler.getInputManager().right)
+		if (InputManager.right)
 		{
 			deltaX += speed * Math.sin(getAngle() - Math.PI / 2);
 			deltaY += speed * Math.cos(getAngle() - Math.PI / 2);
@@ -125,13 +129,13 @@ public abstract class Player extends CollidableEntity
 	}
 
 	@Override
-	public void draw(Graphics g, int camX, int camY)
+	public void draw(GraphicsContext g, int camX, int camY)
 	{
 		if (Launcher.isDebug)
 		{
-			g.setColor(Color.CYAN);
+			g.setStroke(Color.CYAN);
 			Rectangle r = getBounds();
-			g.drawRect(r.x - camX, r.y - camY, r.width, r.height);
+			g.strokeRect(r.getX() - camX, r.getY() - camY, r.getWidth(), r.getHeight());
 			double endX = x + 350 * Math.sin(getAngle());
 			double endY = y + 350 * Math.cos(getAngle());
 			double endLeftX = x + 350 * Math.sin(getAngle() + Math.PI / 4);
@@ -139,9 +143,9 @@ public abstract class Player extends CollidableEntity
 			double endRightX = x + 350 * Math.sin(getAngle() - Math.PI / 4);
 			double endRightY = y + 350 * Math.cos(getAngle() - Math.PI / 4);
 
-			g.drawLine((int) x - camX, (int) y - camY, (int) endX - camX, (int) endY - camY);
-			g.drawLine((int) x - camX, (int) y - camY, (int) endLeftX - camX, (int) endLeftY - camY);
-			g.drawLine((int) x - camX, (int) y - camY, (int) endRightX - camX, (int) endRightY - camY);
+			g.strokeLine((int) x - camX, (int) y - camY, (int) endX - camX, (int) endY - camY);
+			g.strokeLine((int) x - camX, (int) y - camY, (int) endLeftX - camX, (int) endLeftY - camY);
+			g.strokeLine((int) x - camX, (int) y - camY, (int) endRightX - camX, (int) endRightY - camY);
 		}
 	}
 
@@ -149,29 +153,29 @@ public abstract class Player extends CollidableEntity
 	{
 		ArrayList<MovementRestriction> result = new ArrayList<>();
 		Rectangle r = getBounds();
-		Rectangle movedPosition = new Rectangle((int) (r.x + deltaX), (int) (r.y + deltaY), r.width, r.height);
+		Rectangle movedPosition = new Rectangle((int) (r.getX() + deltaX), (int) (r.getY() + deltaY), r.getWidth(), r.getHeight());
 		for (CollidableEntity e : entities)
 		{
 			Rectangle otherRect = e.getBounds();
-			if (otherRect.intersects(movedPosition))
+			if (otherRect.intersects(movedPosition.getBoundsInLocal()))
 			{
-				if (movedPosition.x + movedPosition.width > otherRect.x)
+				if (movedPosition.getX() + movedPosition.getWidth() > otherRect.getX())
 				{
 					Launcher.logger.Info("Collision with object on right");
 					result.add(MovementRestriction.XPositive);
 				}
-				if (otherRect.x + otherRect.width > movedPosition.x)
+				if (otherRect.getX() + otherRect.getWidth() > movedPosition.getX())
 				{
 					Launcher.logger.Info("Collision with object on left");
 					result.add(MovementRestriction.XNegative);
 				}
 
-				if (movedPosition.y + movedPosition.height > otherRect.y)
+				if (movedPosition.getY() + movedPosition.getHeight() > otherRect.getY())
 				{
 					Launcher.logger.Info("Collision with object on bot");
 					result.add(MovementRestriction.YPositive);
 				}
-				if (otherRect.y + otherRect.height > movedPosition.y)
+				if (otherRect.getY() + otherRect.getHeight() > movedPosition.getY())
 				{
 					Launcher.logger.Info("Collision with object on top");
 					result.add(MovementRestriction.YNegative);
@@ -181,5 +185,6 @@ public abstract class Player extends CollidableEntity
 		return result;
 	}
 
-	public abstract Polygon getViewPolygon();
+	public abstract double[] getViewPolygonX();
+	public abstract double[] getViewPolygonY();
 }

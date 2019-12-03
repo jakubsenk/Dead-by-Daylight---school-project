@@ -4,8 +4,11 @@ import com.senkgang.dbd.Handler;
 import com.senkgang.dbd.entities.*;
 import com.senkgang.dbd.entities.player.Survivor;
 import com.senkgang.dbd.map.Map;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
-import java.awt.*;
+import javax.swing.*;
+import java.net.SocketException;
 import java.util.Random;
 
 public class TestMap extends Map
@@ -69,17 +72,32 @@ public class TestMap extends Map
 		}
 		else
 		{
-			handler.client.send();
+			if (handler.client.connectFailed)
+			{
+				JOptionPane.showMessageDialog(null, "Unable to connect to killer.", "Connection lost.", JOptionPane.ERROR_MESSAGE);
+				handler.getGame().stop();
+			}
+			try
+			{
+				handler.client.send();
+			}
+			catch (SocketException e)
+			{
+				JOptionPane.showMessageDialog(null, e, "Connection lost.", JOptionPane.ERROR_MESSAGE);
+				handler.getGame().stop();
+			}
+
 		}
 	}
 
 	@Override
-	public void draw(Graphics g, int camX, int camY)
+	public void draw(GraphicsContext g, int camX, int camY)
 	{
-		g.drawLine(0 - camX, 0 - camY, 0 - camX, height - camY);
-		g.drawLine(0 - camX, 0 - camY, width - camX, 0 - camY);
-		g.drawLine(0 - camX, height - camY, width - camX, height - camY);
-		g.drawLine(width - camX, 0 - camY, width - camX, height - camY);
+		g.setStroke(Color.BLACK);
+		g.strokeLine(0 - camX, 0 - camY, 0 - camX, height - camY);
+		g.strokeLine(0 - camX, 0 - camY, width - camX, 0 - camY);
+		g.strokeLine(0 - camX, height - camY, width - camX, height - camY);
+		g.strokeLine(width - camX, 0 - camY, width - camX, height - camY);
 
 		for (Entity e : entities)
 		{

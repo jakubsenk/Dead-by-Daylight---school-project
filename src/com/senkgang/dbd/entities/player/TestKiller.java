@@ -3,8 +3,10 @@ package com.senkgang.dbd.entities.player;
 import com.senkgang.dbd.Handler;
 import com.senkgang.dbd.entities.CollidableEntity;
 import com.senkgang.dbd.entities.ISightBlocker;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public class TestKiller extends Killer
@@ -34,12 +36,12 @@ public class TestKiller extends Killer
 	}
 
 	@Override
-	public void draw(Graphics g, int camX, int camY)
+	public void draw(GraphicsContext g, int camX, int camY)
 	{
 		super.draw(g, camX, camY);
-		g.setColor(Color.DARK_GRAY);
+		g.setFill(Color.DARKGRAY);
 		g.fillOval((int) x - 25 - camX, (int) y - 25 - camY, 50, 50);
-		g.setColor(Color.black);
-		g.drawLine((int) x - camX, (int) y - camY, (int) endX - camX, (int) endY - camY);
+		g.setStroke(Color.BLACK);
+		g.strokeLine((int) x - camX, (int) y - camY, (int) endX - camX, (int) endY - camY);
 	}
 }

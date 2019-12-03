@@ -1,6 +1,5 @@
 package com.senkgang.dbd;
 
-import com.senkgang.dbd.display.Display;
 import com.senkgang.dbd.display.GameCamera;
 import com.senkgang.dbd.input.InputManager;
 import com.senkgang.dbd.input.MouseManager;
@@ -8,52 +7,49 @@ import com.senkgang.dbd.resources.Assets;
 import com.senkgang.dbd.screens.IntroScreen;
 import com.senkgang.dbd.screens.Screen;
 
+import javafx.application.Platform;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+
 import javax.swing.*;
-import java.awt.image.BufferStrategy;
-import java.awt.Graphics;
-import java.awt.Color;
 import java.io.IOException;
 
-public class Game implements Runnable
+public class Game
 {
-	private final int width;
-	private final int height;
+	private final int width = 1600;
+	private final int height = 900;
 
 	private int fps;
 
-	private Display display;
-	private Thread thread;
-	private boolean running = false;
-
-	private BufferStrategy bs;
-	private Graphics gr;
-
 	private Screen screen;
 
-	private InputManager inputMgr;
 	private MouseManager mouseMgr;
 
 	private Handler handler;
 
 	private GameCamera camera;
 
-	public Game(int width, int height)
+
+	public Game(Canvas c)
 	{
-		this.width = width;
-		this.height = height;
-		inputMgr = new InputManager();
-		mouseMgr = new MouseManager();
+		mouseMgr = new MouseManager(c);
+
+		try
+		{
+			init();
+		}
+		catch (IOException e)
+		{
+			Launcher.logger.Exception(e);
+			JOptionPane.showMessageDialog(null, e, "ERROR initializing assets", JOptionPane.ERROR_MESSAGE);
+			stop();
+			return;
+		}
 	}
 
 	private void init() throws IOException
 	{
-		display = new Display(width, height, this);
-		display.getJFrame().addKeyListener(inputMgr);
-		display.getJFrame().addMouseListener(mouseMgr);
-		display.getJFrame().addMouseMotionListener(mouseMgr);
-		display.getCanvas().addMouseListener(mouseMgr);
-		display.getCanvas().addMouseMotionListener(mouseMgr);
-
 		handler = new Handler(this);
 
 		Assets.init();
@@ -62,11 +58,6 @@ public class Game implements Runnable
 
 		screen = new IntroScreen(handler);
 		Screen.setScreen(screen);
-	}
-
-	public InputManager getInputManager()
-	{
-		return inputMgr;
 	}
 
 	public MouseManager getMouseManager()
@@ -95,28 +86,20 @@ public class Game implements Runnable
 		{
 			Screen.getScreen().update();
 		}
-		if (inputMgr.quit)
+		if (InputManager.quit)
 		{
 			stop();
 		}
 	}
 
-	private void draw()
+	private void draw(GraphicsContext gr)
 	{
-		bs = display.getCanvas().getBufferStrategy();
-		if (bs == null)
-		{
-			display.getCanvas().createBufferStrategy(2);
-			return;
-		}
-		gr = bs.getDrawGraphics();
-
 		gr.clearRect(0, 0, width, height); // Clear screen
 
 		// #region drawings
 
-		gr.setColor(Color.black);
-		gr.drawString("FPS: " + fps, 0, 10);
+		gr.setFill(Color.BLACK);
+		gr.strokeText("FPS: " + fps, 0, 10);
 
 		if (Screen.getScreen() != null)
 		{
@@ -125,93 +108,45 @@ public class Game implements Runnable
 
 		// #endregion
 
-		bs.show();
-		gr.dispose();
 	}
 
-	@Override
-	public void run()
+	private long last;
+	private long ticks = 0;
+	private long timer = 0;
+	private long current;
+
+	public void tick(GraphicsContext gr, long currentNanoTime)
 	{
-		try
-		{
-			init();
-		}
-		catch (IOException e)
-		{
-			Launcher.logger.Exception(e);
-			JOptionPane.showMessageDialog(null, e, "ERROR initializing assets", JOptionPane.ERROR_MESSAGE);
-			stop();
-			return;
-		}
+		current = currentNanoTime;
+		timer += current - last;
+		last = current;
 
-		int targetFps = 60;
-		double timePerTick = 1000000000 / targetFps;
-		double delta = 0;
-		long current;
-		long last = System.nanoTime();
-		long timer = 0;
-		int ticks = 0;
+		update();
+		draw(gr);
+		ticks++;
 
-		while (running)
+
+		if (timer >= 1000000000)
 		{
-			current = System.nanoTime();
-			delta += (current - last) / timePerTick;
-			timer += current - last;
-			last = current;
-
-			if (delta >= 1)
+			if (ticks < 55)
 			{
-				update();
-				draw();
-				ticks++;
-				delta = 0;
+				Launcher.logger.Warning("Frames per second dropped to: " + ticks);
 			}
-
-			if (timer >= 1000000000)
-			{
-				if (ticks < 55)
-				{
-					Launcher.logger.Warning("Frames per second droped to: " + ticks);
-				}
-				else if (ticks < 59) Launcher.logger.Trace("Frames per second droped to: " + ticks);
-				fps = ticks;
-				ticks = 0;
-				timer = 0;
-			}
+			else if (ticks < 59) Launcher.logger.Trace("Frames per second dropped to: " + ticks);
+			fps = (int) ticks;
+			ticks = 0;
+			timer = 0;
 		}
 	}
 
-	public synchronized void start()
+	public void stop()
 	{
-		if (running)
-		{
-			Launcher.logger.Error("Trying to run game while game already running!");
-			return;
-		}
-		running = true;
-		thread = new Thread(this);
-		thread.start();
+		handler.server.stop();
+		handler.client.stop();
+		Launcher.logger.Info("Stopping game...");
+		Platform.exit();
+		Launcher.logger.Info("Game stopped.");
+		System.exit(0);
 	}
 
-	public synchronized void stop()
-	{
-		if (!running)
-		{
-			Launcher.logger.Error("Trying to stop game while game is not running!");
-			return;
-		}
-		running = false;
-		try
-		{
-			handler.server.stop();
-			Launcher.logger.Info("Stopping game...");
-			display.close();
-			thread.join(3000);
-			Launcher.logger.Info("Game stopped.");
-		}
-		catch (InterruptedException e)
-		{
-			Launcher.logger.Exception(e);
-		}
-	}
 }

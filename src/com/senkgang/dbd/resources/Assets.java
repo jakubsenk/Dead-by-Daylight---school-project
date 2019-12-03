@@ -1,17 +1,17 @@
 package com.senkgang.dbd.resources;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
+import javafx.scene.image.Image;
+
 import java.io.File;
 import java.io.IOException;
 
 public class Assets
 {
-	public static BufferedImage generator, introLogo;
+	public static Image generator, introLogo;
 
 	public static void init() throws IOException
 	{
-		generator = ImageIO.read(new File("res/images/generator.png"));
-		introLogo = ImageIO.read(new File("res/images/introLogo.jpg"));
+		generator = new Image(new File("res/images/generator.png").toURI().toString());
+		introLogo = new Image(new File("res/images/introLogo.jpg").toURI().toString());
 	}
 }

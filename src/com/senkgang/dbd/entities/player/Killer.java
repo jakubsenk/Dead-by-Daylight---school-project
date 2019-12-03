@@ -7,17 +7,22 @@ import com.senkgang.dbd.entities.ISightBlocker;
 import com.senkgang.dbd.entities.Player;
 import com.senkgang.dbd.fov.Algorithm;
 import com.senkgang.dbd.fov.Line;
+import javafx.geometry.Point2D;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Polygon;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public abstract class Killer extends Player
 {
 	private Algorithm algorithm = new Algorithm(600);
-	private ArrayList<Point> points = new ArrayList<>();
+	private ArrayList<Point2D> points = new ArrayList<>();
 	private ArrayList<Line> sceneLines = new ArrayList<>();
 	private ArrayList<Line> scanLines = new ArrayList<>();
-	private Polygon viewPolygon;
+	private double[] viewPolygonX;
+	private double[] viewPolygonY;
 
 	protected int fov = 90;
 
@@ -27,9 +32,15 @@ public abstract class Killer extends Player
 	}
 
 	@Override
-	public Polygon getViewPolygon()
+	public double[] getViewPolygonX()
 	{
-		return viewPolygon;
+		return viewPolygonX;
+	}
+
+	@Override
+	public double[] getViewPolygonY()
+	{
+		return viewPolygonY;
 	}
 
 	@Override
@@ -50,33 +61,38 @@ public abstract class Killer extends Player
 		double endRightX = getX() + 500 * Math.sin(getAngle() - Math.toRadians(fov / 2));
 		double endRightY = getY() + 500 * Math.cos(getAngle() - Math.toRadians(fov / 2));
 
-		sceneLines.add(new Line(new Point((int) (getX() - 5 * Math.sin(getAngle())), (int) (getY() - 5 * Math.cos(getAngle()))), new Point((int) endLeftX, (int) endLeftY)));
-		sceneLines.add(new Line(new Point((int) (getX() - 5 * Math.sin(getAngle())), (int) (getY() - 5 * Math.cos(getAngle()))), new Point((int) endRightX, (int) endRightY)));
+		sceneLines.add(new Line(new Point2D((int) (getX() - 5 * Math.sin(getAngle())), (int) (getY() - 5 * Math.cos(getAngle()))), new Point2D((int) endLeftX, (int) endLeftY)));
+		sceneLines.add(new Line(new Point2D((int) (getX() - 5 * Math.sin(getAngle())), (int) (getY() - 5 * Math.cos(getAngle()))), new Point2D((int) endRightX, (int) endRightY)));
 
 		points = algorithm.getIntersectionPoints(scanLines, sceneLines);
 
-		viewPolygon = new Polygon();
-		for (Point point : points)
+		viewPolygonX = new double[points.size()];
+		viewPolygonY = new double[points.size()];
+		for (int i = 0; i < points.size(); i++)
 		{
-			viewPolygon.addPoint(point.x, point.y);
+			viewPolygonX[i] = points.get(i).getX();
+			viewPolygonY[i] = points.get(i).getY();
 		}
 	}
 
 	@Override
-	public void draw(Graphics g, int camX, int camY)
+	public void draw(GraphicsContext g, int camX, int camY)
 	{
 		super.draw(g, camX, camY);
 		if (Launcher.isDebug)
 		{
-			g.setColor(Color.GREEN);
+			g.setStroke(Color.GREEN);
 
-			Polygon p = new Polygon();
-			for (Point point : points)
+			double[] xPol = new double[points.size()];
+			double[] yPol = new double[points.size()];
+			for (int i = 0; i < points.size(); i++)
 			{
-				p.addPoint(point.x - camX, point.y - camY);
+				xPol[i] = points.get(i).getX() - camX;
+				yPol[i] = points.get(i).getY() - camY;
 			}
-			((Graphics2D) g).setStroke(new BasicStroke(5));
-			g.drawPolygon(p);
+			g.setLineWidth(3);
+			g.strokePolygon(xPol, yPol, points.size());
+			g.setLineWidth(1);
 		}
 	}
 }

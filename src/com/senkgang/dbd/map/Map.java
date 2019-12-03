@@ -11,7 +11,8 @@ import com.senkgang.dbd.entities.player.Survivor;
 import com.senkgang.dbd.entities.player.TestKiller;
 import com.senkgang.dbd.entities.player.TestSurvivor;
 
-import java.awt.*;
+import javafx.scene.canvas.GraphicsContext;
+
 import java.util.ArrayList;
 
 public abstract class Map
@@ -56,7 +57,7 @@ public abstract class Map
 
 	public abstract void update();
 
-	public abstract void draw(Graphics g, int camX, int camY);
+	public abstract void draw(GraphicsContext g, int camX, int camY);
 
 	public String addSurvivor()
 	{

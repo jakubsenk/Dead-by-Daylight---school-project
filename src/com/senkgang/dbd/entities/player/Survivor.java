@@ -8,16 +8,21 @@ import com.senkgang.dbd.entities.Player;
 import com.senkgang.dbd.fov.Algorithm;
 import com.senkgang.dbd.fov.Line;
 
-import java.awt.*;
+import javafx.geometry.Point2D;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+
 import java.util.ArrayList;
 
 public abstract class Survivor extends Player
 {
 	private Algorithm algorithm = new Algorithm(450);
-	private ArrayList<Point> points = new ArrayList<>();
+	private ArrayList<Point2D> points = new ArrayList<>();
 	private ArrayList<Line> sceneLines = new ArrayList<>();
 	private ArrayList<Line> scanLines = new ArrayList<>();
-	private Polygon viewPolygon;
+	private double[] viewPolygonX;
+	private double[] viewPolygonY;
 
 	public Survivor(int playerID, Handler h, double x, double y, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlockers)
 	{
@@ -25,9 +30,15 @@ public abstract class Survivor extends Player
 	}
 
 	@Override
-	public Polygon getViewPolygon()
+	public double[] getViewPolygonX()
 	{
-		return viewPolygon;
+		return viewPolygonX;
+	}
+
+	@Override
+	public double[] getViewPolygonY()
+	{
+		return viewPolygonY;
 	}
 
 	@Override
@@ -45,29 +56,33 @@ public abstract class Survivor extends Player
 
 		points = algorithm.getIntersectionPoints(scanLines, sceneLines);
 
-		viewPolygon = new Polygon();
-		for (Point point : points)
+		viewPolygonX = new double[points.size()];
+		viewPolygonY = new double[points.size()];
+		for (int i = 0; i < points.size(); i++)
 		{
-			viewPolygon.addPoint(point.x, point.y);
+			viewPolygonX[i] = points.get(i).getX();
+			viewPolygonY[i] = points.get(i).getY();
 		}
 	}
 
 	@Override
-	public void draw(Graphics g, int camX, int camY)
+	public void draw(GraphicsContext g, int camX, int camY)
 	{
 		super.draw(g, camX, camY);
 		if (Launcher.isDebug)
 		{
-			g.setColor(Color.GREEN);
+			g.setStroke(Color.GREEN);
 
-			Polygon p = new Polygon();
-			for (Point point : points)
+			double[] xPol = new double[points.size()];
+			double[] yPol = new double[points.size()];
+			for (int i = 0; i < points.size(); i++)
 			{
-				p.addPoint(point.x - camX, point.y - camY);
+				xPol[i] = points.get(i).getX() - camX;
+				yPol[i] = points.get(i).getY() - camY;
 			}
-			((Graphics2D) g).setStroke(new BasicStroke(5));
-			g.drawPolygon(p);
-			((Graphics2D) g).setStroke(new BasicStroke());
+			g.setLineWidth(3);
+			g.strokePolygon(xPol, yPol, points.size());
+			g.setLineWidth(1);
 		}
 	}
 }

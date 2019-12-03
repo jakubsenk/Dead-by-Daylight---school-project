@@ -1,68 +1,62 @@
 package com.senkgang.dbd.input;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import javafx.event.EventHandler;
+import javafx.scene.input.KeyEvent;
 
-public class InputManager implements KeyListener
+public class InputManager
 {
-	public boolean up, down, left, right;
-	public boolean quit;
+	public static boolean up, down, left, right;
+	public static boolean quit;
 
-	public InputManager()
+	public static EventHandler<KeyEvent> keyPressed = new EventHandler<KeyEvent>()
 	{
-
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e)
-	{
-		switch (e.getKeyCode())
+		@Override
+		public void handle(KeyEvent e)
 		{
-			case KeyEvent.VK_A:
-				left = true;
-				break;
-			case KeyEvent.VK_D:
-				right = true;
-				break;
-			case KeyEvent.VK_W:
-				up = true;
-				break;
-			case KeyEvent.VK_S:
-				down = true;
-				break;
-			case KeyEvent.VK_ESCAPE:
-				quit = true;
-				break;
+			switch (e.getCode())
+			{
+				case A:
+					left = true;
+					break;
+				case D:
+					right = true;
+					break;
+				case W:
+					up = true;
+					break;
+				case S:
+					down = true;
+					break;
+				case ESCAPE:
+					quit = true;
+					break;
+			}
 		}
-	}
+	};
 
-	@Override
-	public void keyReleased(KeyEvent e)
+	public static EventHandler<KeyEvent> keyReleased = new EventHandler<KeyEvent>()
 	{
-		switch (e.getKeyCode())
+		@Override
+		public void handle(KeyEvent e)
 		{
-			case KeyEvent.VK_A:
-				left = false;
-				break;
-			case KeyEvent.VK_D:
-				right = false;
-				break;
-			case KeyEvent.VK_W:
-				up = false;
-				break;
-			case KeyEvent.VK_S:
-				down = false;
-				break;
-			case KeyEvent.VK_ESCAPE:
-				quit = false;
-				break;
+			switch (e.getCode())
+			{
+				case A:
+					left = false;
+					break;
+				case D:
+					right = false;
+					break;
+				case W:
+					up = false;
+					break;
+				case S:
+					down = false;
+					break;
+				case ESCAPE:
+					quit = false;
+					break;
+			}
 		}
-	}
+	};
 }

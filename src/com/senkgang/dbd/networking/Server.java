@@ -77,8 +77,16 @@ public class Server implements Runnable
 		try
 		{
 			Launcher.logger.Info("Stopping server...");
-			if (thread != null) thread.join(3000);
+			if (thread != null)
+			{
+				thread.join(3000);
+			}
+			else
+			{
+				Launcher.logger.Info("Server is not running!");
+			}
 			Launcher.logger.Info("Server stopped.");
+
 		}
 		catch (InterruptedException e)
 		{

@@ -1,16 +1,26 @@
 package com.senkgang.dbd.input;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import javafx.event.EventHandler;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 
-public class MouseManager implements MouseListener, MouseMotionListener
+
+public class MouseManager
 {
 	private boolean leftBtn;
 	private boolean rightBtn;
 
 	private int mouseX;
 	private int mouseY;
+
+	public MouseManager(Canvas c)
+	{
+		c.addEventFilter(MouseEvent.MOUSE_CLICKED, mousePressed);
+		c.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseReleased);
+		c.addEventFilter(MouseEvent.MOUSE_MOVED, mouseMoved);
+		c.addEventFilter(MouseEvent.MOUSE_DRAGGED, mouseMoved);
+	}
 
 	public boolean leftButtonPressed()
 	{
@@ -32,48 +42,27 @@ public class MouseManager implements MouseListener, MouseMotionListener
 		return mouseY;
 	}
 
-	@Override
-	public void mouseClicked(MouseEvent mouseEvent)
-	{
+	private EventHandler<MouseEvent> mousePressed = new EventHandler<MouseEvent>() {
+		@Override
+		public void handle(MouseEvent e) {
+			if (e.getButton() == MouseButton.PRIMARY) leftBtn = true;
+			if (e.getButton() == MouseButton.SECONDARY) rightBtn = true;
+		}
+	};
 
-	}
+	private EventHandler<MouseEvent> mouseReleased = new EventHandler<MouseEvent>() {
+		@Override
+		public void handle(MouseEvent e) {
+			if (e.getButton() == MouseButton.PRIMARY) leftBtn = false;
+			if (e.getButton() == MouseButton.SECONDARY) rightBtn = false;
+		}
+	};
 
-	@Override
-	public void mousePressed(MouseEvent mouseEvent)
-	{
-		if (mouseEvent.getButton() == MouseEvent.BUTTON1) leftBtn = true;
-		if (mouseEvent.getButton() == MouseEvent.BUTTON3) rightBtn = true;
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent mouseEvent)
-	{
-		if (mouseEvent.getButton() == MouseEvent.BUTTON1) leftBtn = false;
-		if (mouseEvent.getButton() == MouseEvent.BUTTON3) rightBtn = false;
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent mouseEvent)
-	{
-
-	}
-
-	@Override
-	public void mouseExited(MouseEvent mouseEvent)
-	{
-
-	}
-
-	@Override
-	public void mouseDragged(MouseEvent mouseEvent)
-	{
-
-	}
-
-	@Override
-	public void mouseMoved(MouseEvent mouseEvent)
-	{
-		mouseX = mouseEvent.getX();
-		mouseY = mouseEvent.getY();
-	}
+	private EventHandler<MouseEvent> mouseMoved = new EventHandler<MouseEvent>() {
+		@Override
+		public void handle(MouseEvent e) {
+			mouseX = (int)e.getX();
+			mouseY = (int)e.getY();
+		}
+	};
 }

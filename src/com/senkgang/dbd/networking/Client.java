@@ -5,6 +5,7 @@ import com.senkgang.dbd.Launcher;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 
 
@@ -20,6 +21,8 @@ public class Client implements Runnable
 
 	private ArrayList<Object> dataToSend = new ArrayList<>();
 
+	public boolean connectFailed = false;
+
 	public void start(Handler h)
 	{
 		this.h = h;
@@ -32,7 +35,7 @@ public class Client implements Runnable
 		dataToSend.add(data);
 	}
 
-	public void send()
+	public void send() throws SocketException
 	{
 		if (dataToSend.size() == 0) return;
 		try
@@ -43,6 +46,10 @@ public class Client implements Runnable
 			}
 			writerChannel.flush();
 			dataToSend.clear();
+		}
+		catch (SocketException e)
+		{
+			throw e;
 		}
 		catch (IOException e)
 		{
@@ -82,6 +89,7 @@ public class Client implements Runnable
 		catch (IOException e)
 		{
 			Launcher.logger.Exception(e);
+			connectFailed = true;
 		}
 	}
 
@@ -90,7 +98,14 @@ public class Client implements Runnable
 		try
 		{
 			Launcher.logger.Info("Stopping client...");
-			if (thread != null) thread.join(3000);
+			if (thread != null)
+			{
+				thread.join(3000);
+			}
+			else
+			{
+				Launcher.logger.Info("Client is not running!");
+			}
 			Launcher.logger.Info("Client stopped.");
 		}
 		catch (InterruptedException e)
