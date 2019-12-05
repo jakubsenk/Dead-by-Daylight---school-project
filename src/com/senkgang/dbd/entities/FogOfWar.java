@@ -1,10 +1,10 @@
 package com.senkgang.dbd.entities;
 
 import com.senkgang.dbd.Handler;
+
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
-
 
 public class FogOfWar
 {

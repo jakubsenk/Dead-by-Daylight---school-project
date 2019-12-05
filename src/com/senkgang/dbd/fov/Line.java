@@ -1,6 +1,5 @@
 package com.senkgang.dbd.fov;
 
-
 import javafx.geometry.Point2D;
 
 public class Line

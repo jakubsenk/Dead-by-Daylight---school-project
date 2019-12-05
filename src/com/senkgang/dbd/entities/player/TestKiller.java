@@ -3,6 +3,7 @@ package com.senkgang.dbd.entities.player;
 import com.senkgang.dbd.Handler;
 import com.senkgang.dbd.entities.CollidableEntity;
 import com.senkgang.dbd.entities.ISightBlocker;
+
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;

@@ -1,7 +1,6 @@
 package com.senkgang.dbd;
 
 import com.senkgang.dbd.display.GameCamera;
-import com.senkgang.dbd.input.MouseManager;
 import com.senkgang.dbd.map.Map;
 import com.senkgang.dbd.networking.Client;
 import com.senkgang.dbd.networking.Server;
@@ -30,11 +29,6 @@ public class Handler
 	public int getScreenHeight()
 	{
 		return g.getHeight();
-	}
-
-	public MouseManager getMouseManager()
-	{
-		return g.getMouseManager();
 	}
 
 	public GameCamera getGameCamera()

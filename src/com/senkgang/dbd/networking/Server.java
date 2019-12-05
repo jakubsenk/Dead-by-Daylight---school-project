@@ -6,12 +6,11 @@ import com.senkgang.dbd.Launcher;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
-
 
 public class Server implements Runnable
 {
-
 	private Thread thread;
 	private Handler h;
 
@@ -99,7 +98,7 @@ public class Server implements Runnable
 		dataToSend.add(data);
 	}
 
-	public void send()
+	public void send() throws SocketException
 	{
 		if (writerChannel == null)
 		{
@@ -115,6 +114,10 @@ public class Server implements Runnable
 			}
 			writerChannel.flush();
 			dataToSend.clear();
+		}
+		catch (SocketException e)
+		{
+			throw e;
 		}
 		catch (IOException e)
 		{

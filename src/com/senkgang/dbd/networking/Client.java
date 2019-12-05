@@ -11,7 +11,6 @@ import java.util.ArrayList;
 
 public class Client implements Runnable
 {
-
 	private Thread thread;
 	private Socket socket;
 	private BufferedWriter writerChannel;

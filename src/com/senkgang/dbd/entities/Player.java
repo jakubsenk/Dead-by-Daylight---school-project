@@ -4,16 +4,16 @@ import com.senkgang.dbd.Handler;
 import com.senkgang.dbd.Launcher;
 import com.senkgang.dbd.enums.MovementRestriction;
 import com.senkgang.dbd.input.InputManager;
+import com.senkgang.dbd.input.MouseManager;
+
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 
 public abstract class Player extends CollidableEntity
 {
-
 	protected Handler handler;
 	private ArrayList<CollidableEntity> entities;
 	protected ArrayList<ISightBlocker> sightBlockers;
@@ -45,7 +45,7 @@ public abstract class Player extends CollidableEntity
 	public double getAngle()
 	{
 		if (customAngle != -100) return customAngle;
-		return getAngle(handler.getMouseManager().getMouseX() + handler.getGameCamera().getxOffset(), handler.getMouseManager().getMouseY() + handler.getGameCamera().getyOffset());
+		return getAngle(MouseManager.getMouseX() + handler.getGameCamera().getxOffset(), MouseManager.getMouseY() + handler.getGameCamera().getyOffset());
 	}
 
 	public void setAngle(double angle)
@@ -186,5 +186,6 @@ public abstract class Player extends CollidableEntity
 	}
 
 	public abstract double[] getViewPolygonX();
+
 	public abstract double[] getViewPolygonY();
 }

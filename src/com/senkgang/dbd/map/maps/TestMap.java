@@ -1,11 +1,15 @@
 package com.senkgang.dbd.map.maps;
 
 import com.senkgang.dbd.Handler;
+import com.senkgang.dbd.display.Display;
 import com.senkgang.dbd.entities.*;
 import com.senkgang.dbd.entities.player.Survivor;
 import com.senkgang.dbd.map.Map;
+
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 import javax.swing.*;
 import java.net.SocketException;
@@ -18,7 +22,6 @@ public class TestMap extends Map
 		super(h, width, height);
 
 		int wallDefinitions[][] = new int[10][];
-		int genDefinitions[][] = new int[2][];
 		Random r = new Random();
 		for (int i = 0; i < 10; i++)
 		{
@@ -68,7 +71,30 @@ public class TestMap extends Map
 		handler.getGameCamera().followEntity(controlledPlayer);
 		if (handler.isKiller)
 		{
-			if (survivors.size() > 0) handler.server.send();
+			if (survivors.size() > 0)
+			{
+				try
+				{
+					handler.server.send();
+				}
+				catch (SocketException e)
+				{
+					survivors.clear();
+					Label l = new Label("Connection with survivor lost!");
+					Display.addComponentInstant(l);
+					l.setTextFill(Color.RED);
+					l.setFont(new Font("Segoe UI", 36));
+					l.relocate(handler.getScreenWidth() / 2 - 250, handler.getScreenHeight() / 4);
+					new java.util.Timer().schedule(new java.util.TimerTask()
+					{
+						@Override
+						public void run()
+						{
+							Display.removeComponent(l);
+						}
+					}, 5000);
+				}
+			}
 		}
 		else
 		{

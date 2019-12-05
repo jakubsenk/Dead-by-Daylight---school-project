@@ -2,6 +2,7 @@ package com.senkgang.dbd.entities;
 
 import com.senkgang.dbd.fov.Line;
 import com.senkgang.dbd.resources.Assets;
+
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.Rectangle;

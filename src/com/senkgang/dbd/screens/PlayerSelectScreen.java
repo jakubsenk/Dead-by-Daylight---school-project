@@ -1,14 +1,12 @@
 package com.senkgang.dbd.screens;
 
 import com.senkgang.dbd.Handler;
-import com.senkgang.dbd.Launcher;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import com.senkgang.dbd.display.Display;
+
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 
-
-public class PlayerSelectScreen extends GUIScreen
+public class PlayerSelectScreen extends Screen
 {
 	Button bk = new Button("Play as killer");
 	Button bs = new Button("Play as survivor");
@@ -16,29 +14,21 @@ public class PlayerSelectScreen extends GUIScreen
 	public PlayerSelectScreen(Handler h)
 	{
 		super(h);
-		Launcher.pane.getChildren().add(bk);
-		Launcher.pane.getChildren().add(bs);
+		Display.addComponent(bk);
+		Display.addComponent(bs);
 
 		bk.relocate(300, 400);
 		bs.relocate(1200, 400);
 
-		bk.setOnAction(new EventHandler<ActionEvent>()
+		bk.setOnAction(actionEvent ->
 		{
-			@Override
-			public void handle(ActionEvent actionEvent)
-			{
-				handler.isKiller = true;
-				Screen.setScreen(new GameScreen(handler));
-			}
+			handler.isKiller = true;
+			Screen.setScreen(new GameScreen(handler));
 		});
-		bs.setOnAction(new EventHandler<ActionEvent>()
+		bs.setOnAction(actionEvent ->
 		{
-			@Override
-			public void handle(ActionEvent actionEvent)
-			{
-				handler.isKiller = false;
-				Screen.setScreen(new GameScreen(handler));
-			}
+			handler.isKiller = false;
+			Screen.setScreen(new GameScreen(handler));
 		});
 	}
 
@@ -52,12 +42,5 @@ public class PlayerSelectScreen extends GUIScreen
 	public void draw(GraphicsContext g)
 	{
 
-	}
-
-	@Override
-	public void disposeUIComponents()
-	{
-		Launcher.pane.getChildren().remove(bk);
-		Launcher.pane.getChildren().remove(bs);
 	}
 }

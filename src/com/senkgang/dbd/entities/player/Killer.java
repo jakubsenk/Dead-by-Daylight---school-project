@@ -7,11 +7,10 @@ import com.senkgang.dbd.entities.ISightBlocker;
 import com.senkgang.dbd.entities.Player;
 import com.senkgang.dbd.fov.Algorithm;
 import com.senkgang.dbd.fov.Line;
+
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Polygon;
 
 import java.util.ArrayList;
 
