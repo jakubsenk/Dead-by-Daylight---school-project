@@ -28,8 +28,9 @@ public abstract class Player extends CollidableEntity
 	private double lastAngle;
 
 	private int playerID;
+	private String nick;
 
-	public Player(int playerID, Handler h, double x, double y, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
+	public Player(int playerID, Handler h, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
 	{
 		super(x, y);
 		handler = h;
@@ -40,6 +41,7 @@ public abstract class Player extends CollidableEntity
 		this.sightBlockers = sightBlocker;
 		canControl = playerControlled;
 		this.playerID = playerID;
+		this.nick = nick;
 	}
 
 	public double getAngle()
@@ -76,6 +78,11 @@ public abstract class Player extends CollidableEntity
 	public int getPlayerID()
 	{
 		return playerID;
+	}
+
+	public String getNick()
+	{
+		return nick;
 	}
 
 	@Override
@@ -131,6 +138,7 @@ public abstract class Player extends CollidableEntity
 	@Override
 	public void draw(GraphicsContext g, int camX, int camY)
 	{
+		g.strokeText(nick, x - camX, y - 75 - camY);
 		if (Launcher.isDebug)
 		{
 			g.setStroke(Color.CYAN);
@@ -154,31 +162,34 @@ public abstract class Player extends CollidableEntity
 		ArrayList<MovementRestriction> result = new ArrayList<>();
 		Rectangle r = getBounds();
 		Rectangle movedPosition = new Rectangle((int) (r.getX() + deltaX), (int) (r.getY() + deltaY), r.getWidth(), r.getHeight());
-		for (CollidableEntity e : entities)
+		if (entities != null)
 		{
-			Rectangle otherRect = e.getBounds();
-			if (otherRect.intersects(movedPosition.getBoundsInLocal()))
+			for (CollidableEntity e : entities)
 			{
-				if (movedPosition.getX() + movedPosition.getWidth() > otherRect.getX())
+				Rectangle otherRect = e.getBounds();
+				if (otherRect.intersects(movedPosition.getBoundsInLocal()))
 				{
-					Launcher.logger.Info("Collision with object on right");
-					result.add(MovementRestriction.XPositive);
-				}
-				if (otherRect.getX() + otherRect.getWidth() > movedPosition.getX())
-				{
-					Launcher.logger.Info("Collision with object on left");
-					result.add(MovementRestriction.XNegative);
-				}
+					if (movedPosition.getX() + movedPosition.getWidth() > otherRect.getX())
+					{
+						Launcher.logger.Info("Collision with object on right");
+						result.add(MovementRestriction.XPositive);
+					}
+					if (otherRect.getX() + otherRect.getWidth() > movedPosition.getX())
+					{
+						Launcher.logger.Info("Collision with object on left");
+						result.add(MovementRestriction.XNegative);
+					}
 
-				if (movedPosition.getY() + movedPosition.getHeight() > otherRect.getY())
-				{
-					Launcher.logger.Info("Collision with object on bot");
-					result.add(MovementRestriction.YPositive);
-				}
-				if (otherRect.getY() + otherRect.getHeight() > movedPosition.getY())
-				{
-					Launcher.logger.Info("Collision with object on top");
-					result.add(MovementRestriction.YNegative);
+					if (movedPosition.getY() + movedPosition.getHeight() > otherRect.getY())
+					{
+						Launcher.logger.Info("Collision with object on bot");
+						result.add(MovementRestriction.YPositive);
+					}
+					if (otherRect.getY() + otherRect.getHeight() > movedPosition.getY())
+					{
+						Launcher.logger.Info("Collision with object on top");
+						result.add(MovementRestriction.YNegative);
+					}
 				}
 			}
 		}

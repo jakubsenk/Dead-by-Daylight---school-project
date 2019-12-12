@@ -15,9 +15,9 @@ public class TestKiller extends Killer
 	private double endX;
 	private double endY;
 
-	public TestKiller(int playerID, Handler h, double x, double y, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
+	public TestKiller(int playerID, Handler h, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
 	{
-		super(playerID, h, x, y, playerControlled, entities, sightBlocker);
+		super(playerID, h, x, y, nick, playerControlled, entities, sightBlocker);
 		fov = 130;
 	}
 

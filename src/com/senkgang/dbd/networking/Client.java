@@ -61,28 +61,18 @@ public class Client implements Runnable
 	{
 		try
 		{
-			socket = new Socket("127.0.0.1", 4000);
+			socket = new Socket(h.connectIP, 4000);
 			writerChannel = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 			readerChannel = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-			addData("Spawn survivor");
+			addData("Connect request:" + h.playerNick);
 			send();
 			String line;
-			boolean spawnRequested = true;
 
 			while ((line = readerChannel.readLine()) != null)
 			{
 				Launcher.logger.Info(line);
-				if (line.startsWith("Spawn response:"))
-				{
-					Launcher.logger.Info("Got spawn response. Creating survivor...");
-					h.getCurrentMap().addSurvivor(line, spawnRequested);
-					spawnRequested = false;
-				}
-				if (line.startsWith("Position update:0"))
-				{
-					h.getCurrentMap().updateKiller(line);
-				}
+				processRequest(line);
 			}
 		}
 		catch (IOException e)
@@ -110,6 +100,30 @@ public class Client implements Runnable
 		catch (InterruptedException e)
 		{
 			Launcher.logger.Exception(e);
+		}
+	}
+
+	private void processRequest(String line)
+	{
+		if (line.startsWith("Connected:"))
+		{
+			String id = line.split(":")[1];
+			Launcher.logger.Info("Connected to killer.");
+			h.getLobby().connected(id);
+			h.playerID = id;
+		}
+		if (line.startsWith("Position update:0"))
+		{
+			h.getCurrentMap().updateKiller(line);
+		}
+		if (line.equals("Game start!"))
+		{
+			h.getLobby().startGame();
+		}
+		if (line.startsWith("Spawn data:"))
+		{
+			String id = line.split(":")[1].split(";")[0];
+			h.getCurrentMap().addSurvivor(line, h.playerID.equals(id));
 		}
 	}
 }

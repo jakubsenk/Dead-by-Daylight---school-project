@@ -2,6 +2,7 @@ package com.senkgang.dbd.networking;
 
 import com.senkgang.dbd.Handler;
 import com.senkgang.dbd.Launcher;
+import com.senkgang.dbd.entities.player.Survivor;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -17,6 +18,8 @@ public class Server implements Runnable
 	private ArrayList<Object> dataToSend = new ArrayList<>();
 
 	private BufferedWriter writerChannel;
+
+	public ArrayList<String> connectedSurvivors = new ArrayList<>();
 
 	public void start(Handler h)
 	{
@@ -42,17 +45,7 @@ public class Server implements Runnable
 					while ((line = readerChannel.readLine()) != null)
 					{
 						Launcher.logger.Info(line);
-						if (line.equals("Spawn survivor")) // yeah waste 10 hours figuring why cant compare stupid strings... java is real shit
-						{
-							Launcher.logger.Info("New player wants to join!");
-							String playerInit = h.getCurrentMap().addSurvivor();
-							addData("Spawn response:" + playerInit);
-							send();
-						}
-						if (line.contains("Position update:"))
-						{
-							h.getCurrentMap().updateSurvivor(line);
-						}
+						processRequest(line);
 					}
 				}
 				finally
@@ -122,6 +115,23 @@ public class Server implements Runnable
 		catch (IOException e)
 		{
 			Launcher.logger.Exception(e);
+		}
+	}
+
+	private void processRequest(String line) throws SocketException
+	{
+		if (line.contains("Connect request:"))
+		{
+			Launcher.logger.Info("New player wants to join!");
+			addData("Connected:" + (connectedSurvivors.size() + 1));
+			String nick = line.split(":")[1];
+			h.getLobby().connected(Integer.toString(connectedSurvivors.size() + 1), nick);
+			connectedSurvivors.add(nick);
+			send();
+		}
+		if (line.contains("Position update:"))
+		{
+			h.getCurrentMap().updateSurvivor(line);
 		}
 	}
 }

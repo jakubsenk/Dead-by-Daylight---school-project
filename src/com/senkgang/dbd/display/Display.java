@@ -88,4 +88,16 @@ public class Display
 		currentSceneControls.forEach(x -> pane.getChildren().add(x));
 		nextSceneControls.clear();
 	}
+
+	public static void updateUIComponentsFromThread()
+	{
+		Platform.runLater(() ->
+		{
+			currentSceneControls.forEach(x -> pane.getChildren().remove(x));
+			currentSceneControls.clear();
+			currentSceneControls = new ArrayList<>(nextSceneControls);
+			currentSceneControls.forEach(x -> pane.getChildren().add(x));
+			nextSceneControls.clear();
+		});
+	}
 }

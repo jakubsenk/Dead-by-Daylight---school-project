@@ -25,9 +25,9 @@ public abstract class Killer extends Player
 
 	protected int fov = 90;
 
-	public Killer(int playerID, Handler h, double x, double y, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
+	public Killer(int playerID, Handler h, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
 	{
-		super(playerID, h, x, y, playerControlled, entities, sightBlocker);
+		super(playerID, h, x, y, nick, playerControlled, entities, sightBlocker);
 	}
 
 	@Override
@@ -50,9 +50,12 @@ public abstract class Killer extends Player
 		scanLines = algorithm.createScanLines(getX(), getY());
 
 		sceneLines = new ArrayList<>();
-		for (ISightBlocker sb : sightBlockers)
+		if (sightBlockers != null)
 		{
-			sceneLines.addAll(sb.getSightBlockingLines());
+			for (ISightBlocker sb : sightBlockers)
+			{
+				sceneLines.addAll(sb.getSightBlockingLines());
+			}
 		}
 
 		double endLeftX = getX() + 500 * Math.sin(getAngle() + Math.toRadians(fov / 2));

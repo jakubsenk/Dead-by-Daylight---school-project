@@ -23,9 +23,9 @@ public abstract class Survivor extends Player
 	private double[] viewPolygonX;
 	private double[] viewPolygonY;
 
-	public Survivor(int playerID, Handler h, double x, double y, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlockers)
+	public Survivor(int playerID, Handler h, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlockers)
 	{
-		super(playerID, h, x, y, playerControlled, entities, sightBlockers);
+		super(playerID, h, x, y, nick, playerControlled, entities, sightBlockers);
 	}
 
 	@Override
@@ -48,9 +48,12 @@ public abstract class Survivor extends Player
 		scanLines = algorithm.createScanLines(getX(), getY());
 
 		sceneLines = new ArrayList<>();
-		for (ISightBlocker sb : sightBlockers)
+		if (sightBlockers != null)
 		{
-			sceneLines.addAll(sb.getSightBlockingLines());
+			for (ISightBlocker sb : sightBlockers)
+			{
+				sceneLines.addAll(sb.getSightBlockingLines());
+			}
 		}
 
 		points = algorithm.getIntersectionPoints(scanLines, sceneLines);

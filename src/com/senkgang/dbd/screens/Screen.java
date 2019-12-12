@@ -18,7 +18,19 @@ public abstract class Screen
 
 	public static void setScreen(Screen s)
 	{
-		Display.updateUIComponents();
+		setScreen(s, false);
+	}
+
+	public static void setScreen(Screen s, boolean invoked)
+	{
+		if (invoked)
+		{
+			Display.updateUIComponentsFromThread();
+		}
+		else
+		{
+			Display.updateUIComponents();
+		}
 		currentScreen = s;
 	}
 

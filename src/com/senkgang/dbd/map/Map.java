@@ -2,6 +2,8 @@ package com.senkgang.dbd.map;
 
 import com.senkgang.dbd.Handler;
 import com.senkgang.dbd.Launcher;
+import com.senkgang.dbd.annotations.ClientSide;
+import com.senkgang.dbd.annotations.ServerSide;
 import com.senkgang.dbd.entities.CollidableEntity;
 import com.senkgang.dbd.entities.FogOfWar;
 import com.senkgang.dbd.entities.ISightBlocker;
@@ -13,7 +15,9 @@ import com.senkgang.dbd.entities.player.TestSurvivor;
 
 import javafx.scene.canvas.GraphicsContext;
 
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Random;
 
 public abstract class Map
 {
@@ -41,32 +45,45 @@ public abstract class Map
 
 		survivors = new ArrayList<>();
 		newSurvivors = new ArrayList<>();
-		killer = new TestKiller(0, handler, 300, 300, handler.isKiller, entities, sightBlockers);
+		killer = new TestKiller(0, handler, 300, 300, handler.playerNick, handler.isKiller, entities, sightBlockers);
+
+		controlledPlayer = handler.isKiller ? killer : null;
+		fow = new FogOfWar(controlledPlayer, handler);
 
 		if (handler.isKiller)
 		{
-			handler.server.start(h);
+			for (String nick : handler.server.connectedSurvivors)
+			{
+				handler.server.addData(addSurvivor(nick));
+			}
+			try
+			{
+				handler.server.send();
+			}
+			catch (SocketException e)
+			{
+				Launcher.logger.Exception(e);
+			}
 		}
-		else
-		{
-			handler.client.start(h);
-		}
-		controlledPlayer = handler.isKiller ? killer : null;
-		fow = new FogOfWar(controlledPlayer, handler);
 	}
 
 	public abstract void update();
 
 	public abstract void draw(GraphicsContext g, int camX, int camY);
 
-	public String addSurvivor()
+	@ServerSide
+	public String addSurvivor(String s)
 	{
+		Random r = new Random();
+		int spawnX = r.nextInt(width);
+		int spawnY = r.nextInt(height);
 		if (survivors.size() >= 4) return "Too many survivors";
 		int id = survivors.size() + 1;
-		newSurvivors.add(new TestSurvivor(id, handler, 350, 350, false, entities, sightBlockers));
-		return id + ";350,350";
+		newSurvivors.add(new TestSurvivor(id, handler, spawnX, spawnY, s, false, entities, sightBlockers));
+		return "Spawn data:" + id + ";" + spawnX + "," + spawnY;
 	}
 
+	@ClientSide
 	public void addSurvivor(String spawnData, boolean spawnRequested)
 	{
 		String data = spawnData.split(":")[1];
@@ -74,7 +91,7 @@ public abstract class Map
 		int id = Integer.parseInt(cropped[0]);
 		int spawnX = Integer.parseInt(cropped[1].split(",")[0]);
 		int spawnY = Integer.parseInt(cropped[1].split(",")[1]);
-		Survivor spawned = new TestSurvivor(id, handler, spawnX, spawnY, spawnRequested, entities, sightBlockers);
+		Survivor spawned = new TestSurvivor(id, handler, spawnX, spawnY, handler.playerNick, spawnRequested, entities, sightBlockers);
 		if (spawnRequested)
 		{
 			controlledPlayer = spawned;
@@ -83,6 +100,7 @@ public abstract class Map
 		newSurvivors.add(spawned);
 	}
 
+	@ServerSide
 	public void updateSurvivor(String updateData)
 	{
 		String data = updateData.split(":")[1];
@@ -102,6 +120,7 @@ public abstract class Map
 		s.setAngle(angle);
 	}
 
+	@ClientSide
 	public void updateKiller(String updateData)
 	{
 		String data = updateData.split(";")[1];

@@ -17,7 +17,7 @@ public class IntroScreen extends Screen
 	@Override
 	public void update()
 	{
-		if (MouseManager.leftButtonPressed()) Screen.setScreen(new PlayerSelectScreen(handler));
+		if (MouseManager.leftButtonPressed()) Screen.setScreen(new MenuScreen(handler));
 	}
 
 	@Override

@@ -17,9 +17,9 @@ public class TestSurvivor extends Survivor
 	private double endY;
 	private Handler handler;
 
-	public TestSurvivor(int survivorID, Handler h, double x, double y, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlockers)
+	public TestSurvivor(int survivorID, Handler h, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlockers)
 	{
-		super(survivorID, h, x, y, playerControlled, entities, sightBlockers);
+		super(survivorID, h, x, y, nick, playerControlled, entities, sightBlockers);
 		c = Color.GRAY;
 		handler = h;
 	}
