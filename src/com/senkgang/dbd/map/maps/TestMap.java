@@ -23,7 +23,7 @@ public class TestMap extends Map
 
 		int wallDefinitions[][] = new int[10][];
 		Random r = new Random();
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 2; i++)
 		{
 			if (r.nextBoolean())
 			{
@@ -35,7 +35,7 @@ public class TestMap extends Map
 			}
 		}
 
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 2; i++)
 		{
 			Wall w = new Wall(r.nextInt(width), r.nextInt(height), wallDefinitions[i][0], wallDefinitions[i][1]);
 			entities.add(w);
@@ -47,6 +47,11 @@ public class TestMap extends Map
 			Generator gen = new Generator(r.nextInt(width), r.nextInt(height));
 			entities.add(gen);
 			sightBlockers.add(gen);
+		}
+
+		if (!handler.isKiller)
+		{
+			handler.client.addData("READY!");
 		}
 	}
 

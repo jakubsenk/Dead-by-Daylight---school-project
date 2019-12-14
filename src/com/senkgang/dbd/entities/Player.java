@@ -80,9 +80,9 @@ public abstract class Player extends CollidableEntity
 		return playerID;
 	}
 
-	public String getNick()
+	public void setControllable(boolean canControl)
 	{
-		return nick;
+		this.canControl = canControl;
 	}
 
 	@Override

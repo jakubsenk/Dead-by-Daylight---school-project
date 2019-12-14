@@ -105,22 +105,42 @@ public class Client implements Runnable
 
 	private void processRequest(String line)
 	{
-		if (line.startsWith("Connected:"))
+		if (line.startsWith("Connected:") && h.playerID == null)
 		{
 			String id = line.split(":")[1];
 			Launcher.logger.Info("Connected to killer.");
 			h.getLobby().connected(id);
 			h.playerID = id;
 		}
-		if (line.startsWith("Position update:0"))
+		else if (line.startsWith("Connected player:"))
+		{
+			String id = line.split(":")[1].split(";")[0];
+			String nick = line.split(";")[1];
+			Launcher.logger.Info("Got info about existing player.");
+			if (h.playerID.equals(id))
+			{
+				Launcher.logger.Trace("Got info about myself, do nothing.");
+				return;
+			}
+			h.getLobby().connectedExisting(id, nick);
+		}
+		else if (line.startsWith("Position update:0"))
 		{
 			h.getCurrentMap().updateKiller(line);
 		}
-		if (line.equals("Game start!"))
+		else if (line.startsWith("Position update:"))
+		{
+			h.getCurrentMap().updateSurvivor(line);
+		}
+		else if (line.equals("Load game."))
 		{
 			h.getLobby().startGame();
 		}
-		if (line.startsWith("Spawn data:"))
+		else if (line.equals("START!"))
+		{
+			h.getCurrentMap().unlockPlayer();
+		}
+		else if (line.startsWith("Spawn data:"))
 		{
 			String id = line.split(":")[1].split(";")[0];
 			h.getCurrentMap().addSurvivor(line, h.playerID.equals(id));

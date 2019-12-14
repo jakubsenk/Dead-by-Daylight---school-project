@@ -22,6 +22,9 @@ public class LobbyScreen extends Screen
 	Label connecting = new Label("Connecting...");
 
 	Survivor s1;
+	Survivor s2;
+	Survivor s3;
+	Survivor s4;
 
 	public LobbyScreen(Handler h)
 	{
@@ -39,7 +42,7 @@ public class LobbyScreen extends Screen
 			startBtn.relocate(handler.getScreenWidth() - 100, handler.getScreenHeight() - 50);
 			startBtn.setOnAction(actionEvent ->
 			{
-				handler.server.addData("Game start!");
+				handler.server.addData("Load game.");
 				try
 				{
 					handler.server.send();
@@ -84,12 +87,18 @@ public class LobbyScreen extends Screen
 		}
 
 		if (s1 != null) s1.update();
+		if (s2 != null) s2.update();
+		if (s3 != null) s3.update();
+		if (s4 != null) s4.update();
 	}
 
 	@Override
 	public void draw(GraphicsContext g)
 	{
 		if (s1 != null) s1.draw(g, 0, 0);
+		if (s2 != null) s2.draw(g, 0, 0);
+		if (s3 != null) s3.draw(g, 0, 0);
+		if (s4 != null) s4.draw(g, 0, 0);
 	}
 
 	@ClientSide
@@ -99,19 +108,42 @@ public class LobbyScreen extends Screen
 	}
 
 	@ClientSide
+	public void connectedExisting(String id, String nick)
+	{
+		connected(id, nick);
+	}
+
+	@ClientSide
 	public void startGame()
 	{
 		Screen.setScreen(new GameScreen(handler), true);
 	}
 
+	@ServerSide
+	@ClientSide
 	public void connected(String id, String nick)
 	{
 		startBtn.setVisible(true);
 		Display.removeComponent(connecting);
 		if (id.equals("1"))
 		{
-			s1 = new TestSurvivor(Integer.parseInt(id), handler, 200, 200, nick, false, null, null);
+			s1 = new TestSurvivor(Integer.parseInt(id), handler, 100, 200, nick, false, null, null);
 			s1.setAngle(Math.PI / 4);
+		}
+		else if (id.equals("2"))
+		{
+			s2 = new TestSurvivor(Integer.parseInt(id), handler, 300, 200, nick, false, null, null);
+			s2.setAngle(Math.PI / 6);
+		}
+		else if (id.equals("3"))
+		{
+			s3 = new TestSurvivor(Integer.parseInt(id), handler, 500, 200, nick, false, null, null);
+			s3.setAngle(-Math.PI / 6);
+		}
+		else if (id.equals("4"))
+		{
+			s4 = new TestSurvivor(Integer.parseInt(id), handler, 700, 200, nick, false, null, null);
+			s4.setAngle(-Math.PI / 4);
 		}
 	}
 }
