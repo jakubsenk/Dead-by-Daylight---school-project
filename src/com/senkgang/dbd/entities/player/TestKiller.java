@@ -1,6 +1,5 @@
 package com.senkgang.dbd.entities.player;
 
-import com.senkgang.dbd.Handler;
 import com.senkgang.dbd.entities.CollidableEntity;
 import com.senkgang.dbd.entities.ISightBlocker;
 
@@ -15,9 +14,9 @@ public class TestKiller extends Killer
 	private double endX;
 	private double endY;
 
-	public TestKiller(int playerID, Handler h, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
+	public TestKiller(int playerID, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
 	{
-		super(playerID, h, x, y, nick, playerControlled, entities, sightBlocker);
+		super(playerID, x, y, nick, playerControlled, entities, sightBlocker);
 		fov = 130;
 	}
 

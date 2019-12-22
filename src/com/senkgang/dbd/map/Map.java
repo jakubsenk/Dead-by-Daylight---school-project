@@ -1,14 +1,11 @@
 package com.senkgang.dbd.map;
 
-import com.senkgang.dbd.Handler;
+import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Launcher;
 import com.senkgang.dbd.annotations.ClientSide;
 import com.senkgang.dbd.annotations.ServerSide;
 import com.senkgang.dbd.display.Display;
-import com.senkgang.dbd.entities.CollidableEntity;
-import com.senkgang.dbd.entities.FogOfWar;
-import com.senkgang.dbd.entities.ISightBlocker;
-import com.senkgang.dbd.entities.Player;
+import com.senkgang.dbd.entities.*;
 import com.senkgang.dbd.entities.player.Killer;
 import com.senkgang.dbd.entities.player.Survivor;
 import com.senkgang.dbd.entities.player.TestKiller;
@@ -29,45 +26,48 @@ public abstract class Map
 
 	protected ArrayList<CollidableEntity> entities;
 	protected ArrayList<ISightBlocker> sightBlockers;
+	protected ArrayList<Entity> killerVisibleEntity;
+	protected ArrayList<Entity> survivorVisibleEntity;
 	protected ArrayList<Survivor> survivors;
 	protected ArrayList<Survivor> newSurvivors;
 	protected Killer killer;
 	protected Player controlledPlayer;
-	protected Handler handler;
 
 	protected FogOfWar fow;
 
 	protected Label loading = new Label("Loading...");
 
-	public Map(Handler h, int width, int height)
+	public Map(int width, int height)
 	{
-		handler = h;
 		loading.setFont(new Font("Segoe UI", 36));
 		Display.addComponent(loading);
-		loading.relocate(handler.getScreenWidth() / 2, handler.getScreenHeight() / 2);
+		loading.relocate(Game.handler.getScreenWidth() / 2, Game.handler.getScreenHeight() / 2);
 		this.width = width;
 		this.height = height;
 
 		entities = new ArrayList<CollidableEntity>();
 		sightBlockers = new ArrayList<ISightBlocker>();
 
+		killerVisibleEntity = new ArrayList<>();
+		survivorVisibleEntity = new ArrayList<>();
+
 		survivors = new ArrayList<>();
 		newSurvivors = new ArrayList<>();
-		killer = new TestKiller(0, handler, 300, 300, handler.playerNick, false, entities, sightBlockers);
+		killer = new TestKiller(-1, 0, 0, "unknown", false, null, null);
+		fow = new FogOfWar(killer);
 
-		controlledPlayer = handler.isKiller ? killer : null;
-		fow = new FogOfWar(controlledPlayer, handler);
-
-		if (handler.isKiller)
+		if (Game.handler.isKiller)
 		{
-			for (int i = 0; i < handler.server.connectedSurvivorsNicks.size(); i++)
+			Game.handler.server.addData(createKiller());
+
+			for (int i = 0; i < Game.handler.server.connectedSurvivorsNicks.size(); i++)
 			{
-				String spawnData = addSurvivor(handler.server.connectedSurvivorsNicks.get(i), i + 1);
-				handler.server.addData(spawnData);
+				String spawnData = addSurvivor(Game.handler.server.connectedSurvivorsNicks.get(i), i + 1);
+				Game.handler.server.addData(spawnData);
 			}
 			try
 			{
-				handler.server.send();
+				Game.handler.server.send();
 			}
 			catch (SocketException e)
 			{
@@ -76,9 +76,35 @@ public abstract class Map
 		}
 	}
 
+	public Player getPlayer()
+	{
+		return controlledPlayer;
+	}
+
+	public void addToSurvivorVisibleEntities(Entity e)
+	{
+		if (!survivorVisibleEntity.contains(e)) survivorVisibleEntity.add(e);
+	}
+
+	public void removeFromSurvivorVisibleEntities(Entity e)
+	{
+		survivorVisibleEntity.remove(e);
+	}
+
 	public abstract void update();
 
 	public abstract void draw(GraphicsContext g, int camX, int camY);
+
+	public String createKiller()
+	{
+		Random r = new Random();
+		int spawnX = r.nextInt(width);
+		int spawnY = r.nextInt(height);
+		killer = new TestKiller(0, spawnX, spawnY, Game.handler.playerNick, false, entities, sightBlockers);
+		controlledPlayer = killer;
+		fow = new FogOfWar(controlledPlayer);
+		return "Spawn data:0;" + Game.handler.playerNick + ";" + spawnX + "," + spawnY;
+	}
 
 	@ServerSide
 	public String addSurvivor(String s, int id)
@@ -87,8 +113,8 @@ public abstract class Map
 		int spawnX = r.nextInt(width);
 		int spawnY = r.nextInt(height);
 		if (survivors.size() >= 4) return "Too many survivors";
-		newSurvivors.add(new TestSurvivor(id, handler, spawnX, spawnY, s, false, entities, sightBlockers));
-		return "Spawn data:" + id + ";" + spawnX + "," + spawnY;
+		newSurvivors.add(new TestSurvivor(id, spawnX, spawnY, s, false, entities, sightBlockers));
+		return "Spawn data:" + id + ";" + s + ";" + spawnX + "," + spawnY;
 	}
 
 	@ClientSide
@@ -96,14 +122,21 @@ public abstract class Map
 	{
 		String data = spawnData.split(":")[1];
 		String[] cropped = data.split(";");
+		String nick = cropped[1];
 		int id = Integer.parseInt(cropped[0]);
-		int spawnX = Integer.parseInt(cropped[1].split(",")[0]);
-		int spawnY = Integer.parseInt(cropped[1].split(",")[1]);
-		Survivor spawned = new TestSurvivor(id, handler, spawnX, spawnY, handler.playerNick, false, entities, sightBlockers);
+		int spawnX = Integer.parseInt(cropped[2].split(",")[0]);
+		int spawnY = Integer.parseInt(cropped[2].split(",")[1]);
+		if (id == 0)
+		{
+			killer = new TestKiller(0, spawnX, spawnY, nick, false, entities, sightBlockers);
+			killer.setAngle(0);
+			return;
+		}
+		Survivor spawned = new TestSurvivor(id, spawnX, spawnY, nick, false, entities, sightBlockers);
 		if (spawnRequested)
 		{
 			controlledPlayer = spawned;
-			fow = new FogOfWar(controlledPlayer, handler);
+			fow = new FogOfWar(controlledPlayer);
 		}
 		else
 		{
@@ -118,7 +151,7 @@ public abstract class Map
 	{
 		String data = updateData.split(":")[1];
 		String[] cropped = data.split(";");
-		if (cropped[0].equals(handler.playerID)) return;
+		if (cropped[0].equals(Game.handler.playerID)) return;
 
 		int id = Integer.parseInt(cropped[0]);
 		double updateX = Double.parseDouble(cropped[1].split(",")[0]);
@@ -152,16 +185,16 @@ public abstract class Map
 	@ClientSide
 	public void unlockPlayer()
 	{
-		if (handler.isKiller)
+		if (Game.handler.isKiller)
 		{
 			killer.setControllable(true);
 		}
 		else
 		{
-			Survivor s = survivors.stream().filter(survivor -> survivor.getPlayerID() == Integer.parseInt(handler.playerID)).findFirst().orElse(null);
+			Survivor s = survivors.stream().filter(survivor -> survivor.getPlayerID() == Integer.parseInt(Game.handler.playerID)).findFirst().orElse(null);
 			if (s == null)
 			{
-				Launcher.logger.Error("Some shit happend! Survivor with id " + handler.playerID + " not found!");
+				Launcher.logger.Error("Some shit happend! Survivor with id " + Game.handler.playerID + " not found!");
 				return;
 			}
 			s.setControllable(true);

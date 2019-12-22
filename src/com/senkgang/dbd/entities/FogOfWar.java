@@ -1,7 +1,7 @@
 package com.senkgang.dbd.entities;
 
-import com.senkgang.dbd.Handler;
-
+import com.senkgang.dbd.Game;
+import com.senkgang.dbd.Launcher;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
@@ -10,18 +10,18 @@ public class FogOfWar
 {
 	private Player pl;
 	private Polygon p = new Polygon();
-	private Handler h;
 
-	public FogOfWar(Player p, Handler h)
+	public FogOfWar(Player p)
 	{
 		this.pl = p;
-		this.h = h;
 	}
 
 	public void draw(GraphicsContext g, int camX, int camY)
 	{
 		if (pl == null) return;
-		g.setFill(new Color(0.5, 0.5, 0.5, 0.5));
+
+		g.setFill(Color.GRAY);
+		if (Launcher.isDebug) g.setFill(new Color(0.5, 0.5, 0.5, 0.8));
 
 		double[] xPl = pl.getViewPolygonX();
 		double[] yPl = pl.getViewPolygonY();
@@ -35,10 +35,10 @@ public class FogOfWar
 		xPol[0] = 0;
 		yPol[0] = 0;
 		xPol[1] = 0;
-		yPol[1] = h.getGame().getHeight();
-		xPol[2] = h.getGame().getWidth();
-		yPol[2] = h.getGame().getHeight();
-		xPol[3] = h.getGame().getWidth();
+		yPol[1] = Game.handler.getGame().getHeight();
+		xPol[2] = Game.handler.getGame().getWidth();
+		yPol[2] = Game.handler.getGame().getHeight();
+		xPol[3] = Game.handler.getGame().getWidth();
 		yPol[3] = 0;
 		int i = 0;
 		for (; i < xPl.length; i++)
@@ -48,7 +48,7 @@ public class FogOfWar
 		}
 		xPol[i + 4] = xPl[0] - camX;
 		yPol[i + 4] = yPl[0] - camY;
-		xPol[i + 5] = h.getGame().getWidth();
+		xPol[i + 5] = Game.handler.getGame().getWidth();
 		yPol[i + 5] = 0;
 		g.fillPolygon(xPol, yPol, xPol.length);
 

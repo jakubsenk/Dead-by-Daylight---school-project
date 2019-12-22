@@ -4,6 +4,7 @@ import com.senkgang.dbd.fov.Line;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class Wall extends CollidableEntity implements ISightBlocker
 	@Override
 	public void draw(GraphicsContext g, int camX, int camY)
 	{
+		g.setFill(Color.BLACK);
 		g.fillRect((int) x - width / 2 - camX, (int) y - height / 2 - camY, width, height);
 	}
 

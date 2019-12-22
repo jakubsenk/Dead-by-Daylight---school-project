@@ -1,6 +1,5 @@
 package com.senkgang.dbd.entities.player;
 
-import com.senkgang.dbd.Handler;
 import com.senkgang.dbd.Launcher;
 import com.senkgang.dbd.entities.CollidableEntity;
 import com.senkgang.dbd.entities.ISightBlocker;
@@ -25,9 +24,9 @@ public abstract class Killer extends Player
 
 	protected int fov = 90;
 
-	public Killer(int playerID, Handler h, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
+	public Killer(int playerID, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
 	{
-		super(playerID, h, x, y, nick, playerControlled, entities, sightBlocker);
+		super(playerID, x, y, nick, playerControlled, entities, sightBlocker);
 	}
 
 	@Override

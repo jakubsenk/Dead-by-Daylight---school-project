@@ -1,6 +1,6 @@
 package com.senkgang.dbd.networking;
 
-import com.senkgang.dbd.Handler;
+import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Launcher;
 
 import java.io.*;
@@ -14,7 +14,6 @@ public class Server
 	private final Server selfRef;
 
 	private ArrayList<ServerThread> threads = new ArrayList<>();
-	private Handler h;
 
 	private ArrayList<Object> dataToSend = new ArrayList<>();
 
@@ -39,7 +38,7 @@ public class Server
 						Socket socket = listener.accept();
 						BufferedWriter writerChannel = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 						connectedSurvivors.add(writerChannel);
-						ServerThread st = new ServerThread(selfRef, socket, h, connectedSurvivors);
+						ServerThread st = new ServerThread(selfRef, socket, connectedSurvivors);
 						threads.add(st);
 						st.start();
 					}
@@ -61,9 +60,8 @@ public class Server
 		selfRef = this;
 	}
 
-	public void start(Handler h)
+	public void start()
 	{
-		this.h = h;
 		Thread thread = new Thread(work);
 		thread.start();
 	}

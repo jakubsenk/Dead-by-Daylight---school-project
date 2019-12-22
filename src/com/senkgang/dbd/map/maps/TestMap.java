@@ -1,6 +1,6 @@
 package com.senkgang.dbd.map.maps;
 
-import com.senkgang.dbd.Handler;
+import com.senkgang.dbd.Game;
 import com.senkgang.dbd.display.Display;
 import com.senkgang.dbd.entities.*;
 import com.senkgang.dbd.entities.player.Survivor;
@@ -17,9 +17,9 @@ import java.util.Random;
 
 public class TestMap extends Map
 {
-	public TestMap(Handler h, int width, int height)
+	public TestMap(int width, int height)
 	{
-		super(h, width, height);
+		super(width, height);
 
 		int wallDefinitions[][] = new int[10][];
 		Random r = new Random();
@@ -40,6 +40,8 @@ public class TestMap extends Map
 			Wall w = new Wall(r.nextInt(width), r.nextInt(height), wallDefinitions[i][0], wallDefinitions[i][1]);
 			entities.add(w);
 			sightBlockers.add(w);
+			survivorVisibleEntity.add(w);
+			killerVisibleEntity.add(w);
 		}
 
 		for (int i = 0; i < 10; i++)
@@ -47,11 +49,12 @@ public class TestMap extends Map
 			Generator gen = new Generator(r.nextInt(width), r.nextInt(height));
 			entities.add(gen);
 			sightBlockers.add(gen);
+			killerVisibleEntity.add(gen);
 		}
 
-		if (!handler.isKiller)
+		if (!Game.handler.isKiller)
 		{
-			handler.client.addData("READY!");
+			Game.handler.client.addData("READY!");
 		}
 	}
 
@@ -73,14 +76,14 @@ public class TestMap extends Map
 			newSurvivors.remove(s);
 		}
 		killer.update();
-		handler.getGameCamera().followEntity(controlledPlayer);
-		if (handler.isKiller)
+		Game.handler.getGameCamera().followEntity(controlledPlayer);
+		if (Game.handler.isKiller)
 		{
 			if (survivors.size() > 0)
 			{
 				try
 				{
-					handler.server.send();
+					Game.handler.server.send();
 				}
 				catch (SocketException e)
 				{
@@ -89,7 +92,7 @@ public class TestMap extends Map
 					Display.addComponentInstant(l);
 					l.setTextFill(Color.RED);
 					l.setFont(new Font("Segoe UI", 36));
-					l.relocate(handler.getScreenWidth() / 2 - 250, handler.getScreenHeight() / 4);
+					l.relocate(Game.handler.getScreenWidth() / 2 - 250, Game.handler.getScreenHeight() / 4);
 					new java.util.Timer().schedule(new java.util.TimerTask()
 					{
 						@Override
@@ -103,19 +106,19 @@ public class TestMap extends Map
 		}
 		else
 		{
-			if (handler.client.connectFailed)
+			if (Game.handler.client.connectFailed)
 			{
 				JOptionPane.showMessageDialog(null, "Unable to connect to killer.", "Connection lost.", JOptionPane.ERROR_MESSAGE);
-				handler.getGame().stop();
+				Game.handler.getGame().stop();
 			}
 			try
 			{
-				handler.client.send();
+				Game.handler.client.send();
 			}
 			catch (SocketException e)
 			{
 				JOptionPane.showMessageDialog(null, e, "Connection lost.", JOptionPane.ERROR_MESSAGE);
-				handler.getGame().stop();
+				Game.handler.getGame().stop();
 			}
 
 		}
@@ -130,16 +133,34 @@ public class TestMap extends Map
 		g.strokeLine(0 - camX, height - camY, width - camX, height - camY);
 		g.strokeLine(width - camX, 0 - camY, width - camX, height - camY);
 
-		for (Entity e : entities)
+		if (Game.handler.isKiller)
+		{
+			for (Survivor s : survivors)
+			{
+				s.draw(g, camX, camY);
+			}
+		}
+		else
+		{
+			killer.draw(g, camX, camY);
+		}
+		fow.draw(g, camX, camY);
+
+		if (!Game.handler.isKiller)
+		{
+			for (Survivor s : survivors)
+			{
+				s.draw(g, camX, camY);
+			}
+		}
+		else
+		{
+			killer.draw(g, camX, camY);
+		}
+		for (Entity e : Game.handler.isKiller ? killerVisibleEntity : survivorVisibleEntity)
 		{
 			e.draw(g, camX, camY);
 		}
-		killer.draw(g, camX, camY);
-		for (Survivor s : survivors)
-		{
-			s.draw(g, camX, camY);
-		}
 
-		fow.draw(g, camX, camY);
 	}
 }

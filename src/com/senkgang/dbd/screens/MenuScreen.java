@@ -1,6 +1,6 @@
 package com.senkgang.dbd.screens;
 
-import com.senkgang.dbd.Handler;
+import com.senkgang.dbd.Game;
 import com.senkgang.dbd.display.Display;
 
 import javafx.scene.canvas.GraphicsContext;
@@ -16,19 +16,18 @@ public class MenuScreen extends Screen
 	TextField nick = new TextField("Choose nick");
 	TextField ip = new TextField("localhost");
 
-	public MenuScreen(Handler h)
+	public MenuScreen()
 	{
-		super(h);
 		Display.addComponent(bk);
 		Display.addComponent(bs);
 		Display.addComponent(nick);
 		Display.addComponent(ip);
 
 
-		bk.relocate(handler.getScreenWidth() / 4, handler.getScreenHeight() / 2);
-		bs.relocate(handler.getScreenWidth() / 4 + handler.getScreenWidth() / 2, handler.getScreenHeight() / 2);
-		ip.relocate(handler.getScreenWidth() / 4 + handler.getScreenWidth() / 2 - 25, handler.getScreenHeight() / 2 + 50);
-		nick.relocate(handler.getScreenWidth() / 2 - 75, handler.getScreenHeight() / 2);
+		bk.relocate(Game.handler.getScreenWidth() / 4, Game.handler.getScreenHeight() / 2);
+		bs.relocate(Game.handler.getScreenWidth() / 4 + Game.handler.getScreenWidth() / 2, Game.handler.getScreenHeight() / 2);
+		ip.relocate(Game.handler.getScreenWidth() / 4 + Game.handler.getScreenWidth() / 2 - 25, Game.handler.getScreenHeight() / 2 + 50);
+		nick.relocate(Game.handler.getScreenWidth() / 2 - 75, Game.handler.getScreenHeight() / 2);
 
 		bk.setOnAction(actionEvent ->
 		{
@@ -37,9 +36,9 @@ public class MenuScreen extends Screen
 				JOptionPane.showMessageDialog(null, "Choose your nick first!", "Invalid input.", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
-			handler.isKiller = true;
-			handler.playerNick = nick.getText();
-			Screen.setScreen(new LobbyScreen(handler));
+			Game.handler.isKiller = true;
+			Game.handler.playerNick = nick.getText();
+			Screen.setScreen(new LobbyScreen());
 		});
 		bs.setOnAction(actionEvent ->
 		{
@@ -53,10 +52,10 @@ public class MenuScreen extends Screen
 				JOptionPane.showMessageDialog(null, "Specify IP address first!", "Invalid input.", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
-			handler.isKiller = false;
-			handler.connectIP = ip.getText();
-			handler.playerNick = nick.getText();
-			Screen.setScreen(new LobbyScreen(handler));
+			Game.handler.isKiller = false;
+			Game.handler.connectIP = ip.getText();
+			Game.handler.playerNick = nick.getText();
+			Screen.setScreen(new LobbyScreen());
 		});
 	}
 

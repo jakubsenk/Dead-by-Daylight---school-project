@@ -1,6 +1,5 @@
 package com.senkgang.dbd.entities.player;
 
-import com.senkgang.dbd.Handler;
 import com.senkgang.dbd.entities.CollidableEntity;
 import com.senkgang.dbd.entities.ISightBlocker;
 
@@ -15,13 +14,11 @@ public class TestSurvivor extends Survivor
 	private Color c;
 	private double endX;
 	private double endY;
-	private Handler handler;
 
-	public TestSurvivor(int survivorID, Handler h, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlockers)
+	public TestSurvivor(int survivorID, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlockers)
 	{
-		super(survivorID, h, x, y, nick, playerControlled, entities, sightBlockers);
+		super(survivorID, x, y, nick, playerControlled, entities, sightBlockers);
 		c = Color.GRAY;
-		handler = h;
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package com.senkgang.dbd.networking;
 
-import com.senkgang.dbd.Handler;
+import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Launcher;
 
 import java.io.*;
@@ -15,14 +15,12 @@ public class ServerThread extends Thread
 	private Socket s;
 	private Server server;
 
-	private Handler h;
 	private final ArrayList<BufferedWriter> connectedSurvivors;
 
-	public ServerThread(Server server, Socket s, Handler h, ArrayList<BufferedWriter> connectedSurvivors)
+	public ServerThread(Server server, Socket s, ArrayList<BufferedWriter> connectedSurvivors)
 	{
 		this.s = s;
 		this.server = server;
-		this.h = h;
 		this.connectedSurvivors = connectedSurvivors;
 	}
 
@@ -64,18 +62,18 @@ public class ServerThread extends Thread
 			Launcher.logger.Info("New player wants to join!");
 			server.addData("Connected:" + (connectedSurvivors.size()));
 			String nick = line.split(":")[1];
-			h.getLobby().connected(Integer.toString(connectedSurvivors.size()), nick);
+			Game.handler.getLobby().connected(Integer.toString(connectedSurvivors.size()), nick);
 			server.connectedSurvivorsNicks.add(nick);
 
 			for (int i = 0; i < server.connectedSurvivorsNicks.size(); i++)
 			{
-				server.addData("Connected player:" + (i + 1) + ";" + nick);
+				server.addData("Connected player:" + (i + 1) + ";" + server.connectedSurvivorsNicks.get(i));
 			}
 			server.send();
 		}
 		else if (line.contains("Position update:"))
 		{
-			h.getCurrentMap().updateSurvivor(line);
+			Game.handler.getCurrentMap().updateSurvivor(line);
 			server.addData(line); // inform other survivors about survivor movement
 		}
 		else if (line.equals("READY!"))
@@ -92,9 +90,9 @@ public class ServerThread extends Thread
 					Launcher.logger.Exception(e);
 				}
 				server.addData("START!");
+				server.send();
+				Game.handler.getCurrentMap().unlockPlayer();
 			}
-			server.send();
-			h.getCurrentMap().unlockPlayer();
 		}
 	}
 }

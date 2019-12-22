@@ -1,6 +1,5 @@
 package com.senkgang.dbd.entities.player;
 
-import com.senkgang.dbd.Handler;
 import com.senkgang.dbd.Launcher;
 import com.senkgang.dbd.entities.CollidableEntity;
 import com.senkgang.dbd.entities.ISightBlocker;
@@ -23,9 +22,9 @@ public abstract class Survivor extends Player
 	private double[] viewPolygonX;
 	private double[] viewPolygonY;
 
-	public Survivor(int playerID, Handler h, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlockers)
+	public Survivor(int playerID, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlockers)
 	{
-		super(playerID, h, x, y, nick, playerControlled, entities, sightBlockers);
+		super(playerID, x, y, nick, playerControlled, entities, sightBlockers);
 	}
 
 	@Override

@@ -23,7 +23,7 @@ public class Game
 
 	private Screen screen;
 
-	private Handler handler;
+	public static Handler handler;
 
 	private GameCamera camera;
 
@@ -36,6 +36,7 @@ public class Game
 	{
 		this.width = width;
 		this.height = height;
+		handler = new Handler(this);
 		try
 		{
 			init();
@@ -51,13 +52,11 @@ public class Game
 
 	private void init() throws IOException
 	{
-		handler = new Handler(this);
-
 		Assets.init();
 
-		camera = new GameCamera(handler, 0, 0);
+		camera = new GameCamera( 0, 0);
 
-		screen = new IntroScreen(handler);
+		screen = new IntroScreen();
 		Screen.setScreen(screen);
 	}
 
@@ -94,16 +93,15 @@ public class Game
 
 		// #region drawings
 
-		gr.setFill(Color.BLACK);
-		gr.strokeText("FPS: " + fps, 0, 10);
-
 		if (Screen.getScreen() != null)
 		{
 			Screen.getScreen().draw(gr);
 		}
 
-		// #endregion
+		gr.setFill(Color.BLACK);
+		gr.strokeText("FPS: " + fps, 0, 10);
 
+		// #endregion
 	}
 
 	private long last;

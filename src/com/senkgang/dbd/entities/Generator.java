@@ -1,5 +1,6 @@
 package com.senkgang.dbd.entities;
 
+import com.senkgang.dbd.Game;
 import com.senkgang.dbd.fov.Line;
 import com.senkgang.dbd.resources.Assets;
 
@@ -13,6 +14,8 @@ public class Generator extends CollidableEntity implements ISightBlocker
 {
 	private final int width = 50;
 	private final int height = 50;
+
+	private boolean visible = false;
 
 	public Generator(double x, double y)
 	{
@@ -28,7 +31,28 @@ public class Generator extends CollidableEntity implements ISightBlocker
 	@Override
 	public void update()
 	{
-
+		if (!Game.handler.isKiller && Game.handler.getCurrentMap().getPlayer() != null)
+		{
+			double xDiff = Game.handler.getCurrentMap().getPlayer().getX() - x;
+			double yDiff = Game.handler.getCurrentMap().getPlayer().getY() - y;
+			double distanceToPlayer = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+			if (distanceToPlayer < 450)
+			{
+				if (!visible)
+				{
+					visible = true;
+					Game.handler.getCurrentMap().addToSurvivorVisibleEntities(this);
+				}
+			}
+			else
+			{
+				if (visible)
+				{
+					visible = false;
+					Game.handler.getCurrentMap().removeFromSurvivorVisibleEntities(this);
+				}
+			}
+		}
 	}
 
 	@Override
