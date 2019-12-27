@@ -25,6 +25,7 @@ public abstract class Map
 	protected final int height;
 
 	protected ArrayList<CollidableEntity> entities;
+	protected ArrayList<BleedEffect> bleeds;
 	protected ArrayList<ISightBlocker> sightBlockers;
 	protected ArrayList<Entity> killerVisibleEntity;
 	protected ArrayList<Entity> survivorVisibleEntity;
@@ -45,8 +46,9 @@ public abstract class Map
 		this.width = width;
 		this.height = height;
 
-		entities = new ArrayList<CollidableEntity>();
-		sightBlockers = new ArrayList<ISightBlocker>();
+		entities = new ArrayList<>();
+		bleeds = new ArrayList<>();
+		sightBlockers = new ArrayList<>();
 
 		killerVisibleEntity = new ArrayList<>();
 		survivorVisibleEntity = new ArrayList<>();
@@ -81,9 +83,24 @@ public abstract class Map
 		return controlledPlayer;
 	}
 
+	public Killer getKiller()
+	{
+		return killer;
+	}
+
+	public ArrayList<Survivor> getSurvivors()
+	{
+		return survivors;
+	}
+
 	public void addToSurvivorVisibleEntities(Entity e)
 	{
 		if (!survivorVisibleEntity.contains(e)) survivorVisibleEntity.add(e);
+	}
+
+	public void addBleedEffect(BleedEffect e)
+	{
+		if (!bleeds.contains(e)) bleeds.add(e);
 	}
 
 	public void removeFromSurvivorVisibleEntities(Entity e)

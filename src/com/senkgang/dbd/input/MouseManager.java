@@ -15,7 +15,7 @@ public class MouseManager
 
 	public static void attach(Canvas c)
 	{
-		c.addEventFilter(MouseEvent.MOUSE_CLICKED, mousePressed);
+		c.addEventFilter(MouseEvent.MOUSE_PRESSED, mousePressed);
 		c.addEventFilter(MouseEvent.MOUSE_RELEASED, mouseReleased);
 		c.addEventFilter(MouseEvent.MOUSE_MOVED, mouseMoved);
 		c.addEventFilter(MouseEvent.MOUSE_DRAGGED, mouseMoved);

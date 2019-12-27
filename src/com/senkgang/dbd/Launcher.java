@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 
 public class Launcher extends Application
 {
-	public static ILogger logger = new ConsoleLogger();
+	public static ILogger logger = new ConsoleLogger(1);
 	public static final boolean isDebug = true;
 
 	public static void main(String[] args)

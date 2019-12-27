@@ -1,9 +1,12 @@
 package com.senkgang.dbd.entities.player;
 
+import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Launcher;
+import com.senkgang.dbd.entities.BleedEffect;
 import com.senkgang.dbd.entities.CollidableEntity;
 import com.senkgang.dbd.entities.ISightBlocker;
 import com.senkgang.dbd.entities.Player;
+import com.senkgang.dbd.enums.SurvivorState;
 import com.senkgang.dbd.fov.Algorithm;
 import com.senkgang.dbd.fov.Line;
 
@@ -12,6 +15,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public abstract class Survivor extends Player
 {
@@ -21,6 +26,9 @@ public abstract class Survivor extends Player
 	private ArrayList<Line> scanLines = new ArrayList<>();
 	private double[] viewPolygonX;
 	private double[] viewPolygonY;
+	private Timer boostTimer = new Timer();
+
+	protected SurvivorState state = SurvivorState.Normal;
 
 	public Survivor(int playerID, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlockers)
 	{
@@ -37,6 +45,26 @@ public abstract class Survivor extends Player
 	public double[] getViewPolygonY()
 	{
 		return viewPolygonY;
+	}
+
+	public void hitBleed()
+	{
+		state = SurvivorState.Bleeding;
+		speed *= 2;
+		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x, y, 3000));
+		boostTimer.schedule(new TimerTask()
+		{
+			@Override
+			public void run()
+			{
+				speed /= 2;
+			}
+		}, 2500);
+	}
+
+	public void hitKO()
+	{
+		state = SurvivorState.Dying;
 	}
 
 	@Override

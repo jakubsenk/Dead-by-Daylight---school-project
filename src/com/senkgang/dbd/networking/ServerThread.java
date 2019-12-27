@@ -33,7 +33,7 @@ public class ServerThread extends Thread
 
 			while ((line = readerChannel.readLine()) != null)
 			{
-				Launcher.logger.Info(line);
+				Launcher.logger.Trace(line);
 				processRequest(line);
 			}
 

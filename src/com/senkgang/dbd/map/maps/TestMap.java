@@ -65,6 +65,10 @@ public class TestMap extends Map
 		{
 			e.update();
 		}
+		for (BleedEffect b : bleeds)
+		{
+			b.update();
+		}
 		for (Survivor s : survivors)
 		{
 			s.update();
@@ -132,6 +136,11 @@ public class TestMap extends Map
 		g.strokeLine(0 - camX, 0 - camY, width - camX, 0 - camY);
 		g.strokeLine(0 - camX, height - camY, width - camX, height - camY);
 		g.strokeLine(width - camX, 0 - camY, width - camX, height - camY);
+
+		for (BleedEffect b : bleeds)
+		{
+			b.draw(g, camX, camY);
+		}
 
 		if (Game.handler.isKiller)
 		{

@@ -20,7 +20,7 @@ public abstract class Player extends CollidableEntity
 
 	private double customAngle = -100;
 
-	private int speed = 3;
+	protected double speed = 3;
 
 	private double lastPosX;
 	private double lastPosY;

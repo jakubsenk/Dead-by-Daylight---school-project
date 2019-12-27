@@ -1,17 +1,23 @@
 package com.senkgang.dbd.entities.player;
 
+import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Launcher;
 import com.senkgang.dbd.entities.CollidableEntity;
 import com.senkgang.dbd.entities.ISightBlocker;
 import com.senkgang.dbd.entities.Player;
+import com.senkgang.dbd.enums.SurvivorState;
 import com.senkgang.dbd.fov.Algorithm;
 import com.senkgang.dbd.fov.Line;
+import com.senkgang.dbd.input.MouseManager;
 
+import com.senkgang.dbd.resources.Assets;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public abstract class Killer extends Player
 {
@@ -21,7 +27,12 @@ public abstract class Killer extends Player
 	private ArrayList<Line> scanLines = new ArrayList<>();
 	private double[] viewPolygonX;
 	private double[] viewPolygonY;
+	private boolean preAttack = false;
+	private boolean postAttack = false;
+	private Timer attackTimer = new Timer();
 
+	protected boolean attacking = false;
+	protected double currentAttackAngle = 0;
 	protected int fov = 90;
 
 	public Killer(int playerID, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
@@ -74,6 +85,74 @@ public abstract class Killer extends Player
 			viewPolygonX[i] = points.get(i).getX();
 			viewPolygonY[i] = points.get(i).getY();
 		}
+
+		if (canControl && Game.handler.isKiller && MouseManager.leftButtonPressed())
+		{
+			if (attack()) Game.handler.server.addData("attack");
+		}
+
+		if (preAttack && !attacking)
+		{
+			attackTimer.schedule(new TimerTask()
+			{
+				@Override
+				public void run()
+				{
+					preAttack = false;
+				}
+			}, 250);
+			attacking = true;
+			currentAttackAngle = 80;
+		}
+		else if (!preAttack && attacking)
+		{
+			currentAttackAngle -= 2.5;
+			if (currentAttackAngle <= -15)
+			{
+				double xHit = x + Assets.weapon.getHeight() * Math.sin(getAngle());
+				double yHit = y + Assets.weapon.getHeight() * Math.cos(getAngle());
+				for (Survivor s : Game.handler.getCurrentMap().getSurvivors())
+				{
+					double xCenter = s.getX();
+					double yCenter = s.getY();
+					double xDist = xHit - xCenter < 0 ? xCenter - xHit : xHit - xCenter;
+					double yDist = yHit - yCenter < 0 ? yCenter - yHit : yHit - yCenter;
+					double distance = Math.sqrt(xDist * xDist + yDist * yDist);
+
+					if (distance < 25)
+					{
+						Launcher.logger.Info("HIT");
+						if (s.state == SurvivorState.Normal)
+						{
+							s.hitBleed();
+						}
+						else if (s.state == SurvivorState.Bleeding)
+						{
+							s.hitKO();
+						}
+					}
+				}
+				postAttack = true;
+				attacking = false;
+				speed /= 4;
+				attackTimer.schedule(new TimerTask()
+				{
+					@Override
+					public void run()
+					{
+						speed *= 4;
+						postAttack = false;
+					}
+				}, 1500);
+			}
+		}
+	}
+
+	public boolean attack()
+	{
+		if (preAttack || attacking || postAttack) return false;
+		preAttack = true;
+		return true;
 	}
 
 	@Override

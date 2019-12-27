@@ -68,7 +68,7 @@ public class Client implements Runnable
 
 			while ((line = readerChannel.readLine()) != null)
 			{
-				Launcher.logger.Info(line);
+				Launcher.logger.Trace(line);
 				processRequest(line);
 			}
 		}
@@ -128,6 +128,10 @@ public class Client implements Runnable
 		else if (line.startsWith("Position update:"))
 		{
 			Game.handler.getCurrentMap().updateSurvivor(line);
+		}
+		else if (line.startsWith("attack"))
+		{
+			Game.handler.getCurrentMap().getKiller().attack();
 		}
 		else if (line.equals("Load game."))
 		{

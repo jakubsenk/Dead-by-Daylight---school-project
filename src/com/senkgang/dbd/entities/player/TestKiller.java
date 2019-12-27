@@ -1,11 +1,14 @@
 package com.senkgang.dbd.entities.player;
 
+import com.senkgang.dbd.Launcher;
 import com.senkgang.dbd.entities.CollidableEntity;
 import com.senkgang.dbd.entities.ISightBlocker;
+import com.senkgang.dbd.resources.Assets;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Rotate;
 
 import java.util.ArrayList;
 
@@ -43,5 +46,21 @@ public class TestKiller extends Killer
 		g.fillOval((int) x - 25 - camX, (int) y - 25 - camY, 50, 50);
 		g.setStroke(Color.BLACK);
 		g.strokeLine((int) x - camX, (int) y - camY, (int) endX - camX, (int) endY - camY);
+
+		if (attacking)
+		{
+			g.save();
+			Rotate r = new Rotate(Math.toDegrees(getAngle() + Math.PI) * -1 + currentAttackAngle, x - camX, y - camY);
+			g.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
+			g.drawImage(Assets.weapon, (int) x + Assets.weapon.getWidth() / 2 - camX, (int) y - Assets.weapon.getHeight() - camY);
+			g.restore();
+
+			if (Launcher.isDebug) // hit point
+			{
+				double xHit = x + Assets.weapon.getHeight() * Math.sin(getAngle());
+				double yHit = y + Assets.weapon.getHeight() * Math.cos(getAngle());
+				g.strokeOval(xHit - camX - 2, yHit - camY - 2, 4, 4);
+			}
+		}
 	}
 }
