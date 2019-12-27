@@ -1,38 +1,37 @@
 package com.senkgang.dbd.entities;
 
-import com.senkgang.dbd.Handler;
+import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Launcher;
 import com.senkgang.dbd.enums.MovementRestriction;
 import com.senkgang.dbd.input.InputManager;
+import com.senkgang.dbd.input.MouseManager;
+
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 
 public abstract class Player extends CollidableEntity
 {
-
-	protected Handler handler;
 	private ArrayList<CollidableEntity> entities;
 	protected ArrayList<ISightBlocker> sightBlockers;
 	protected boolean canControl;
 
 	private double customAngle = -100;
 
-	private int speed = 3;
+	protected double speed = 3;
 
 	private double lastPosX;
 	private double lastPosY;
 	private double lastAngle;
 
 	private int playerID;
+	private String nick;
 
-	public Player(int playerID, Handler h, double x, double y, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
+	public Player(int playerID, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
 	{
 		super(x, y);
-		handler = h;
 		lastPosX = x;
 		lastPosY = y;
 		lastAngle = getAngle();
@@ -40,12 +39,13 @@ public abstract class Player extends CollidableEntity
 		this.sightBlockers = sightBlocker;
 		canControl = playerControlled;
 		this.playerID = playerID;
+		this.nick = nick;
 	}
 
 	public double getAngle()
 	{
 		if (customAngle != -100) return customAngle;
-		return getAngle(handler.getMouseManager().getMouseX() + handler.getGameCamera().getxOffset(), handler.getMouseManager().getMouseY() + handler.getGameCamera().getyOffset());
+		return getAngle(MouseManager.getMouseX() + Game.handler.getGameCamera().getxOffset(), MouseManager.getMouseY() + Game.handler.getGameCamera().getyOffset());
 	}
 
 	public void setAngle(double angle)
@@ -76,6 +76,11 @@ public abstract class Player extends CollidableEntity
 	public int getPlayerID()
 	{
 		return playerID;
+	}
+
+	public void setControllable(boolean canControl)
+	{
+		this.canControl = canControl;
 	}
 
 	@Override
@@ -114,13 +119,13 @@ public abstract class Player extends CollidableEntity
 		double curAngle = getAngle();
 		if (lastPosX != x || lastPosY != y || lastAngle != curAngle && canControl)
 		{
-			if (handler.isKiller)
+			if (Game.handler.isKiller)
 			{
-				handler.server.addData("Position update:0;" + x + "," + y + "," + curAngle);
+				Game.handler.server.addData("Position update:0;" + x + "," + y + "," + curAngle);
 			}
 			else
 			{
-				handler.client.addData("Position update:" + playerID + ";" + x + "," + y + "," + curAngle);
+				Game.handler.client.addData("Position update:" + playerID + ";" + x + "," + y + "," + curAngle);
 			}
 		}
 		lastPosX = x;
@@ -131,6 +136,7 @@ public abstract class Player extends CollidableEntity
 	@Override
 	public void draw(GraphicsContext g, int camX, int camY)
 	{
+		g.strokeText(nick, x - camX, y - 75 - camY);
 		if (Launcher.isDebug)
 		{
 			g.setStroke(Color.CYAN);
@@ -154,31 +160,34 @@ public abstract class Player extends CollidableEntity
 		ArrayList<MovementRestriction> result = new ArrayList<>();
 		Rectangle r = getBounds();
 		Rectangle movedPosition = new Rectangle((int) (r.getX() + deltaX), (int) (r.getY() + deltaY), r.getWidth(), r.getHeight());
-		for (CollidableEntity e : entities)
+		if (entities != null)
 		{
-			Rectangle otherRect = e.getBounds();
-			if (otherRect.intersects(movedPosition.getBoundsInLocal()))
+			for (CollidableEntity e : entities)
 			{
-				if (movedPosition.getX() + movedPosition.getWidth() > otherRect.getX())
+				Rectangle otherRect = e.getBounds();
+				if (otherRect.intersects(movedPosition.getBoundsInLocal()))
 				{
-					Launcher.logger.Info("Collision with object on right");
-					result.add(MovementRestriction.XPositive);
-				}
-				if (otherRect.getX() + otherRect.getWidth() > movedPosition.getX())
-				{
-					Launcher.logger.Info("Collision with object on left");
-					result.add(MovementRestriction.XNegative);
-				}
+					if (movedPosition.getX() + movedPosition.getWidth() > otherRect.getX())
+					{
+						Launcher.logger.Info("Collision with object on right");
+						result.add(MovementRestriction.XPositive);
+					}
+					if (otherRect.getX() + otherRect.getWidth() > movedPosition.getX())
+					{
+						Launcher.logger.Info("Collision with object on left");
+						result.add(MovementRestriction.XNegative);
+					}
 
-				if (movedPosition.getY() + movedPosition.getHeight() > otherRect.getY())
-				{
-					Launcher.logger.Info("Collision with object on bot");
-					result.add(MovementRestriction.YPositive);
-				}
-				if (otherRect.getY() + otherRect.getHeight() > movedPosition.getY())
-				{
-					Launcher.logger.Info("Collision with object on top");
-					result.add(MovementRestriction.YNegative);
+					if (movedPosition.getY() + movedPosition.getHeight() > otherRect.getY())
+					{
+						Launcher.logger.Info("Collision with object on bot");
+						result.add(MovementRestriction.YPositive);
+					}
+					if (otherRect.getY() + otherRect.getHeight() > movedPosition.getY())
+					{
+						Launcher.logger.Info("Collision with object on top");
+						result.add(MovementRestriction.YNegative);
+					}
 				}
 			}
 		}
@@ -186,5 +195,6 @@ public abstract class Player extends CollidableEntity
 	}
 
 	public abstract double[] getViewPolygonX();
+
 	public abstract double[] getViewPolygonY();
 }

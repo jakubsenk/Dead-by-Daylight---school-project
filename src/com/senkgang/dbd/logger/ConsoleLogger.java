@@ -5,7 +5,14 @@ import java.time.format.DateTimeFormatter;
 
 public class ConsoleLogger implements ILogger
 {
+	public int minLevel = 0;
+
 	private DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSSS");
+
+	public ConsoleLogger(int minLevel)
+	{
+		this.minLevel = minLevel;
+	}
 
 	private String curTime()
 	{
@@ -67,33 +74,31 @@ public class ConsoleLogger implements ILogger
 	@Override
 	public void Error(String msg)
 	{
-		System.out.println(this.curTime() + "ERROR " + this.getStackTrace() + msg);
-
+		if (minLevel <= 4) System.out.println(this.curTime() + "ERROR " + this.getStackTrace() + msg);
 	}
 
 	@Override
 	public void Warning(String msg)
 	{
-		System.out.println(this.curTime() + "WARNING " + this.getClassName() + msg);
-
+		if (minLevel <= 3) System.out.println(this.curTime() + "WARNING " + this.getClassName() + msg);
 	}
 
 	@Override
 	public void Info(String msg)
 	{
-		System.out.println(this.curTime() + "INFO " + this.getClassName() + msg);
+		if (minLevel <= 2) System.out.println(this.curTime() + "INFO " + this.getClassName() + msg);
 	}
 
 	@Override
 	public void Debug(String msg)
 	{
-		System.out.println(this.curTime() + "DEBUG " + this.getClassName() + msg);
+		if (minLevel <= 1) System.out.println(this.curTime() + "DEBUG " + this.getClassName() + msg);
 	}
 
 	@Override
 	public void Trace(String msg)
 	{
-		System.out.println(this.curTime() + "TRACE " + this.getClassName() + msg);
+		if (minLevel == 0) System.out.println(this.curTime() + "TRACE " + this.getClassName() + msg);
 	}
 
 }

@@ -1,97 +1,93 @@
 package com.senkgang.dbd.networking;
 
-import com.senkgang.dbd.Handler;
+import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Launcher;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 
-
-public class Server implements Runnable
+public class Server
 {
+	private final Server selfRef;
 
-	private Thread thread;
-	private Handler h;
+	private ArrayList<ServerThread> threads = new ArrayList<>();
 
 	private ArrayList<Object> dataToSend = new ArrayList<>();
 
-	private BufferedWriter writerChannel;
 
-	public void start(Handler h)
-	{
-		this.h = h;
-		thread = new Thread(this);
-		thread.start();
-	}
+	public ArrayList<BufferedWriter> connectedSurvivors = new ArrayList<>();
+	public ArrayList<String> connectedSurvivorsNicks = new ArrayList<>();
+	public int playersReady = 0;
 
-	@Override
-	public void run()
+
+	private Runnable work = new Runnable()
 	{
-		try
+		@Override
+		public void run()
 		{
-			ServerSocket listener = new ServerSocket(4000);
-			String line;
 			try
 			{
-				Socket socket = listener.accept();
-				BufferedReader readerChannel = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				writerChannel = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+				ServerSocket listener = new ServerSocket(4000);
 				try
 				{
-					while ((line = readerChannel.readLine()) != null)
+					while (threads.size() < 4)
 					{
-						Launcher.logger.Info(line);
-						if (line.equals("Spawn survivor")) // yeah waste 10 hours figuring why cant compare stupid strings... java is real shit
-						{
-							Launcher.logger.Info("New player wants to join!");
-							String playerInit = h.getCurrentMap().addSurvivor();
-							addData("Spawn response:" + playerInit);
-							send();
-						}
-						if (line.contains("Position update:"))
-						{
-							h.getCurrentMap().updateSurvivor(line);
-						}
+						Socket socket = listener.accept();
+						BufferedWriter writerChannel = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+						connectedSurvivors.add(writerChannel);
+						ServerThread st = new ServerThread(selfRef, socket, connectedSurvivors);
+						threads.add(st);
+						st.start();
 					}
 				}
 				finally
 				{
-					socket.close();
+					listener.close();
 				}
 			}
-			finally
+			catch (IOException e)
 			{
-				listener.close();
+				Launcher.logger.Exception(e);
 			}
 		}
-		catch (IOException e)
-		{
-			Launcher.logger.Exception(e);
-		}
+	};
+
+	public Server()
+	{
+		selfRef = this;
+	}
+
+	public void start()
+	{
+		Thread thread = new Thread(work);
+		thread.start();
 	}
 
 	public void stop()
 	{
-		try
+		Launcher.logger.Info("Stopping server...");
+		if (threads.size() > 0)
 		{
-			Launcher.logger.Info("Stopping server...");
-			if (thread != null)
+			threads.forEach((t) ->
 			{
-				thread.join(3000);
-			}
-			else
-			{
-				Launcher.logger.Info("Server is not running!");
-			}
-			Launcher.logger.Info("Server stopped.");
-
+				try
+				{
+					t.join(1000);
+				}
+				catch (InterruptedException e)
+				{
+					Launcher.logger.Exception(e);
+				}
+			});
 		}
-		catch (InterruptedException e)
+		else
 		{
-			Launcher.logger.Exception(e);
+			Launcher.logger.Info("Server is not running!");
 		}
+		Launcher.logger.Info("Server stopped.");
 	}
 
 	public void addData(Object data)
@@ -99,11 +95,11 @@ public class Server implements Runnable
 		dataToSend.add(data);
 	}
 
-	public void send()
+	public void send() throws SocketException
 	{
-		if (writerChannel == null)
+		if (connectedSurvivors == null || connectedSurvivors.size() == 0)
 		{
-			Launcher.logger.Error("Cant send data becouse writerChannel is null!");
+			Launcher.logger.Error("Cant send data becouse there are no clients!");
 			return;
 		}
 		if (dataToSend.size() == 0) return;
@@ -111,10 +107,20 @@ public class Server implements Runnable
 		{
 			for (Object o : dataToSend)
 			{
-				writerChannel.write(o.toString() + "\n\r");
+				for (BufferedWriter wc : connectedSurvivors)
+				{
+					wc.write(o.toString() + "\n\r");
+				}
 			}
-			writerChannel.flush();
+			for (BufferedWriter wc : connectedSurvivors)
+			{
+				wc.flush();
+			}
 			dataToSend.clear();
+		}
+		catch (SocketException e)
+		{
+			throw e;
 		}
 		catch (IOException e)
 		{

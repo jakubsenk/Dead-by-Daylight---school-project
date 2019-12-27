@@ -1,6 +1,6 @@
 package com.senkgang.dbd.screens;
 
-import com.senkgang.dbd.Handler;
+import com.senkgang.dbd.Game;
 import com.senkgang.dbd.map.Map;
 import com.senkgang.dbd.map.maps.TestMap;
 
@@ -10,10 +10,9 @@ public class GameScreen extends Screen
 {
 	private Map map;
 
-	public GameScreen(Handler h)
+	public GameScreen()
 	{
-		super(h);
-		map = new TestMap(handler, 2500, 1500);
+		map = new TestMap(2500, 1500);
 	}
 
 	@Override
@@ -25,7 +24,7 @@ public class GameScreen extends Screen
 	@Override
 	public void draw(GraphicsContext g)
 	{
-		map.draw(g, handler.getGameCamera().getxOffset(), handler.getGameCamera().getyOffset());
+		map.draw(g, Game.handler.getGameCamera().getxOffset(), Game.handler.getGameCamera().getyOffset());
 	}
 
 	public Map getMap()
