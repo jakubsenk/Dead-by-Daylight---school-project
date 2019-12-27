@@ -45,6 +45,20 @@ public class TestMap extends Map
 			entities.add(gen);
 			sightBlockers.add(gen);
 		}
+		for (int i = 0; i < 2; i++)
+		{
+			if(i==0)
+			{
+				Gate gate = new Gate(r.nextInt(width),0);
+				entities.add(gate);
+			}
+			else
+				{
+			Gate gate = new Gate(r.nextInt(width),height);
+			entities.add(gate);
+				}
+
+		}
 	}
 
 	@Override
