@@ -4,7 +4,8 @@ import com.senkgang.dbd.resources.Assets;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.Rectangle;
 
-public class Gate extends CollidableEntity {
+public class Gate extends CollidableEntity
+{
 
 	private final int width = 150;
 	private final int height = 50;
@@ -29,6 +30,6 @@ public class Gate extends CollidableEntity {
 	@Override
 	public void draw(GraphicsContext g, int camX, int camY)
 	{
-		g.drawImage(Assets.closegate, (int) x - width / 2 - camX, (int) y - height / 2 - camY, width, height);
+		g.drawImage(Assets.closeGate, (int) x - width / 2 - camX, (int) y - height / 2 - camY, width, height);
 	}
 }
