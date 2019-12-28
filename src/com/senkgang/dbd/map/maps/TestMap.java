@@ -53,11 +53,13 @@ public class TestMap extends Map
 			{
 				Gate gate = new Gate(r.nextInt(width), 0);
 				entities.add(gate);
+				killerVisibleEntity.add(gate);
 			}
 			else
 			{
 				Gate gate = new Gate(r.nextInt(width), height);
 				entities.add(gate);
+				killerVisibleEntity.add(gate);
 			}
 		}
 

@@ -18,7 +18,7 @@ public class Gate extends CollidableEntity
 	@Override
 	public Rectangle getBounds()
 	{
-		return new Rectangle((int) x - width / 2, (int) y - height / 2, width, height);
+		return new Rectangle((int) x - width / 2, (int) y - height / 2 - 22, width, height);
 	}
 
 	@Override
@@ -30,6 +30,6 @@ public class Gate extends CollidableEntity
 	@Override
 	public void draw(GraphicsContext g, int camX, int camY)
 	{
-		g.drawImage(Assets.closeGate, (int) x - width / 2 - camX, (int) y - height / 2 - camY, width, height);
+		g.drawImage(Assets.closeGate, (int) x - width / 2 - camX, (int) y - height / 2 - camY - 22, width, height);
 	}
 }
