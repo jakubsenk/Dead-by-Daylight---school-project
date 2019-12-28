@@ -1,18 +1,13 @@
 package com.senkgang.dbd.map.maps;
 
 import com.senkgang.dbd.Game;
-import com.senkgang.dbd.display.Display;
 import com.senkgang.dbd.entities.*;
 import com.senkgang.dbd.entities.player.Survivor;
 import com.senkgang.dbd.map.Map;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 
-import javax.swing.*;
-import java.net.SocketException;
 import java.util.Random;
 
 public class TestMap extends Map
@@ -52,94 +47,30 @@ public class TestMap extends Map
 			killerVisibleEntity.add(gen);
 		}
 
-		if (!Game.handler.isKiller)
-		{
-			Game.handler.client.addData("READY!");
-		}
 		for (int i = 0; i < 2; i++)
 		{
-			if(i==0)
+			if (i == 0)
 			{
-				Gate gate = new Gate(r.nextInt(width),0);
+				Gate gate = new Gate(r.nextInt(width), 0);
 				entities.add(gate);
 			}
 			else
-				{
-			Gate gate = new Gate(r.nextInt(width),height);
-			entities.add(gate);
-				}
+			{
+				Gate gate = new Gate(r.nextInt(width), height);
+				entities.add(gate);
+			}
+		}
 
+		if (!Game.handler.isKiller)
+		{
+			Game.handler.client.addData("READY!");
 		}
 	}
 
 	@Override
 	public void update()
 	{
-		for (Entity e : entities)
-		{
-			e.update();
-		}
-		for (BleedEffect b : bleeds)
-		{
-			b.update();
-		}
-		for (Survivor s : survivors)
-		{
-			s.update();
-		}
-		if (newSurvivors.size() > 0) // dont iterate to prevent java.util.ConcurrentModificationException
-		{
-			Survivor s = newSurvivors.get(0);
-			survivors.add(s);
-			newSurvivors.remove(s);
-		}
-		killer.update();
-		Game.handler.getGameCamera().followEntity(controlledPlayer);
-		if (Game.handler.isKiller)
-		{
-			if (survivors.size() > 0)
-			{
-				try
-				{
-					Game.handler.server.send();
-				}
-				catch (SocketException e)
-				{
-					survivors.clear();
-					Label l = new Label("Connection with survivor lost!");
-					Display.addComponentInstant(l);
-					l.setTextFill(Color.RED);
-					l.setFont(new Font("Segoe UI", 36));
-					l.relocate(Game.handler.getScreenWidth() / 2 - 250, Game.handler.getScreenHeight() / 4);
-					new java.util.Timer().schedule(new java.util.TimerTask()
-					{
-						@Override
-						public void run()
-						{
-							Display.removeComponent(l);
-						}
-					}, 5000);
-				}
-			}
-		}
-		else
-		{
-			if (Game.handler.client.connectFailed)
-			{
-				JOptionPane.showMessageDialog(null, "Unable to connect to killer.", "Connection lost.", JOptionPane.ERROR_MESSAGE);
-				Game.handler.getGame().stop();
-			}
-			try
-			{
-				Game.handler.client.send();
-			}
-			catch (SocketException e)
-			{
-				JOptionPane.showMessageDialog(null, e, "Connection lost.", JOptionPane.ERROR_MESSAGE);
-				Game.handler.getGame().stop();
-			}
-
-		}
+		super.update();
 	}
 
 	@Override

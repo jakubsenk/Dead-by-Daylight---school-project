@@ -15,6 +15,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -27,6 +28,7 @@ public abstract class Survivor extends Player
 	private double[] viewPolygonX;
 	private double[] viewPolygonY;
 	private Timer boostTimer = new Timer();
+	private Timer bleedTimer = new Timer();
 
 	protected SurvivorState state = SurvivorState.Normal;
 
@@ -47,24 +49,96 @@ public abstract class Survivor extends Player
 		return viewPolygonY;
 	}
 
-	public void hitBleed()
+	public void hit()
+	{
+		if (Game.handler.isKiller)
+		{
+			Game.handler.server.addData("hit:" + getPlayerID());
+		}
+		if (state == SurvivorState.Normal)
+		{
+			hitBleed();
+		}
+		else if (state == SurvivorState.Bleeding)
+		{
+			hitKO();
+		}
+	}
+
+	private void hitBleed()
 	{
 		state = SurvivorState.Bleeding;
 		speed *= 2;
-		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x, y, 3000));
+		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x, y, 1000));
 		boostTimer.schedule(new TimerTask()
 		{
 			@Override
 			public void run()
 			{
 				speed /= 2;
+				scheduleBleed();
 			}
 		}, 2500);
 	}
 
-	public void hitKO()
+	private void hitKO()
 	{
 		state = SurvivorState.Dying;
+		speed /= 10;
+		if (Game.handler.isKiller)
+		{
+			Game.handler.server.addData("bleed:" + x + ";" + y);
+			Game.handler.server.addData("bleed:" + (x + 20) + ";" + y);
+			Game.handler.server.addData("bleed:" + (x - 20) + ";" + y);
+			Game.handler.server.addData("bleed:" + x + ";" + (y + 20));
+			Game.handler.server.addData("bleed:" + x + ";" + (y - 20));
+			Game.handler.server.addData("bleed:" + (x + 20) + ";" + (y + 20));
+			Game.handler.server.addData("bleed:" + (x - 20) + ";" + (y - 20));
+			Game.handler.server.addData("bleed:" + (x + 20) + ";" + (y - 20));
+			Game.handler.server.addData("bleed:" + (x - 20) + ";" + (y + 20));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x, y, 1000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 20, y, 1000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 20, y, 1000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x, y + 20, 1000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x, y - 20, 1000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 20, y + 20, 1000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 20, y - 20, 1000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 20, y - 20, 1000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 20, y + 20, 1000));
+		}
+		scheduleBleed();
+	}
+
+	private void scheduleBleed()
+	{
+		Random r = new Random();
+		double lastX = x;
+		double lastY = y;
+		bleedTimer.schedule(new TimerTask()
+		{
+			@Override
+			public void run()
+			{
+				if (state == SurvivorState.Bleeding)
+				{
+					if (Game.handler.isKiller)
+					{
+						Game.handler.server.addData("bleed:" + x + ";" + y);
+						Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x, y, 1000));
+					}
+					scheduleBleed();
+				}
+				if (state == SurvivorState.Dying)
+				{
+					if (lastX != x && lastY != y && Game.handler.isKiller)
+					{
+						Game.handler.server.addData("bleed:" + x + ";" + y);
+						Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x, y, 1000));
+					}
+					scheduleBleed();
+				}
+			}
+		}, r.nextInt(5500) + 1500);
 	}
 
 	@Override

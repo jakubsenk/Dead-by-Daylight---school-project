@@ -1,6 +1,5 @@
 package com.senkgang.dbd.networking;
 
-import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Launcher;
 
 import java.io.*;
@@ -16,7 +15,6 @@ public class Server
 	private ArrayList<ServerThread> threads = new ArrayList<>();
 
 	private ArrayList<Object> dataToSend = new ArrayList<>();
-
 
 	public ArrayList<BufferedWriter> connectedSurvivors = new ArrayList<>();
 	public ArrayList<String> connectedSurvivorsNicks = new ArrayList<>();
@@ -105,12 +103,14 @@ public class Server
 		if (dataToSend.size() == 0) return;
 		try
 		{
-			for (Object o : dataToSend)
+			while (!dataToSend.isEmpty()) // iterate this way to prevent java.util.ConcurrentModificationException
 			{
+				Object o = dataToSend.get(0);
 				for (BufferedWriter wc : connectedSurvivors)
 				{
 					wc.write(o.toString() + "\n\r");
 				}
+				dataToSend.remove(0);
 			}
 			for (BufferedWriter wc : connectedSurvivors)
 			{

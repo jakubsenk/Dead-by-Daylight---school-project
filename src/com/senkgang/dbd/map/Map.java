@@ -13,8 +13,10 @@ import com.senkgang.dbd.entities.player.TestSurvivor;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+import javax.swing.*;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -103,12 +105,83 @@ public abstract class Map
 		if (!bleeds.contains(e)) bleeds.add(e);
 	}
 
+	public void removeBleedEffect(BleedEffect e)
+	{
+		bleeds.remove(e);
+	}
+
 	public void removeFromSurvivorVisibleEntities(Entity e)
 	{
 		survivorVisibleEntity.remove(e);
 	}
 
-	public abstract void update();
+	public void update()
+	{
+		for (Entity e : entities)
+		{
+			e.update();
+		}
+		for (int i = 0; i < bleeds.size(); i++)
+		{
+			bleeds.get(i).update();
+		}
+		for (Survivor s : survivors)
+		{
+			s.update();
+		}
+		if (newSurvivors.size() > 0) // dont iterate to prevent java.util.ConcurrentModificationException
+		{
+			Survivor s = newSurvivors.get(0);
+			survivors.add(s);
+			newSurvivors.remove(s);
+		}
+		killer.update();
+		Game.handler.getGameCamera().followEntity(controlledPlayer);
+		if (Game.handler.isKiller)
+		{
+			if (survivors.size() > 0)
+			{
+				try
+				{
+					Game.handler.server.send();
+				}
+				catch (SocketException e)
+				{
+					survivors.clear();
+					Label l = new Label("Connection with survivor lost!");
+					Display.addComponentInstant(l);
+					l.setTextFill(Color.RED);
+					l.setFont(new Font("Segoe UI", 36));
+					l.relocate(Game.handler.getScreenWidth() / 2 - 250, Game.handler.getScreenHeight() / 4);
+					new java.util.Timer().schedule(new java.util.TimerTask()
+					{
+						@Override
+						public void run()
+						{
+							Display.removeComponent(l);
+						}
+					}, 5000);
+				}
+			}
+		}
+		else
+		{
+			if (Game.handler.client.connectFailed)
+			{
+				JOptionPane.showMessageDialog(null, "Unable to connect to killer.", "Connection lost.", JOptionPane.ERROR_MESSAGE);
+				Game.handler.getGame().stop();
+			}
+			try
+			{
+				Game.handler.client.send();
+			}
+			catch (SocketException e)
+			{
+				JOptionPane.showMessageDialog(null, e, "Connection lost.", JOptionPane.ERROR_MESSAGE);
+				Game.handler.getGame().stop();
+			}
+		}
+	}
 
 	public abstract void draw(GraphicsContext g, int camX, int camY);
 

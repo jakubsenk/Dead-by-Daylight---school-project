@@ -109,26 +109,22 @@ public abstract class Killer extends Player
 			currentAttackAngle -= 2.5;
 			if (currentAttackAngle <= -15)
 			{
-				double xHit = x + Assets.weapon.getHeight() * Math.sin(getAngle());
-				double yHit = y + Assets.weapon.getHeight() * Math.cos(getAngle());
-				for (Survivor s : Game.handler.getCurrentMap().getSurvivors())
+				if (Game.handler.isKiller)
 				{
-					double xCenter = s.getX();
-					double yCenter = s.getY();
-					double xDist = xHit - xCenter < 0 ? xCenter - xHit : xHit - xCenter;
-					double yDist = yHit - yCenter < 0 ? yCenter - yHit : yHit - yCenter;
-					double distance = Math.sqrt(xDist * xDist + yDist * yDist);
-
-					if (distance < 25)
+					double xHit = x + Assets.weapon.getHeight() * Math.sin(getAngle());
+					double yHit = y + Assets.weapon.getHeight() * Math.cos(getAngle());
+					for (Survivor s : Game.handler.getCurrentMap().getSurvivors())
 					{
-						Launcher.logger.Info("HIT");
-						if (s.state == SurvivorState.Normal)
+						double xCenter = s.getX();
+						double yCenter = s.getY();
+						double xDist = xHit - xCenter < 0 ? xCenter - xHit : xHit - xCenter;
+						double yDist = yHit - yCenter < 0 ? yCenter - yHit : yHit - yCenter;
+						double distance = Math.sqrt(xDist * xDist + yDist * yDist);
+
+						if (distance < 25)
 						{
-							s.hitBleed();
-						}
-						else if (s.state == SurvivorState.Bleeding)
-						{
-							s.hitKO();
+							Launcher.logger.Info("HIT");
+							s.hit();
 						}
 					}
 				}

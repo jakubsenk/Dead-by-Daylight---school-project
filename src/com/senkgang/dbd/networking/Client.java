@@ -2,6 +2,8 @@ package com.senkgang.dbd.networking;
 
 import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Launcher;
+import com.senkgang.dbd.entities.BleedEffect;
+import com.senkgang.dbd.entities.player.Survivor;
 
 import java.io.*;
 import java.net.Socket;
@@ -36,9 +38,11 @@ public class Client implements Runnable
 		if (dataToSend.size() == 0) return;
 		try
 		{
-			for (Object o : dataToSend)
+			while (!dataToSend.isEmpty())
 			{
+				Object o = dataToSend.get(0);
 				writerChannel.write(o.toString() + "\n\r");
+				dataToSend.remove(0);
 			}
 			writerChannel.flush();
 			dataToSend.clear();
@@ -132,6 +136,20 @@ public class Client implements Runnable
 		else if (line.startsWith("attack"))
 		{
 			Game.handler.getCurrentMap().getKiller().attack();
+		}
+		else if (line.startsWith("hit:"))
+		{
+			int id = Integer.parseInt(line.split(":")[1]);
+			for (Survivor s : Game.handler.getCurrentMap().getSurvivors())
+			{
+				if (s.getPlayerID() == id) s.hit();
+			}
+		}
+		else if (line.contains("bleed:"))
+		{
+			double x = Double.parseDouble(line.split(";")[0].split(":")[1]);
+			double y = Double.parseDouble(line.split(";")[1]);
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x, y, 1000));
 		}
 		else if (line.equals("Load game."))
 		{
