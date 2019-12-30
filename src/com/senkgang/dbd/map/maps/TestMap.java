@@ -59,23 +59,37 @@ public class TestMap extends Map
 
 			for (int i = 0; i < 2; i++)
 			{
+				int a = r.nextInt(4);
 				int x, y;
-				x = r.nextInt(width);
-				if (i == 0)
+				switch (a)
 				{
-					y = 0;
-					Gate gate = new Gate(x, 0);
-					entities.add(gate);
-					killerVisibleEntity.add(gate);
+					case 0:
+						x = r.nextInt(width);
+						y = 0;
+						;
+						break;
+					case 1:
+						x = r.nextInt(width);
+						y = height;
+						break;
+					case 2:
+						x = 0;
+						y = r.nextInt(height);
+						break;
+					case 3:
+						x = width;
+						y = r.nextInt(height);
+						break;
+					default:
+						x = 0;
+						y = 0;
+						break;
 				}
-				else
-				{
-					y = height;
-					Gate gate = new Gate(x, height);
-					entities.add(gate);
-					killerVisibleEntity.add(gate);
-				}
-				spawnObjects.add("Spawn object;" + Gate.class.getSimpleName() + ":" + x + ":" + y);
+				Gate gate = new Gate(x, y, i, width, height);
+				entities.add(gate);
+				killerVisibleEntity.add(gate);
+
+				spawnObjects.add("Spawn object;" + Gate.class.getSimpleName() + ":" + x + ":" + y + ":" + i + ":" + width + ":" + height);
 			}
 			Game.handler.server.addData("Spawn object count:" + entities.size());
 			for (String s : spawnObjects)

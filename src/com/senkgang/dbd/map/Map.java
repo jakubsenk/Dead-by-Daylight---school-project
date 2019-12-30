@@ -305,7 +305,7 @@ public abstract class Map
 		}
 		else if (obj[0].equals(Gate.class.getSimpleName()))
 		{
-			Gate gate = new Gate(Double.parseDouble(obj[1]), Double.parseDouble(obj[2]));
+			Gate gate = new Gate(Double.parseDouble(obj[1]), Double.parseDouble(obj[2]),Integer.parseInt(obj[3]),Integer.parseInt(obj[4]), Integer.parseInt(obj[5]));
 			entities.add(gate);
 			killerVisibleEntity.add(gate);
 			objCount++;
