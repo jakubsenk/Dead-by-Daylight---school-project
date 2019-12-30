@@ -164,5 +164,13 @@ public class Client implements Runnable
 			String id = line.split(":")[1].split(";")[0];
 			Game.handler.getCurrentMap().addSurvivor(line, Game.handler.playerID.equals(id));
 		}
+		else if (line.startsWith("Spawn object;"))
+		{
+			Game.handler.getCurrentMap().spawnObject(line);
+		}
+		else if (line.startsWith("Spawn object count"))
+		{
+			Game.handler.getCurrentMap().setMaxObjCount(Integer.parseInt(line.split(":")[1]));
+		}
 	}
 }

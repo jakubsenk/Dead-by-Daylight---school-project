@@ -26,13 +26,15 @@ public abstract class Map
 	protected final int width;
 	protected final int height;
 
+	private int objCount = 0;
+	private int maxObjCount = -1;
+
 	protected ArrayList<CollidableEntity> entities;
 	protected ArrayList<BleedEffect> bleeds;
 	protected ArrayList<ISightBlocker> sightBlockers;
 	protected ArrayList<Entity> killerVisibleEntity;
 	protected ArrayList<Entity> survivorVisibleEntity;
 	protected ArrayList<Survivor> survivors;
-	protected ArrayList<Survivor> newSurvivors;
 	protected Killer killer;
 	protected Player controlledPlayer;
 
@@ -56,7 +58,6 @@ public abstract class Map
 		survivorVisibleEntity = new ArrayList<>();
 
 		survivors = new ArrayList<>();
-		newSurvivors = new ArrayList<>();
 		killer = new TestKiller(-1, 0, 0, "unknown", false, null, null);
 		fow = new FogOfWar(killer);
 
@@ -68,14 +69,6 @@ public abstract class Map
 			{
 				String spawnData = addSurvivor(Game.handler.server.connectedSurvivorsNicks.get(i), i + 1);
 				Game.handler.server.addData(spawnData);
-			}
-			try
-			{
-				Game.handler.server.send();
-			}
-			catch (SocketException e)
-			{
-				Launcher.logger.Exception(e);
 			}
 		}
 	}
@@ -117,24 +110,19 @@ public abstract class Map
 
 	public void update()
 	{
-		for (Entity e : entities)
+		for (int i = 0; i < entities.size(); i++)
 		{
-			e.update();
+			entities.get(i).update();
 		}
 		for (int i = 0; i < bleeds.size(); i++)
 		{
 			bleeds.get(i).update();
 		}
-		for (Survivor s : survivors)
+		for (int i = 0; i < survivors.size(); i++)
 		{
-			s.update();
+			survivors.get(i).update();
 		}
-		if (newSurvivors.size() > 0) // dont iterate to prevent java.util.ConcurrentModificationException
-		{
-			Survivor s = newSurvivors.get(0);
-			survivors.add(s);
-			newSurvivors.remove(s);
-		}
+
 		killer.update();
 		Game.handler.getGameCamera().followEntity(controlledPlayer);
 		if (Game.handler.isKiller)
@@ -203,7 +191,7 @@ public abstract class Map
 		int spawnX = r.nextInt(width);
 		int spawnY = r.nextInt(height);
 		if (survivors.size() >= 4) return "Too many survivors";
-		newSurvivors.add(new TestSurvivor(id, spawnX, spawnY, s, false, entities, sightBlockers));
+		survivors.add(new TestSurvivor(id, spawnX, spawnY, s, false, entities, sightBlockers));
 		return "Spawn data:" + id + ";" + s + ";" + spawnX + "," + spawnY;
 	}
 
@@ -232,7 +220,7 @@ public abstract class Map
 		{
 			spawned.setAngle(0);
 		}
-		newSurvivors.add(spawned);
+		survivors.add(spawned);
 	}
 
 	@ServerSide
@@ -290,5 +278,48 @@ public abstract class Map
 			s.setControllable(true);
 		}
 		Display.removeComponent(loading);
+	}
+
+	@ClientSide
+	public void spawnObject(String line)
+	{
+		String t = line.split(";")[1];
+		String[] obj = t.split(":");
+
+		if (obj[0].equals(Wall.class.getSimpleName()))
+		{
+			Wall w = new Wall(Double.parseDouble(obj[1]), Double.parseDouble(obj[2]), Integer.parseInt(obj[3]), Integer.parseInt(obj[4]));
+			entities.add(w);
+			sightBlockers.add(w);
+			survivorVisibleEntity.add(w);
+			killerVisibleEntity.add(w);
+			objCount++;
+		}
+		else if (obj[0].equals(Generator.class.getSimpleName()))
+		{
+			Generator gen = new Generator(Double.parseDouble(obj[1]), Double.parseDouble(obj[2]));
+			entities.add(gen);
+			sightBlockers.add(gen);
+			killerVisibleEntity.add(gen);
+			objCount++;
+		}
+		else if (obj[0].equals(Gate.class.getSimpleName()))
+		{
+			Gate gate = new Gate(Double.parseDouble(obj[1]), Double.parseDouble(obj[2]));
+			entities.add(gate);
+			killerVisibleEntity.add(gate);
+			objCount++;
+		}
+
+		if (objCount == maxObjCount)
+		{
+			Launcher.logger.Info("Sending ready");
+			Game.handler.client.addData("READY!");
+		}
+	}
+
+	public void setMaxObjCount(int cnt)
+	{
+		maxObjCount = cnt;
 	}
 }

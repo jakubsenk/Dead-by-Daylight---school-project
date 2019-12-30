@@ -26,7 +26,7 @@ public class FogOfWar
 		double[] xPl = pl.getViewPolygonX();
 		double[] yPl = pl.getViewPolygonY();
 
-		if (xPl == null) return;
+		if (xPl == null || xPl.length == 0) return;
 
 		double[] xPol = new double[xPl.length + 6];
 		double[] yPol = new double[xPl.length + 6];

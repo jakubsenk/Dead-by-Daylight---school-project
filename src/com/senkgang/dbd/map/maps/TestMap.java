@@ -8,6 +8,7 @@ import com.senkgang.dbd.map.Map;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class TestMap extends Map
@@ -16,56 +17,71 @@ public class TestMap extends Map
 	{
 		super(width, height);
 
-		int wallDefinitions[][] = new int[10][];
-		Random r = new Random();
-		for (int i = 0; i < 2; i++)
+		if (Game.handler.isKiller)
 		{
-			if (r.nextBoolean())
+			ArrayList<String> spawnObjects = new ArrayList<>();
+			int wallDefinitions[][] = new int[5][];
+			Random r = new Random();
+			for (int i = 0; i < 5; i++)
 			{
-				wallDefinitions[i] = new int[]{50, 350};
+				if (r.nextBoolean())
+				{
+					wallDefinitions[i] = new int[]{50, 350};
+				}
+				else
+				{
+					wallDefinitions[i] = new int[]{350, 50};
+				}
 			}
-			else
+
+			for (int i = 0; i < 5; i++)
 			{
-				wallDefinitions[i] = new int[]{350, 50};
+				int x = r.nextInt(width);
+				int y = r.nextInt(height);
+				Wall w = new Wall(x, y, wallDefinitions[i][0], wallDefinitions[i][1]);
+				entities.add(w);
+				sightBlockers.add(w);
+				survivorVisibleEntity.add(w);
+				killerVisibleEntity.add(w);
+				spawnObjects.add("Spawn object;" + Wall.class.getSimpleName() + ":" + x + ":" + y + ":" + wallDefinitions[i][0] + ":" + wallDefinitions[i][1]);
 			}
-		}
 
-		for (int i = 0; i < 2; i++)
-		{
-			Wall w = new Wall(r.nextInt(width), r.nextInt(height), wallDefinitions[i][0], wallDefinitions[i][1]);
-			entities.add(w);
-			sightBlockers.add(w);
-			survivorVisibleEntity.add(w);
-			killerVisibleEntity.add(w);
-		}
-
-		for (int i = 0; i < 10; i++)
-		{
-			Generator gen = new Generator(r.nextInt(width), r.nextInt(height));
-			entities.add(gen);
-			sightBlockers.add(gen);
-			killerVisibleEntity.add(gen);
-		}
-
-		for (int i = 0; i < 2; i++)
-		{
-			if (i == 0)
+			for (int i = 0; i < 20; i++)
 			{
-				Gate gate = new Gate(r.nextInt(width), 0);
-				entities.add(gate);
-				killerVisibleEntity.add(gate);
+				int x = r.nextInt(width);
+				int y = r.nextInt(height);
+				Generator gen = new Generator(x, y);
+				entities.add(gen);
+				sightBlockers.add(gen);
+				killerVisibleEntity.add(gen);
+				spawnObjects.add("Spawn object;" + Generator.class.getSimpleName() + ":" + x + ":" + y);
 			}
-			else
-			{
-				Gate gate = new Gate(r.nextInt(width), height);
-				entities.add(gate);
-				killerVisibleEntity.add(gate);
-			}
-		}
 
-		if (!Game.handler.isKiller)
-		{
-			Game.handler.client.addData("READY!");
+			for (int i = 0; i < 2; i++)
+			{
+				int x, y;
+				x = r.nextInt(width);
+				if (i == 0)
+				{
+					y = 0;
+					Gate gate = new Gate(x, 0);
+					entities.add(gate);
+					killerVisibleEntity.add(gate);
+				}
+				else
+				{
+					y = height;
+					Gate gate = new Gate(x, height);
+					entities.add(gate);
+					killerVisibleEntity.add(gate);
+				}
+				spawnObjects.add("Spawn object;" + Gate.class.getSimpleName() + ":" + x + ":" + y);
+			}
+			Game.handler.server.addData("Spawn object count:" + entities.size());
+			for (String s : spawnObjects)
+			{
+				Game.handler.server.addData(s);
+			}
 		}
 	}
 

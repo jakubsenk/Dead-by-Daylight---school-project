@@ -151,9 +151,9 @@ public abstract class Survivor extends Player
 		sceneLines = new ArrayList<>();
 		if (sightBlockers != null)
 		{
-			for (ISightBlocker sb : sightBlockers)
+			for (int i = 0; i < sightBlockers.size(); i++)
 			{
-				sceneLines.addAll(sb.getSightBlockingLines());
+				sceneLines.addAll(sightBlockers.get(i).getSightBlockingLines());
 			}
 		}
 
