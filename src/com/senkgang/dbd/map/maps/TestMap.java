@@ -1,8 +1,10 @@
 package com.senkgang.dbd.map.maps;
 
 import com.senkgang.dbd.Game;
+import com.senkgang.dbd.Launcher;
 import com.senkgang.dbd.entities.*;
 import com.senkgang.dbd.entities.player.Survivor;
+import com.senkgang.dbd.enums.GateOrientation;
 import com.senkgang.dbd.map.Map;
 
 import javafx.scene.canvas.GraphicsContext;
@@ -61,35 +63,38 @@ public class TestMap extends Map
 			{
 				int a = r.nextInt(4);
 				int x, y;
+				GateOrientation gateOrientation;
 				switch (a)
 				{
 					case 0:
 						x = r.nextInt(width);
 						y = 0;
-						;
+						gateOrientation = GateOrientation.North;
 						break;
 					case 1:
 						x = r.nextInt(width);
 						y = height;
+						gateOrientation = GateOrientation.South;
 						break;
 					case 2:
 						x = 0;
 						y = r.nextInt(height);
+						gateOrientation = GateOrientation.West;
 						break;
 					case 3:
 						x = width;
 						y = r.nextInt(height);
+						gateOrientation = GateOrientation.East;
 						break;
 					default:
-						x = 0;
-						y = 0;
-						break;
+						Launcher.logger.Error("Some shit happend! Gate got wrong number in switch" + a);
+						return;
 				}
-				Gate gate = new Gate(x, y, i, width, height);
+				Gate gate = new Gate(x, y, gateOrientation);
 				entities.add(gate);
 				killerVisibleEntity.add(gate);
 
-				spawnObjects.add("Spawn object;" + Gate.class.getSimpleName() + ":" + x + ":" + y + ":" + i + ":" + width + ":" + height);
+				spawnObjects.add("Spawn object;" + Gate.class.getSimpleName() + ":" + x + ":" + y + ":" + gateOrientation);
 			}
 			Game.handler.server.addData("Spawn object count:" + entities.size());
 			for (String s : spawnObjects)

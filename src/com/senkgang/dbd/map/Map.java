@@ -11,6 +11,7 @@ import com.senkgang.dbd.entities.player.Survivor;
 import com.senkgang.dbd.entities.player.TestKiller;
 import com.senkgang.dbd.entities.player.TestSurvivor;
 
+import com.senkgang.dbd.enums.GateOrientation;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
@@ -305,7 +306,7 @@ public abstract class Map
 		}
 		else if (obj[0].equals(Gate.class.getSimpleName()))
 		{
-			Gate gate = new Gate(Double.parseDouble(obj[1]), Double.parseDouble(obj[2]),Integer.parseInt(obj[3]),Integer.parseInt(obj[4]), Integer.parseInt(obj[5]));
+			Gate gate = new Gate(Double.parseDouble(obj[1]), Double.parseDouble(obj[2]), GateOrientation.valueOf(obj[3]));
 			entities.add(gate);
 			killerVisibleEntity.add(gate);
 			objCount++;
