@@ -172,5 +172,17 @@ public class Client implements Runnable
 		{
 			Game.handler.getCurrentMap().setMaxObjCount(Integer.parseInt(line.split(":")[1]));
 		}
+		else if (line.contains("Gen repair start:"))
+		{
+			Game.handler.getCurrentMap().repairGen(line, true);
+		}
+		else if (line.contains("Gen repair stop:"))
+		{
+			Game.handler.getCurrentMap().repairGen(line, false);
+		}
+		else if (line.contains("Gen sync:"))
+		{
+			Game.handler.getCurrentMap().syncGen(line);
+		}
 	}
 }

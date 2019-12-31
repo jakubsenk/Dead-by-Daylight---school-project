@@ -1,6 +1,7 @@
 package com.senkgang.dbd.entities;
 
 import com.senkgang.dbd.fov.Line;
+import com.senkgang.dbd.interfaces.ISightBlocker;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;

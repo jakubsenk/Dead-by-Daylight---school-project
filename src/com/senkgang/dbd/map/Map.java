@@ -10,8 +10,9 @@ import com.senkgang.dbd.entities.player.Killer;
 import com.senkgang.dbd.entities.player.Survivor;
 import com.senkgang.dbd.entities.player.TestKiller;
 import com.senkgang.dbd.entities.player.TestSurvivor;
-
 import com.senkgang.dbd.enums.GateOrientation;
+import com.senkgang.dbd.interfaces.ISightBlocker;
+
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
@@ -281,6 +282,35 @@ public abstract class Map
 		Display.removeComponent(loading);
 	}
 
+	@ServerSide
+	@ClientSide
+	public void repairGen(String line, boolean repair)
+	{
+		int id = Integer.parseInt(line.split(":")[1]);
+		Generator g = (Generator) entities.stream().filter(x -> x instanceof Generator && ((Generator) x).getId() == id).findFirst().orElse(null);
+		if (g == null)
+		{
+			Launcher.logger.Error("Some shit happend! Generator with id " + id + " not found.");
+			return;
+		}
+		if (!g.isRepairing()) g.setRepairing(repair);
+	}
+
+	@ClientSide
+	public void syncGen(String line)
+	{
+		int id = Integer.parseInt(line.split(":")[1].split(";")[0]);
+		double progress = Double.parseDouble(line.split(";")[1]);
+		Generator g = (Generator) entities.stream().filter(x -> x instanceof Generator && ((Generator) x).getId() == id).findFirst().orElse(null);
+		if (g == null)
+		{
+			Launcher.logger.Error("Some shit happend! Generator with id " + id + " not found.");
+			return;
+		}
+		g.setProgress(progress);
+		if (progress == 100) g.finish();
+	}
+
 	@ClientSide
 	public void spawnObject(String line)
 	{
@@ -298,7 +328,7 @@ public abstract class Map
 		}
 		else if (obj[0].equals(Generator.class.getSimpleName()))
 		{
-			Generator gen = new Generator(Double.parseDouble(obj[1]), Double.parseDouble(obj[2]));
+			Generator gen = new Generator(Integer.parseInt(obj[1]), Double.parseDouble(obj[2]), Double.parseDouble(obj[3]));
 			entities.add(gen);
 			sightBlockers.add(gen);
 			killerVisibleEntity.add(gen);

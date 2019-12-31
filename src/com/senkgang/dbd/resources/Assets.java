@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Assets
 {
-	public static Image generator, introLogo, closeGate, openGate, weapon;
+	public static Image generator, introLogo, closeGate, openGate, weapon, leftBtn;
 	public static ArrayList<Image> bleeds = new ArrayList<>();
 
 	public static void init()
@@ -17,6 +17,7 @@ public class Assets
 		closeGate = new Image(new File("res/images/closeGate.png").toURI().toString());
 		openGate = new Image(new File("res/images/openGate.png").toURI().toString());
 		weapon = new Image(new File("res/images/hammer.png").toURI().toString());
+		leftBtn = new Image(new File("res/images/leftBtn.png").toURI().toString());
 
 		bleeds.add(new Image(new File("res/images/bleed0.png").toURI().toString()));
 		bleeds.add(new Image(new File("res/images/bleed1.png").toURI().toString()));

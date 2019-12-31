@@ -76,6 +76,16 @@ public class ServerThread extends Thread
 			Game.handler.getCurrentMap().updateSurvivor(line);
 			server.addData(line); // inform other survivors about survivor movement
 		}
+		else if (line.contains("Gen repair start:"))
+		{
+			Game.handler.getCurrentMap().repairGen(line, true);
+			server.addData(line);
+		}
+		else if (line.contains("Gen repair stop:"))
+		{
+			Game.handler.getCurrentMap().repairGen(line, false);
+			server.addData(line);
+		}
 		else if (line.equals("READY!"))
 		{
 			server.playersReady++;

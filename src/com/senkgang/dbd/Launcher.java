@@ -2,7 +2,7 @@ package com.senkgang.dbd;
 
 import com.senkgang.dbd.display.Display;
 import com.senkgang.dbd.logger.ConsoleLogger;
-import com.senkgang.dbd.logger.ILogger;
+import com.senkgang.dbd.interfaces.ILogger;
 
 import javafx.application.Application;
 import javafx.scene.canvas.GraphicsContext;

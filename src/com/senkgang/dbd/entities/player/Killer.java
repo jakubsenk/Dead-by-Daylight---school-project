@@ -3,14 +3,13 @@ package com.senkgang.dbd.entities.player;
 import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Launcher;
 import com.senkgang.dbd.entities.CollidableEntity;
-import com.senkgang.dbd.entities.ISightBlocker;
+import com.senkgang.dbd.interfaces.ISightBlocker;
 import com.senkgang.dbd.entities.Player;
-import com.senkgang.dbd.enums.SurvivorState;
 import com.senkgang.dbd.fov.Algorithm;
 import com.senkgang.dbd.fov.Line;
 import com.senkgang.dbd.input.MouseManager;
-
 import com.senkgang.dbd.resources.Assets;
+
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;

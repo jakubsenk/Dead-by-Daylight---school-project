@@ -48,15 +48,15 @@ public class TestMap extends Map
 				spawnObjects.add("Spawn object;" + Wall.class.getSimpleName() + ":" + x + ":" + y + ":" + wallDefinitions[i][0] + ":" + wallDefinitions[i][1]);
 			}
 
-			for (int i = 0; i < 20; i++)
+			for (int i = 0; i < 7; i++)
 			{
 				int x = r.nextInt(width);
 				int y = r.nextInt(height);
-				Generator gen = new Generator(x, y);
+				Generator gen = new Generator(i + 1, x, y);
 				entities.add(gen);
 				sightBlockers.add(gen);
 				killerVisibleEntity.add(gen);
-				spawnObjects.add("Spawn object;" + Generator.class.getSimpleName() + ":" + x + ":" + y);
+				spawnObjects.add("Spawn object;" + Generator.class.getSimpleName() + ":" + (i + 1) + ":" + x + ":" + y);
 			}
 
 			for (int i = 0; i < 2; i++)

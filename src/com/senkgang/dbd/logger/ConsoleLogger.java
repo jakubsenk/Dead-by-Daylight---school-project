@@ -1,5 +1,7 @@
 package com.senkgang.dbd.logger;
 
+import com.senkgang.dbd.interfaces.ILogger;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 

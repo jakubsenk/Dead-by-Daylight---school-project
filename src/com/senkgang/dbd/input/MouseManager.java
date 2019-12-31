@@ -1,5 +1,6 @@
 package com.senkgang.dbd.input;
 
+import com.senkgang.dbd.Game;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseButton;
@@ -35,10 +36,18 @@ public class MouseManager
 	{
 		return mouseX;
 	}
+	public static int getMouseXInWorld()
+	{
+		return mouseX + Game.handler.getGameCamera().getxOffset();
+	}
 
 	public static int getMouseY()
 	{
 		return mouseY;
+	}
+	public static int getMouseYInWorld()
+	{
+		return mouseY + Game.handler.getGameCamera().getyOffset();
 	}
 
 	private static EventHandler<MouseEvent> mousePressed = new EventHandler<MouseEvent>()

@@ -4,7 +4,7 @@ import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Launcher;
 import com.senkgang.dbd.entities.BleedEffect;
 import com.senkgang.dbd.entities.CollidableEntity;
-import com.senkgang.dbd.entities.ISightBlocker;
+import com.senkgang.dbd.interfaces.ISightBlocker;
 import com.senkgang.dbd.entities.Player;
 import com.senkgang.dbd.enums.SurvivorState;
 import com.senkgang.dbd.fov.Algorithm;

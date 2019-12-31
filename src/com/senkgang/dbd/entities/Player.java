@@ -5,6 +5,7 @@ import com.senkgang.dbd.Launcher;
 import com.senkgang.dbd.enums.MovementRestriction;
 import com.senkgang.dbd.input.InputManager;
 import com.senkgang.dbd.input.MouseManager;
+import com.senkgang.dbd.interfaces.ISightBlocker;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;

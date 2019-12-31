@@ -1,4 +1,4 @@
-package com.senkgang.dbd.logger;
+package com.senkgang.dbd.interfaces;
 
 public interface ILogger
 {

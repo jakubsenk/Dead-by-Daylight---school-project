@@ -1,4 +1,4 @@
-package com.senkgang.dbd.entities;
+package com.senkgang.dbd.interfaces;
 
 import com.senkgang.dbd.fov.Line;
 
