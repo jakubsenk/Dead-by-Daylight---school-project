@@ -81,41 +81,28 @@ public class Gate extends CollidableEntity
 		}
 		else
 		{
+			g.save();
+			Rotate r;
 			if (gateOrientation == GateOrientation.South)
 			{
-				g.save();
-				Rotate r = new Rotate(180, x - camX, y - camY);
-				g.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
-				g.drawImage(Assets.closeGate, (int) x - width / 2 - camX, (int) y - height / 2 - camY, width, height);
-				g.restore();
+				r = new Rotate(180, x - camX, y - camY);
+			}
+			else if (gateOrientation == GateOrientation.West)
+			{
+				r = new Rotate(270, x - camX, y - camY);
+			}
+			else if (gateOrientation == GateOrientation.East)
+			{
+				r = new Rotate(90, x - camX, y - camY);
 			}
 			else
 			{
-				if (gateOrientation == GateOrientation.West)
-				{
-					g.save();
-					Rotate r = new Rotate(270, x - camX, y - camY);
-					g.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
-					g.drawImage(Assets.closeGate, (int) x - width / 2 - camX, (int) y - height / 2 - camY, width, height);
-					g.restore();
-				}
-				else
-				{
-					if (gateOrientation == GateOrientation.East)
-					{
-						g.save();
-						Rotate r = new Rotate(90, x - camX, y - camY);
-						g.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
-						g.drawImage(Assets.closeGate, (int) x - width / 2 - camX, (int) y - height / 2 - camY, width, height);
-						g.restore();
-					}
-					else
-					{
-						Launcher.logger.Error("Some shit happend! GateOrientation is " + gateOrientation);
-						return;
-					}
-				}
+				Launcher.logger.Error("Some shit happend! GateOrientation is " + gateOrientation);
+				return;
 			}
+			g.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
+			g.drawImage(Assets.closeGate, (int) x - width / 2 - camX, (int) y - height / 2 - camY, width, height);
+			g.restore();
 		}
 	}
 }

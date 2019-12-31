@@ -61,33 +61,28 @@ public class TestMap extends Map
 
 			for (int i = 0; i < 2; i++)
 			{
-				int a = r.nextInt(4);
 				int x, y;
-				GateOrientation gateOrientation;
-				switch (a)
+				GateOrientation gateOrientation = GateOrientation.values()[r.nextInt(4)];
+				switch (gateOrientation)
 				{
-					case 0:
+					case North:
 						x = r.nextInt(width);
 						y = 0;
-						gateOrientation = GateOrientation.North;
 						break;
-					case 1:
+					case South:
 						x = r.nextInt(width);
 						y = height;
-						gateOrientation = GateOrientation.South;
 						break;
-					case 2:
+					case West:
 						x = 0;
 						y = r.nextInt(height);
-						gateOrientation = GateOrientation.West;
 						break;
-					case 3:
+					case East:
 						x = width;
 						y = r.nextInt(height);
-						gateOrientation = GateOrientation.East;
 						break;
 					default:
-						Launcher.logger.Error("Some shit happend! Gate got wrong number in switch" + a);
+						Launcher.logger.Error("Some shit happend! Gate got wrong number in switch" + gateOrientation);
 						return;
 				}
 				Gate gate = new Gate(x, y, gateOrientation);
