@@ -96,6 +96,16 @@ public class ServerThread extends Thread
 			Game.handler.getCurrentMap().unhookSurv(line, false);
 			server.addData(line);
 		}
+		else if (line.contains("heal start:"))
+		{
+			Game.handler.getCurrentMap().healSurv(line, true);
+			server.addData(line);
+		}
+		else if (line.contains("heal stop:"))
+		{
+			Game.handler.getCurrentMap().healSurv(line, false);
+			server.addData(line);
+		}
 		else if (line.equals("READY!"))
 		{
 			server.playersReady++;

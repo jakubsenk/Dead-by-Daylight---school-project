@@ -310,6 +310,20 @@ public abstract class Map
 		if (!h.isRescuing()) h.setRescuing(rescue);
 	}
 
+	@ServerSide
+	@ClientSide
+	public void healSurv(String line, boolean heal)
+	{
+		int id = Integer.parseInt(line.split(":")[1]);
+		Survivor s = survivors.stream().filter(x -> x.getPlayerID() == id).findFirst().orElse(null);
+		if (s == null)
+		{
+			Launcher.logger.Error("Some shit happend! Survivor with id " + id + " not found.");
+			return;
+		}
+		s.setHealing(heal);
+	}
+
 	@ClientSide
 	public void syncGen(String line)
 	{
@@ -338,6 +352,21 @@ public abstract class Map
 		}
 		h.setProgress(progress);
 		if (progress == 100) h.finish();
+	}
+
+	@ClientSide
+	public void syncHealing(String line)
+	{
+		int id = Integer.parseInt(line.split(":")[1].split(";")[0]);
+		double progress = Double.parseDouble(line.split(";")[1]);
+		Survivor s = survivors.stream().filter(x -> x.getPlayerID() == id).findFirst().orElse(null);
+		if (s == null)
+		{
+			Launcher.logger.Error("Some shit happend! Survivor with id " + id + " not found.");
+			return;
+		}
+		s.setProgress(progress);
+		if (progress == 100) s.finish();
 	}
 
 	@ClientSide

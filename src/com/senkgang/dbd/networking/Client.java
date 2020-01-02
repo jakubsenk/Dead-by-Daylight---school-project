@@ -188,6 +188,14 @@ public class Client implements Runnable
 		{
 			Game.handler.getCurrentMap().unhookSurv(line, false);
 		}
+		else if (line.contains("heal start:"))
+		{
+			Game.handler.getCurrentMap().healSurv(line, true);
+		}
+		else if (line.contains("heal stop:"))
+		{
+			Game.handler.getCurrentMap().healSurv(line, false);
+		}
 		else if (line.contains("Gen sync:"))
 		{
 			Game.handler.getCurrentMap().syncGen(line);
@@ -195,6 +203,10 @@ public class Client implements Runnable
 		else if (line.contains("unhook sync:"))
 		{
 			Game.handler.getCurrentMap().syncUnhooking(line);
+		}
+		else if (line.contains("heal sync:"))
+		{
+			Game.handler.getCurrentMap().syncHealing(line);
 		}
 		else if (line.contains("pick:"))
 		{

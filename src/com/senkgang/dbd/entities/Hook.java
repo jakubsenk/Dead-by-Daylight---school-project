@@ -151,7 +151,7 @@ public class Hook extends CollidableEntity implements ISightBlocker, IProgressab
 		{
 			g.setFill(Color.YELLOWGREEN);
 			g.fillRect(x - 100 - camX, y + Assets.hook.getHeight() - camY, progress * 2, 15);
-			g.setFill(Color.BLACK);
+			g.setStroke(Color.BLACK);
 			g.strokeRect(x - 100 - camX, y + Assets.hook.getHeight() - camY, 200, 15);
 		}
 		if (canPut || canRescue)
