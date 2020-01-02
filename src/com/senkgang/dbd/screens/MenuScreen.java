@@ -38,6 +38,7 @@ public class MenuScreen extends Screen
 			}
 			Game.handler.isKiller = true;
 			Game.handler.playerNick = nick.getText();
+			Game.handler.playerID = "0";
 			Screen.setScreen(new LobbyScreen());
 		});
 		bs.setOnAction(actionEvent ->

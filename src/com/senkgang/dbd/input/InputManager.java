@@ -7,8 +7,9 @@ public class InputManager
 {
 	public static boolean up, down, left, right;
 	public static boolean quit;
+	public static boolean space;
 
-	public static EventHandler<KeyEvent> keyPressed = new EventHandler<KeyEvent>()
+	public static EventHandler<KeyEvent> keyPressed = new EventHandler<>()
 	{
 		@Override
 		public void handle(KeyEvent e)
@@ -30,11 +31,14 @@ public class InputManager
 				case ESCAPE:
 					quit = true;
 					break;
+				case SPACE:
+					space = true;
+					break;
 			}
 		}
 	};
 
-	public static EventHandler<KeyEvent> keyReleased = new EventHandler<KeyEvent>()
+	public static EventHandler<KeyEvent> keyReleased = new EventHandler<>()
 	{
 		@Override
 		public void handle(KeyEvent e)
@@ -55,6 +59,9 @@ public class InputManager
 					break;
 				case ESCAPE:
 					quit = false;
+					break;
+				case SPACE:
+					space = false;
 					break;
 			}
 		}

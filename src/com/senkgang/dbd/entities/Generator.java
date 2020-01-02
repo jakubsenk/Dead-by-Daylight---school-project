@@ -1,6 +1,8 @@
 package com.senkgang.dbd.entities;
 
 import com.senkgang.dbd.Game;
+import com.senkgang.dbd.entities.player.Survivor;
+import com.senkgang.dbd.enums.SurvivorState;
 import com.senkgang.dbd.fov.Line;
 import com.senkgang.dbd.input.MouseManager;
 import com.senkgang.dbd.interfaces.IProgressable;
@@ -90,7 +92,7 @@ public class Generator extends CollidableEntity implements ISightBlocker, IProgr
 				}
 			}
 
-			if (MouseManager.leftButtonPressed() && isInGeneratorRange() && distanceToPlayer < 80 && !finished)
+			if (MouseManager.leftButtonPressed() && isInGeneratorRange() && distanceToPlayer < 80 && !finished && ((Survivor) Game.handler.getCurrentMap().getPlayer()).getState() != SurvivorState.Dying)
 			{
 				if (!repairing)
 				{
@@ -101,7 +103,7 @@ public class Generator extends CollidableEntity implements ISightBlocker, IProgr
 			}
 			else
 			{
-				if (distanceToPlayer < 80 && !finished)
+				if (distanceToPlayer < 80 && !finished && ((Survivor) Game.handler.getCurrentMap().getPlayer()).getState() != SurvivorState.Dying)
 				{
 					repairAvailable = true;
 				}

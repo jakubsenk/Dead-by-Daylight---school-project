@@ -54,7 +54,7 @@ public class Game
 	{
 		Assets.init();
 
-		camera = new GameCamera( 0, 0);
+		camera = new GameCamera(0, 0);
 
 		screen = new IntroScreen();
 		Screen.setScreen(screen);

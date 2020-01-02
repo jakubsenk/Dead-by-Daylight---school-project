@@ -296,6 +296,20 @@ public abstract class Map
 		if (!g.isRepairing()) g.setRepairing(repair);
 	}
 
+	@ServerSide
+	@ClientSide
+	public void unhookSurv(String line, boolean rescue)
+	{
+		int id = Integer.parseInt(line.split(":")[1]);
+		Hook h = (Hook) entities.stream().filter(x -> x instanceof Hook && ((Hook) x).getId() == id).findFirst().orElse(null);
+		if (h == null)
+		{
+			Launcher.logger.Error("Some shit happend! Hook with id " + id + " not found.");
+			return;
+		}
+		if (!h.isRescuing()) h.setRescuing(rescue);
+	}
+
 	@ClientSide
 	public void syncGen(String line)
 	{
@@ -309,6 +323,47 @@ public abstract class Map
 		}
 		g.setProgress(progress);
 		if (progress == 100) g.finish();
+	}
+
+	@ClientSide
+	public void syncUnhooking(String line)
+	{
+		int id = Integer.parseInt(line.split(":")[1].split(";")[0]);
+		double progress = Double.parseDouble(line.split(";")[1]);
+		Hook h = (Hook) entities.stream().filter(x -> x instanceof Hook && ((Hook) x).getId() == id).findFirst().orElse(null);
+		if (h == null)
+		{
+			Launcher.logger.Error("Some shit happend! Hook with id " + id + " not found.");
+			return;
+		}
+		h.setProgress(progress);
+		if (progress == 100) h.finish();
+	}
+
+	@ClientSide
+	public void pickSurv(String line)
+	{
+		int id = Integer.parseInt(line.split(":")[1]);
+		Survivor s = survivors.stream().filter(x -> x.getPlayerID() == id).findFirst().orElse(null);
+		if (s == null)
+		{
+			Launcher.logger.Error("Some shit happend! Survivor with id " + id + " not found.");
+			return;
+		}
+		killer.pick(s);
+	}
+
+	@ClientSide
+	public void putSurv(String line)
+	{
+		int id = Integer.parseInt(line.split(":")[1]);
+		Hook h = (Hook) entities.stream().filter(x -> x instanceof Hook && ((Hook) x).getId() == id).findFirst().orElse(null);
+		if (h == null)
+		{
+			Launcher.logger.Error("Some shit happend! Hook with id " + id + " not found.");
+			return;
+		}
+		h.put(killer);
 	}
 
 	@ClientSide
@@ -334,6 +389,15 @@ public abstract class Map
 			killerVisibleEntity.add(gen);
 			objCount++;
 		}
+		else if (obj[0].equals(Hook.class.getSimpleName()))
+		{
+			Hook h = new Hook(Integer.parseInt(obj[1]), Double.parseDouble(obj[2]), Double.parseDouble(obj[3]));
+			entities.add(h);
+			sightBlockers.add(h);
+			killerVisibleEntity.add(h);
+			survivorVisibleEntity.add(h);
+			objCount++;
+		}
 		else if (obj[0].equals(Gate.class.getSimpleName()))
 		{
 			Gate gate = new Gate(Double.parseDouble(obj[1]), Double.parseDouble(obj[2]), GateOrientation.valueOf(obj[3]));
@@ -349,6 +413,7 @@ public abstract class Map
 		}
 	}
 
+	@ClientSide
 	public void setMaxObjCount(int cnt)
 	{
 		maxObjCount = cnt;

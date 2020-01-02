@@ -3,7 +3,6 @@ package com.senkgang.dbd.map.maps;
 import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Launcher;
 import com.senkgang.dbd.entities.*;
-import com.senkgang.dbd.entities.player.Survivor;
 import com.senkgang.dbd.enums.GateOrientation;
 import com.senkgang.dbd.map.Map;
 
@@ -57,6 +56,18 @@ public class TestMap extends Map
 				sightBlockers.add(gen);
 				killerVisibleEntity.add(gen);
 				spawnObjects.add("Spawn object;" + Generator.class.getSimpleName() + ":" + (i + 1) + ":" + x + ":" + y);
+			}
+
+			for (int i = 0; i < 5; i++)
+			{
+				int x = r.nextInt(width);
+				int y = r.nextInt(height);
+				Hook h = new Hook(i + 1, x, y);
+				entities.add(h);
+				sightBlockers.add(h);
+				killerVisibleEntity.add(h);
+				survivorVisibleEntity.add(h);
+				spawnObjects.add("Spawn object;" + Hook.class.getSimpleName() + ":" + (i + 1) + ":" + x + ":" + y);
 			}
 
 			for (int i = 0; i < 2; i++)
@@ -114,16 +125,16 @@ public class TestMap extends Map
 		g.strokeLine(0 - camX, height - camY, width - camX, height - camY);
 		g.strokeLine(width - camX, 0 - camY, width - camX, height - camY);
 
-		for (BleedEffect b : bleeds)
+		for (int i = 0; i < bleeds.size(); i++)
 		{
-			b.draw(g, camX, camY);
+			bleeds.get(i).draw(g, camX, camY);
 		}
 
 		if (Game.handler.isKiller)
 		{
-			for (Survivor s : survivors)
+			for (int i = 0; i < survivors.size(); i++)
 			{
-				s.draw(g, camX, camY);
+				survivors.get(i).draw(g, camX, camY);
 			}
 		}
 		else
@@ -134,18 +145,18 @@ public class TestMap extends Map
 
 		if (!Game.handler.isKiller)
 		{
-			for (Survivor s : survivors)
+			for (int i = 0; i < survivors.size(); i++)
 			{
-				s.draw(g, camX, camY);
+				survivors.get(i).draw(g, camX, camY);
 			}
 		}
 		else
 		{
 			killer.draw(g, camX, camY);
 		}
-		for (Entity e : Game.handler.isKiller ? killerVisibleEntity : survivorVisibleEntity)
+		for (int i = 0; i < (Game.handler.isKiller ? killerVisibleEntity : survivorVisibleEntity).size(); i++)
 		{
-			e.draw(g, camX, camY);
+			(Game.handler.isKiller ? killerVisibleEntity : survivorVisibleEntity).get(i).draw(g, camX, camY);
 		}
 
 	}

@@ -3,6 +3,8 @@ package com.senkgang.dbd.entities.player;
 import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Launcher;
 import com.senkgang.dbd.entities.CollidableEntity;
+import com.senkgang.dbd.enums.SurvivorState;
+import com.senkgang.dbd.input.InputManager;
 import com.senkgang.dbd.interfaces.ISightBlocker;
 import com.senkgang.dbd.entities.Player;
 import com.senkgang.dbd.fov.Algorithm;
@@ -28,6 +30,9 @@ public abstract class Killer extends Player
 	private double[] viewPolygonY;
 	private boolean preAttack = false;
 	private boolean postAttack = false;
+	private boolean canPick = false;
+	private boolean carrying = false;
+	private Survivor carrySurv = null;
 	private Timer attackTimer = new Timer();
 
 	protected boolean attacking = false;
@@ -141,11 +146,67 @@ public abstract class Killer extends Player
 				}, 1500);
 			}
 		}
+
+		if (canControl && !carrying && Game.handler.getCurrentMap().getSurvivors().stream().anyMatch(x -> x.state == SurvivorState.Dying))
+		{
+			canPick = false;
+			for (int i = 0; i < Game.handler.getCurrentMap().getSurvivors().size(); i++)
+			{
+				Survivor s = Game.handler.getCurrentMap().getSurvivors().get(i);
+				if (s.state != SurvivorState.Dying) continue;
+				if (Math.abs(x - s.getX()) < 50 && Math.abs(y - s.getY()) < 50)
+				{
+					canPick = true;
+					if (InputManager.space)
+					{
+						pick(s);
+						break;
+					}
+				}
+			}
+		}
+		else
+		{
+			canPick = false;
+			if (carrySurv != null)
+			{
+				carrySurv.setPos(x + 25 * Math.sin(getAngle() + Math.PI / 2), y + 25 * Math.cos(getAngle() + Math.PI / 2));
+			}
+		}
+	}
+
+	public void pick(Survivor s)
+	{
+		if (Game.handler.isKiller) Game.handler.server.addData("pick:" + s.getPlayerID());
+		carrying = true;
+		s.setControllable(false);
+		carrySurv = s;
+	}
+
+	public void put()
+	{
+		carrySurv = null;
+		carrying = false;
+	}
+
+	public boolean isCarrying()
+	{
+		return carrying;
+	}
+
+	public Survivor getCarryingSurvivor()
+	{
+		return carrySurv;
+	}
+
+	private boolean isAttacking()
+	{
+		return preAttack || attacking || postAttack;
 	}
 
 	public boolean attack()
 	{
-		if (preAttack || attacking || postAttack) return false;
+		if (isAttacking()) return false;
 		preAttack = true;
 		return true;
 	}
@@ -154,6 +215,10 @@ public abstract class Killer extends Player
 	public void draw(GraphicsContext g, int camX, int camY)
 	{
 		super.draw(g, camX, camY);
+		if (canPick)
+		{
+			g.drawImage(Assets.space, x - Assets.space.getWidth() / 2 - camX, y + getBounds().getHeight() - camY);
+		}
 		if (Launcher.isDebug)
 		{
 			g.setStroke(Color.GREEN);

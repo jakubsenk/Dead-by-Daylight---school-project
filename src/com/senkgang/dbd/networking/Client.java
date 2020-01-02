@@ -180,9 +180,29 @@ public class Client implements Runnable
 		{
 			Game.handler.getCurrentMap().repairGen(line, false);
 		}
+		else if (line.contains("unhook start:"))
+		{
+			Game.handler.getCurrentMap().unhookSurv(line, true);
+		}
+		else if (line.contains("unhook stop:"))
+		{
+			Game.handler.getCurrentMap().unhookSurv(line, false);
+		}
 		else if (line.contains("Gen sync:"))
 		{
 			Game.handler.getCurrentMap().syncGen(line);
+		}
+		else if (line.contains("unhook sync:"))
+		{
+			Game.handler.getCurrentMap().syncUnhooking(line);
+		}
+		else if (line.contains("pick:"))
+		{
+			Game.handler.getCurrentMap().pickSurv(line);
+		}
+		else if (line.contains("hook:"))
+		{
+			Game.handler.getCurrentMap().putSurv(line);
 		}
 	}
 }
