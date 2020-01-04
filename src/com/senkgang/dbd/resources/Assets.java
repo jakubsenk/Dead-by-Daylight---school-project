@@ -9,6 +9,7 @@ public class Assets
 {
 	public static Image generator, introLogo, closeGate, openGate, weapon, leftBtn, space, hook;
 	public static ArrayList<Image> bleeds = new ArrayList<>();
+	public static Image farm, barn, corn;
 
 	public static void init()
 	{
@@ -25,5 +26,9 @@ public class Assets
 		bleeds.add(new Image(new File("res/images/bleed1.png").toURI().toString()));
 		bleeds.add(new Image(new File("res/images/bleed2.png").toURI().toString()));
 		bleeds.add(new Image(new File("res/images/bleed3.png").toURI().toString()));
+
+		farm = new Image(new File("res/images/farm.png").toURI().toString());
+		barn = new Image(new File("res/images/barn.png").toURI().toString());
+		corn = new Image(new File("res/images/corn.png").toURI().toString());
 	}
 }

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public abstract class Player extends CollidableEntity
 {
-	private ArrayList<CollidableEntity> entities;
+	private ArrayList<Entity> entities;
 	protected ArrayList<ISightBlocker> sightBlockers;
 	protected boolean canControl;
 
@@ -30,7 +30,7 @@ public abstract class Player extends CollidableEntity
 	private int playerID;
 	private String nick;
 
-	public Player(int playerID, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
+	public Player(int playerID, double x, double y, String nick, boolean playerControlled, ArrayList<Entity> entities, ArrayList<ISightBlocker> sightBlocker)
 	{
 		super(x, y);
 		lastPosX = x;
@@ -163,9 +163,13 @@ public abstract class Player extends CollidableEntity
 		Rectangle movedPosition = new Rectangle((int) (r.getX() + deltaX), (int) (r.getY() + deltaY), r.getWidth(), r.getHeight());
 		if (entities != null)
 		{
-			for (CollidableEntity e : entities)
+			for (int i = 0; i < entities.size(); i++)
 			{
+				Entity en = entities.get(i);
+				if (!(en instanceof CollidableEntity)) continue;
+				CollidableEntity e = (CollidableEntity) en;
 				Rectangle otherRect = e.getBounds();
+				if (otherRect == null) continue;
 				if (otherRect.intersects(movedPosition.getBoundsInLocal()))
 				{
 					if (movedPosition.getX() + movedPosition.getWidth() > otherRect.getX())

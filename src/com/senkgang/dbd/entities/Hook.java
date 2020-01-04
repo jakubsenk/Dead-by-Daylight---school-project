@@ -9,6 +9,7 @@ import com.senkgang.dbd.input.InputManager;
 import com.senkgang.dbd.interfaces.IProgressable;
 import com.senkgang.dbd.interfaces.ISightBlocker;
 import com.senkgang.dbd.resources.Assets;
+
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -22,7 +23,7 @@ public class Hook extends CollidableEntity implements ISightBlocker, IProgressab
 	private boolean canRescue = false;
 	private boolean rescuing = false;
 	private boolean rescuingOther = false;
-	private int id;
+	private final int id;
 	private Survivor hookedSurv = null;
 
 	private double progress = 0;

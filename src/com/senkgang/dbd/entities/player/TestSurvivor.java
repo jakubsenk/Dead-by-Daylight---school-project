@@ -1,6 +1,6 @@
 package com.senkgang.dbd.entities.player;
 
-import com.senkgang.dbd.entities.CollidableEntity;
+import com.senkgang.dbd.entities.Entity;
 import com.senkgang.dbd.interfaces.ISightBlocker;
 
 import javafx.scene.canvas.GraphicsContext;
@@ -15,7 +15,7 @@ public class TestSurvivor extends Survivor
 	private double endX;
 	private double endY;
 
-	public TestSurvivor(int survivorID, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlockers)
+	public TestSurvivor(int survivorID, double x, double y, String nick, boolean playerControlled, ArrayList<Entity> entities, ArrayList<ISightBlocker> sightBlockers)
 	{
 		super(survivorID, x, y, nick, playerControlled, entities, sightBlockers);
 		c = Color.GRAY;

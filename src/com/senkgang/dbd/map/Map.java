@@ -31,7 +31,7 @@ public abstract class Map
 	private int objCount = 0;
 	private int maxObjCount = -1;
 
-	protected ArrayList<CollidableEntity> entities;
+	protected ArrayList<Entity> entities;
 	protected ArrayList<BleedEffect> bleeds;
 	protected ArrayList<ISightBlocker> sightBlockers;
 	protected ArrayList<Entity> killerVisibleEntity;
@@ -62,6 +62,8 @@ public abstract class Map
 		survivors = new ArrayList<>();
 		killer = new TestKiller(-1, 0, 0, "unknown", false, null, null);
 		fow = new FogOfWar(killer);
+
+		Game.handler.generatorsRemaining = 4;
 
 		if (Game.handler.isKiller)
 		{
@@ -95,6 +97,11 @@ public abstract class Map
 		if (!survivorVisibleEntity.contains(e)) survivorVisibleEntity.add(e);
 	}
 
+	public void addToKillerVisibleEntities(Entity e)
+	{
+		if (!killerVisibleEntity.contains(e)) killerVisibleEntity.add(e);
+	}
+
 	public void addBleedEffect(BleedEffect e)
 	{
 		if (!bleeds.contains(e)) bleeds.add(e);
@@ -108,6 +115,11 @@ public abstract class Map
 	public void removeFromSurvivorVisibleEntities(Entity e)
 	{
 		survivorVisibleEntity.remove(e);
+	}
+
+	public void removeFromKillerVisibleEntities(Entity e)
+	{
+		killerVisibleEntity.remove(e);
 	}
 
 	public void update()
@@ -173,18 +185,44 @@ public abstract class Map
 		}
 	}
 
-	public abstract void draw(GraphicsContext g, int camX, int camY);
-
-	public String createKiller()
+	public void draw(GraphicsContext g, int camX, int camY)
 	{
-		Random r = new Random();
-		int spawnX = r.nextInt(width);
-		int spawnY = r.nextInt(height);
-		killer = new TestKiller(0, spawnX, spawnY, Game.handler.playerNick, false, entities, sightBlockers);
-		controlledPlayer = killer;
-		fow = new FogOfWar(controlledPlayer);
-		return "Spawn data:0;" + Game.handler.playerNick + ";" + spawnX + "," + spawnY;
+		for (int i = 0; i < bleeds.size(); i++)
+		{
+			bleeds.get(i).draw(g, camX, camY);
+		}
+
+		if (Game.handler.isKiller)
+		{
+			for (int i = 0; i < survivors.size(); i++)
+			{
+				survivors.get(i).draw(g, camX, camY);
+			}
+		}
+		else
+		{
+			killer.draw(g, camX, camY);
+		}
+		fow.draw(g, camX, camY);
+
+		if (!Game.handler.isKiller)
+		{
+			for (int i = 0; i < survivors.size(); i++)
+			{
+				survivors.get(i).draw(g, camX, camY);
+			}
+		}
+		else
+		{
+			killer.draw(g, camX, camY);
+		}
+		for (int i = 0; i < (Game.handler.isKiller ? killerVisibleEntity : survivorVisibleEntity).size(); i++)
+		{
+			(Game.handler.isKiller ? killerVisibleEntity : survivorVisibleEntity).get(i).draw(g, camX, camY);
+		}
 	}
+
+	public abstract String createKiller();
 
 	@ServerSide
 	public String addSurvivor(String s, int id)
@@ -298,6 +336,20 @@ public abstract class Map
 
 	@ServerSide
 	@ClientSide
+	public void openGate(String line, boolean open)
+	{
+		int id = Integer.parseInt(line.split(":")[1]);
+		Gate g = (Gate) entities.stream().filter(x -> x instanceof Gate && ((Gate) x).getId() == id).findFirst().orElse(null);
+		if (g == null)
+		{
+			Launcher.logger.Error("Some shit happend! Gate with id " + id + " not found.");
+			return;
+		}
+		if (!g.isOpening()) g.setOpening(open);
+	}
+
+	@ServerSide
+	@ClientSide
 	public void unhookSurv(String line, boolean rescue)
 	{
 		int id = Integer.parseInt(line.split(":")[1]);
@@ -333,6 +385,21 @@ public abstract class Map
 		if (g == null)
 		{
 			Launcher.logger.Error("Some shit happend! Generator with id " + id + " not found.");
+			return;
+		}
+		g.setProgress(progress);
+		if (progress == 100) g.finish();
+	}
+
+	@ClientSide
+	public void syncGate(String line)
+	{
+		int id = Integer.parseInt(line.split(":")[1].split(";")[0]);
+		double progress = Double.parseDouble(line.split(";")[1]);
+		Gate g = (Gate) entities.stream().filter(x -> x instanceof Gate && ((Gate) x).getId() == id).findFirst().orElse(null);
+		if (g == null)
+		{
+			Launcher.logger.Error("Some shit happend! Gate with id " + id + " not found.");
 			return;
 		}
 		g.setProgress(progress);
@@ -429,7 +496,7 @@ public abstract class Map
 		}
 		else if (obj[0].equals(Gate.class.getSimpleName()))
 		{
-			Gate gate = new Gate(Double.parseDouble(obj[1]), Double.parseDouble(obj[2]), GateOrientation.valueOf(obj[3]));
+			Gate gate = new Gate(Integer.parseInt(obj[1]), Double.parseDouble(obj[2]), Double.parseDouble(obj[3]), GateOrientation.valueOf(obj[4]));
 			entities.add(gate);
 			killerVisibleEntity.add(gate);
 			objCount++;

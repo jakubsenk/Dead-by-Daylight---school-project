@@ -26,7 +26,7 @@ public class Generator extends CollidableEntity implements ISightBlocker, IProgr
 	private double progress = 0;
 	private boolean finished = false;
 
-	private int id;
+	private final int id;
 
 	public Generator(int id, double x, double y)
 	{
@@ -54,6 +54,7 @@ public class Generator extends CollidableEntity implements ISightBlocker, IProgr
 		if (Game.handler.isKiller) Game.handler.server.addData("Gen sync:" + id + ";" + 100);
 		progress = 100;
 		finished = true;
+		Game.handler.generatorsRemaining--;
 	}
 
 	private boolean isInGeneratorRange()
@@ -92,7 +93,7 @@ public class Generator extends CollidableEntity implements ISightBlocker, IProgr
 				}
 			}
 
-			if (MouseManager.leftButtonPressed() && isInGeneratorRange() && distanceToPlayer < 80 && !finished && ((Survivor) Game.handler.getCurrentMap().getPlayer()).getState() != SurvivorState.Dying)
+			if (Game.handler.generatorsRemaining > 0 && MouseManager.leftButtonPressed() && isInGeneratorRange() && distanceToPlayer < 80 && !finished && ((Survivor) Game.handler.getCurrentMap().getPlayer()).getState() != SurvivorState.Dying)
 			{
 				if (!repairing)
 				{
@@ -103,14 +104,7 @@ public class Generator extends CollidableEntity implements ISightBlocker, IProgr
 			}
 			else
 			{
-				if (distanceToPlayer < 80 && !finished && ((Survivor) Game.handler.getCurrentMap().getPlayer()).getState() != SurvivorState.Dying)
-				{
-					repairAvailable = true;
-				}
-				else
-				{
-					repairAvailable = false;
-				}
+				repairAvailable = Game.handler.generatorsRemaining > 0 && distanceToPlayer < 80 && !finished && ((Survivor) Game.handler.getCurrentMap().getPlayer()).getState() != SurvivorState.Dying;
 				if (repairing && !repairingOther)
 				{
 					Game.handler.client.addData("Gen repair stop:" + id);

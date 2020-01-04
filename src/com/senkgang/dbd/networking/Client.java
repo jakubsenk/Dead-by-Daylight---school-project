@@ -196,6 +196,14 @@ public class Client implements Runnable
 		{
 			Game.handler.getCurrentMap().healSurv(line, false);
 		}
+		else if (line.contains("gate open start:"))
+		{
+			Game.handler.getCurrentMap().openGate(line, true);
+		}
+		else if (line.contains("gate open stop:"))
+		{
+			Game.handler.getCurrentMap().openGate(line, false);
+		}
 		else if (line.contains("Gen sync:"))
 		{
 			Game.handler.getCurrentMap().syncGen(line);
@@ -207,6 +215,10 @@ public class Client implements Runnable
 		else if (line.contains("heal sync:"))
 		{
 			Game.handler.getCurrentMap().syncHealing(line);
+		}
+		else if (line.contains("gate sync:"))
+		{
+			Game.handler.getCurrentMap().syncGate(line);
 		}
 		else if (line.contains("pick:"))
 		{

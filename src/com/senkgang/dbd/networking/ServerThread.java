@@ -106,6 +106,16 @@ public class ServerThread extends Thread
 			Game.handler.getCurrentMap().healSurv(line, false);
 			server.addData(line);
 		}
+		else if (line.contains("gate open start:"))
+		{
+			Game.handler.getCurrentMap().openGate(line, true);
+			server.addData(line);
+		}
+		else if (line.contains("gate open stop:"))
+		{
+			Game.handler.getCurrentMap().openGate(line, false);
+			server.addData(line);
+		}
 		else if (line.equals("READY!"))
 		{
 			server.playersReady++;

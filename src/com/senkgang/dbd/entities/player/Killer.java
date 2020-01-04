@@ -2,7 +2,7 @@ package com.senkgang.dbd.entities.player;
 
 import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Launcher;
-import com.senkgang.dbd.entities.CollidableEntity;
+import com.senkgang.dbd.entities.Entity;
 import com.senkgang.dbd.enums.SurvivorState;
 import com.senkgang.dbd.input.InputManager;
 import com.senkgang.dbd.interfaces.ISightBlocker;
@@ -39,7 +39,7 @@ public abstract class Killer extends Player
 	protected double currentAttackAngle = 0;
 	protected int fov = 90;
 
-	public Killer(int playerID, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlocker)
+	public Killer(int playerID, double x, double y, String nick, boolean playerControlled, ArrayList<Entity> entities, ArrayList<ISightBlocker> sightBlocker)
 	{
 		super(playerID, x, y, nick, playerControlled, entities, sightBlocker);
 	}

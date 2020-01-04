@@ -62,4 +62,6 @@ public class Handler
 	public String playerNick;
 	public String playerID;
 	public String connectIP;
+
+	public int generatorsRemaining;
 }

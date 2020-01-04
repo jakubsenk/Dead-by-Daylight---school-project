@@ -3,6 +3,7 @@ package com.senkgang.dbd.map.maps;
 import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Launcher;
 import com.senkgang.dbd.entities.*;
+import com.senkgang.dbd.entities.player.TestKiller;
 import com.senkgang.dbd.enums.GateOrientation;
 import com.senkgang.dbd.map.Map;
 
@@ -96,11 +97,11 @@ public class TestMap extends Map
 						Launcher.logger.Error("Some shit happend! Gate got wrong number in switch" + gateOrientation);
 						return;
 				}
-				Gate gate = new Gate(x, y, gateOrientation);
+				Gate gate = new Gate(i + 1, x, y, gateOrientation);
 				entities.add(gate);
 				killerVisibleEntity.add(gate);
 
-				spawnObjects.add("Spawn object;" + Gate.class.getSimpleName() + ":" + x + ":" + y + ":" + gateOrientation);
+				spawnObjects.add("Spawn object;" + Gate.class.getSimpleName() + ":" + (i + 1) + ":" + x + ":" + y + ":" + gateOrientation);
 			}
 			Game.handler.server.addData("Spawn object count:" + entities.size());
 			for (String s : spawnObjects)
@@ -125,39 +126,18 @@ public class TestMap extends Map
 		g.strokeLine(0 - camX, height - camY, width - camX, height - camY);
 		g.strokeLine(width - camX, 0 - camY, width - camX, height - camY);
 
-		for (int i = 0; i < bleeds.size(); i++)
-		{
-			bleeds.get(i).draw(g, camX, camY);
-		}
+		super.draw(g, camX, camY);
+	}
 
-		if (Game.handler.isKiller)
-		{
-			for (int i = 0; i < survivors.size(); i++)
-			{
-				survivors.get(i).draw(g, camX, camY);
-			}
-		}
-		else
-		{
-			killer.draw(g, camX, camY);
-		}
-		fow.draw(g, camX, camY);
-
-		if (!Game.handler.isKiller)
-		{
-			for (int i = 0; i < survivors.size(); i++)
-			{
-				survivors.get(i).draw(g, camX, camY);
-			}
-		}
-		else
-		{
-			killer.draw(g, camX, camY);
-		}
-		for (int i = 0; i < (Game.handler.isKiller ? killerVisibleEntity : survivorVisibleEntity).size(); i++)
-		{
-			(Game.handler.isKiller ? killerVisibleEntity : survivorVisibleEntity).get(i).draw(g, camX, camY);
-		}
-
+	@Override
+	public String createKiller()
+	{
+		Random r = new Random();
+		int spawnX = r.nextInt(width);
+		int spawnY = r.nextInt(height);
+		killer = new TestKiller(0, spawnX, spawnY, Game.handler.playerNick, false, entities, sightBlockers);
+		controlledPlayer = killer;
+		fow = new FogOfWar(controlledPlayer);
+		return "Spawn data:0;" + Game.handler.playerNick + ";" + spawnX + "," + spawnY;
 	}
 }

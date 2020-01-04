@@ -2,6 +2,7 @@ package com.senkgang.dbd.screens;
 
 import com.senkgang.dbd.Game;
 import com.senkgang.dbd.map.Map;
+import com.senkgang.dbd.map.maps.FarmMap;
 import com.senkgang.dbd.map.maps.TestMap;
 
 import javafx.scene.canvas.GraphicsContext;
@@ -12,7 +13,8 @@ public class GameScreen extends Screen
 
 	public GameScreen()
 	{
-		map = new TestMap(2500, 1500);
+		map = new FarmMap();
+		//map = new TestMap(2500, 1500);
 	}
 
 	@Override

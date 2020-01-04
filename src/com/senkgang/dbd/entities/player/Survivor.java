@@ -3,8 +3,7 @@ package com.senkgang.dbd.entities.player;
 import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Launcher;
 import com.senkgang.dbd.entities.BleedEffect;
-import com.senkgang.dbd.entities.CollidableEntity;
-import com.senkgang.dbd.input.InputManager;
+import com.senkgang.dbd.entities.Entity;
 import com.senkgang.dbd.input.MouseManager;
 import com.senkgang.dbd.interfaces.IProgressable;
 import com.senkgang.dbd.interfaces.ISightBlocker;
@@ -43,7 +42,7 @@ public abstract class Survivor extends Player implements IProgressable
 	protected SurvivorState state = SurvivorState.Normal;
 	protected double progress = 0;
 
-	public Survivor(int playerID, double x, double y, String nick, boolean playerControlled, ArrayList<CollidableEntity> entities, ArrayList<ISightBlocker> sightBlockers)
+	public Survivor(int playerID, double x, double y, String nick, boolean playerControlled, ArrayList<Entity> entities, ArrayList<ISightBlocker> sightBlockers)
 	{
 		super(playerID, x, y, nick, playerControlled, entities, sightBlockers);
 	}
