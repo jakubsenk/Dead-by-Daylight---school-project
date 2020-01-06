@@ -3,6 +3,7 @@ package com.senkgang.dbd.resources;
 import javafx.scene.image.Image;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class Assets
@@ -11,24 +12,48 @@ public class Assets
 	public static ArrayList<Image> bleeds = new ArrayList<>();
 	public static Image farm, barn, corn;
 
-	public static void init()
+	public static void init() throws FileNotFoundException
 	{
-		generator = new Image(new File("res/images/generator.png").toURI().toString());
-		introLogo = new Image(new File("res/images/introLogo.jpg").toURI().toString());
-		closeGate = new Image(new File("res/images/closeGate.png").toURI().toString());
+		File f = new File("res/images/generator.png");
+		if (!f.exists()) throw new FileNotFoundException("Can not find file generator.png");
+		generator = new Image(f.toURI().toString());
+		f = new File("res/images/introLogo.jpg");
+		if (!f.exists()) throw new FileNotFoundException("Can not find file introLogo.jpg");
+		introLogo = new Image(f.toURI().toString());
+		f = new File("res/images/closeGate.png");
+		if (!f.exists()) throw new FileNotFoundException("Can not find file closeGate.png");
+		closeGate = new Image(f.toURI().toString());
+		f = new File("res/images/openGate.png");
+		if (!f.exists()) throw new FileNotFoundException("Can not find file openGate.png");
 		openGate = new Image(new File("res/images/openGate.png").toURI().toString());
-		weapon = new Image(new File("res/images/hammer.png").toURI().toString());
-		leftBtn = new Image(new File("res/images/leftBtn.png").toURI().toString());
-		hook = new Image(new File("res/images/hook.png").toURI().toString());
-		space = new Image(new File("res/images/space.png").toURI().toString());
+		f = new File("res/images/hammer.png");
+		if (!f.exists()) throw new FileNotFoundException("Can not find file hammer.png");
+		weapon = new Image(f.toURI().toString());
+		f = new File("res/images/leftBtn.png");
+		if (!f.exists()) throw new FileNotFoundException("Can not find file leftBtn.png");
+		leftBtn = new Image(f.toURI().toString());
+		f = new File("res/images/hook.png");
+		if (!f.exists()) throw new FileNotFoundException("Can not find file hook.png");
+		hook = new Image(f.toURI().toString());
+		f = new File("res/images/space.png");
+		if (!f.exists()) throw new FileNotFoundException("Can not find file space.png");
+		space = new Image(f.toURI().toString());
 
-		bleeds.add(new Image(new File("res/images/bleed0.png").toURI().toString()));
-		bleeds.add(new Image(new File("res/images/bleed1.png").toURI().toString()));
-		bleeds.add(new Image(new File("res/images/bleed2.png").toURI().toString()));
-		bleeds.add(new Image(new File("res/images/bleed3.png").toURI().toString()));
+		for (int i = 0; i < 4; i++)
+		{
+			f = new File("res/images/bleed" + i + ".png");
+			if (!f.exists()) throw new FileNotFoundException("Can not find file bleed" + i + ".png");
+			bleeds.add(new Image(f.toURI().toString()));
+		}
 
-		farm = new Image(new File("res/images/farm.png").toURI().toString());
-		barn = new Image(new File("res/images/barn.png").toURI().toString());
-		corn = new Image(new File("res/images/corn.png").toURI().toString());
+		f = new File("res/images/farm.png");
+		if (!f.exists()) throw new FileNotFoundException("Can not find file farm.png");
+		farm = new Image(f.toURI().toString());
+		f = new File("res/images/barn.png");
+		if (!f.exists()) throw new FileNotFoundException("Can not find file barn.png");
+		barn = new Image(f.toURI().toString());
+		f = new File("res/images/corn.png");
+		if (!f.exists()) throw new FileNotFoundException("Can not find file corn.png");
+		corn = new Image(f.toURI().toString());
 	}
 }

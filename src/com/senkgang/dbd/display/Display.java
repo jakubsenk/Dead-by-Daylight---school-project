@@ -63,7 +63,10 @@ public class Display
 	public static void addComponentInstant(Node c)
 	{
 		currentSceneControls.add(c);
-		pane.getChildren().add(c);
+		Platform.runLater(() ->
+		{
+			pane.getChildren().add(c);
+		});
 	}
 
 	public static void removeComponent(Node c)

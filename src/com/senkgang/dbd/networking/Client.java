@@ -228,5 +228,9 @@ public class Client implements Runnable
 		{
 			Game.handler.getCurrentMap().putSurv(line);
 		}
+		else if (line.contains("Gens to repair:"))
+		{
+			Game.handler.generatorsRemaining = Integer.parseInt(line.split(":")[1]);
+		}
 	}
 }

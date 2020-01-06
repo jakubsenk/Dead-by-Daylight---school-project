@@ -25,8 +25,8 @@ import java.util.Random;
 
 public abstract class Map
 {
-	protected final int width;
-	protected final int height;
+	public final int width;
+	public final int height;
 
 	private int objCount = 0;
 	private int maxObjCount = -1;
@@ -42,7 +42,7 @@ public abstract class Map
 
 	protected FogOfWar fow;
 
-	protected Label loading = new Label("Loading...");
+	private Label loading = new Label("Loading...");
 
 	public Map(int width, int height)
 	{
@@ -63,10 +63,10 @@ public abstract class Map
 		killer = new TestKiller(-1, 0, 0, "unknown", false, null, null);
 		fow = new FogOfWar(killer);
 
-		Game.handler.generatorsRemaining = 4;
-
 		if (Game.handler.isKiller)
 		{
+			Game.handler.generatorsRemaining = 2 * Game.handler.server.connectedSurvivorsNicks.size();
+			Game.handler.server.addData("Gens to repair:" + Game.handler.generatorsRemaining);
 			Game.handler.server.addData(createKiller());
 
 			for (int i = 0; i < Game.handler.server.connectedSurvivorsNicks.size(); i++)

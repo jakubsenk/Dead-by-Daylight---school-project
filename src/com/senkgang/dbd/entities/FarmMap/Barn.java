@@ -25,7 +25,7 @@ public class Barn extends CollidableEntity implements ISightBlocker
 	@Override
 	public Rectangle getBounds()
 	{
-		return new Rectangle((int) x - width / 2 + 15, (int) y - height / 2 + 30, width - 30, height - 30);
+		return new Rectangle((int) x - width / 2 + 15, (int) y - height / 2 + 60, width - 30, height - 60);
 	}
 
 	@Override

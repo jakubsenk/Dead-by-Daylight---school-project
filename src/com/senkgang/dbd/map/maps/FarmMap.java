@@ -44,7 +44,7 @@ public class FarmMap extends Map
 				if (r.nextBoolean()) i++;
 			}
 
-			for (int i = 0, offset = r.nextInt(3); i < 7; i++, offset += r.nextInt(3) + 1)
+			for (int i = 0, offset = r.nextInt(1); i < 7; i++, offset += r.nextInt(2) + 1)
 			{
 				int x = genLocations[offset][0];
 				int y = genLocations[offset][1];

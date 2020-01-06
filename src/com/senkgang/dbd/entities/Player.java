@@ -91,31 +91,56 @@ public abstract class Player extends CollidableEntity
 
 		double deltaX = 0;
 		double deltaY = 0;
-		if (InputManager.up)
+		if (InputManager.up && InputManager.left && !InputManager.right && !InputManager.down)
+		{
+			deltaX += speed * Math.sin(getAngle() + Math.PI / 4);
+			deltaY += speed * Math.cos(getAngle() + Math.PI / 4);
+		}
+		if (InputManager.up && InputManager.right && !InputManager.left && !InputManager.down)
+		{
+			deltaX += speed * Math.sin(getAngle() - Math.PI / 4);
+			deltaY += speed * Math.cos(getAngle() - Math.PI / 4);
+		}
+		if (InputManager.down && InputManager.left && !InputManager.up && !InputManager.right)
+		{
+			deltaX -= speed * Math.sin(getAngle() - Math.PI / 4);
+			deltaY -= speed * Math.cos(getAngle() - Math.PI / 4);
+		}
+		if (InputManager.down && InputManager.right && !InputManager.up && !InputManager.left)
+		{
+			deltaX -= speed * Math.sin(getAngle() + Math.PI / 4);
+			deltaY -= speed * Math.cos(getAngle() + Math.PI / 4);
+		}
+		if (InputManager.up && !InputManager.down && !InputManager.left && !InputManager.right)
 		{
 			deltaX += speed * Math.sin(getAngle());
 			deltaY += speed * Math.cos(getAngle());
 		}
-		if (InputManager.down)
+		if (InputManager.down && !InputManager.up && !InputManager.left && !InputManager.right)
 		{
 			deltaX -= speed * Math.sin(getAngle());
 			deltaY -= speed * Math.cos(getAngle());
 		}
-		if (InputManager.left)
+		if (InputManager.left && !InputManager.up && !InputManager.down && !InputManager.right)
 		{
 			deltaX += speed * Math.sin(getAngle() + Math.PI / 2);
 			deltaY += speed * Math.cos(getAngle() + Math.PI / 2);
 		}
-		if (InputManager.right)
+		if (InputManager.right && !InputManager.up && !InputManager.left && !InputManager.down)
 		{
 			deltaX += speed * Math.sin(getAngle() - Math.PI / 2);
 			deltaY += speed * Math.cos(getAngle() - Math.PI / 2);
 		}
+
 		ArrayList<MovementRestriction> rest = detectCollisions(deltaX, deltaY);
 		if (!rest.contains(MovementRestriction.XPositive) && deltaX > 0) x += deltaX;
 		if (!rest.contains(MovementRestriction.XNegative) && deltaX < 0) x += deltaX;
 		if (!rest.contains(MovementRestriction.YPositive) && deltaY > 0) y += deltaY;
 		if (!rest.contains(MovementRestriction.YNegative) && deltaY < 0) y += deltaY;
+		if (x < 0) x = 0;
+		if (y < 0) y = 0;
+		if (x > Game.handler.getCurrentMap().width) x = Game.handler.getCurrentMap().width;
+		if (y > Game.handler.getCurrentMap().height) y = Game.handler.getCurrentMap().height;
 
 		double curAngle = getAngle();
 		if (lastPosX != x || lastPosY != y || lastAngle != curAngle && canControl)
@@ -160,7 +185,7 @@ public abstract class Player extends CollidableEntity
 	{
 		ArrayList<MovementRestriction> result = new ArrayList<>();
 		Rectangle r = getBounds();
-		Rectangle movedPosition = new Rectangle((int) (r.getX() + deltaX), (int) (r.getY() + deltaY), r.getWidth(), r.getHeight());
+		Rectangle movedPosition = new Rectangle(r.getX() + deltaX, r.getY() + deltaY, r.getWidth(), r.getHeight());
 		if (entities != null)
 		{
 			for (int i = 0; i < entities.size(); i++)
@@ -172,23 +197,23 @@ public abstract class Player extends CollidableEntity
 				if (otherRect == null) continue;
 				if (otherRect.intersects(movedPosition.getBoundsInLocal()))
 				{
-					if (movedPosition.getX() + movedPosition.getWidth() > otherRect.getX())
+					if (isInCollisionTolerance(movedPosition.getX() + movedPosition.getWidth(), otherRect.getX()))
 					{
 						Launcher.logger.Info("Collision with object on right");
 						result.add(MovementRestriction.XPositive);
 					}
-					if (otherRect.getX() + otherRect.getWidth() > movedPosition.getX())
+					if (isInCollisionTolerance(otherRect.getX() + otherRect.getWidth(), movedPosition.getX()))
 					{
 						Launcher.logger.Info("Collision with object on left");
 						result.add(MovementRestriction.XNegative);
 					}
 
-					if (movedPosition.getY() + movedPosition.getHeight() > otherRect.getY())
+					if (isInCollisionTolerance(movedPosition.getY() + movedPosition.getHeight(), otherRect.getY()))
 					{
 						Launcher.logger.Info("Collision with object on bot");
 						result.add(MovementRestriction.YPositive);
 					}
-					if (otherRect.getY() + otherRect.getHeight() > movedPosition.getY())
+					if (isInCollisionTolerance(movedPosition.getY(), otherRect.getY() + otherRect.getHeight()))
 					{
 						Launcher.logger.Info("Collision with object on top");
 						result.add(MovementRestriction.YNegative);
@@ -197,6 +222,11 @@ public abstract class Player extends CollidableEntity
 			}
 		}
 		return result;
+	}
+
+	private boolean isInCollisionTolerance(double a, double b)
+	{
+		return Math.abs(a - b) < 5;
 	}
 
 	public abstract double[] getViewPolygonX();

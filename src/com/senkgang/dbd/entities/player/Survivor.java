@@ -2,6 +2,7 @@ package com.senkgang.dbd.entities.player;
 
 import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Launcher;
+import com.senkgang.dbd.display.Display;
 import com.senkgang.dbd.entities.BleedEffect;
 import com.senkgang.dbd.entities.Entity;
 import com.senkgang.dbd.input.MouseManager;
@@ -11,11 +12,13 @@ import com.senkgang.dbd.entities.Player;
 import com.senkgang.dbd.enums.SurvivorState;
 import com.senkgang.dbd.fov.Algorithm;
 import com.senkgang.dbd.fov.Line;
-
 import com.senkgang.dbd.resources.Assets;
+
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -42,6 +45,8 @@ public abstract class Survivor extends Player implements IProgressable
 	protected SurvivorState state = SurvivorState.Normal;
 	protected double progress = 0;
 
+	private int lives = 3;
+
 	public Survivor(int playerID, double x, double y, String nick, boolean playerControlled, ArrayList<Entity> entities, ArrayList<ISightBlocker> sightBlockers)
 	{
 		super(playerID, x, y, nick, playerControlled, entities, sightBlockers);
@@ -55,6 +60,21 @@ public abstract class Survivor extends Player implements IProgressable
 	public void setState(SurvivorState state)
 	{
 		this.state = state;
+		if (state == SurvivorState.Hooked) lives--;
+		if (lives == 0 && getPlayerID() == Integer.parseInt(Game.handler.playerID))
+		{
+			Label l = new Label("And this is the end of your journey...");
+			l.setFont(new Font("Segoe UI", 36));
+			l.setStyle("-fx-font-weight: bold");
+			l.setTextFill(Color.RED);
+			Display.addComponentInstant(l);
+			l.relocate(Game.handler.getScreenWidth() / 2 - 270, Game.handler.getScreenHeight() / 2 + 100);
+		}
+	}
+
+	public boolean isAlive()
+	{
+		return lives > 0;
 	}
 
 	@Override

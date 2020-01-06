@@ -66,6 +66,27 @@ public class Hook extends CollidableEntity implements ISightBlocker, IProgressab
 		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 20 + 15, y - 20, 1000));
 		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 20 + 15, y - 20, 1000));
 		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 20 + 15, y + 20, 1000));
+		if (!hookedSurv.isAlive())
+		{
+			hookedSurv.setAngle(Math.PI * 2);
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 15, y, 5000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 30 + 15, y, 5000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 30 + 15, y, 5000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 15, y + 30, 5000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 15, y - 30, 5000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 30 + 15, y + 30, 5000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 30 + 15, y - 30, 5000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 30 + 15, y - 30, 5000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 30 + 15, y + 30, 5000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 45 + 15, y, 5000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 45 + 15, y, 5000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 15, y + 45, 5000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 15, y - 45, 5000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 45 + 15, y + 45, 5000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 45 + 15, y - 45, 5000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 45 + 15, y - 45, 5000));
+			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 45 + 15, y + 45, 5000));
+		}
 	}
 
 	public void finish()
@@ -107,7 +128,7 @@ public class Hook extends CollidableEntity implements ISightBlocker, IProgressab
 				canPut = false;
 			}
 		}
-		else if (!Game.handler.isKiller && hookedSurv != null)
+		else if (!Game.handler.isKiller && hookedSurv != null && hookedSurv.isAlive())
 		{
 			Survivor s = (Survivor) Game.handler.getCurrentMap().getPlayer();
 			if (s.getState() != SurvivorState.Hooked && s.getState() != SurvivorState.Dying)
