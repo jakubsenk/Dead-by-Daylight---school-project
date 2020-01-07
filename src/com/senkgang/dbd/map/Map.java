@@ -66,6 +66,7 @@ public abstract class Map
 		if (Game.handler.isKiller)
 		{
 			Game.handler.generatorsRemaining = 2 * Game.handler.server.connectedSurvivorsNicks.size();
+			if (Game.handler.generatorsRemaining > 5) Game.handler.generatorsRemaining = 5;
 			Game.handler.server.addData("Gens to repair:" + Game.handler.generatorsRemaining);
 			Game.handler.server.addData(createKiller());
 
@@ -120,6 +121,13 @@ public abstract class Map
 	public void removeFromKillerVisibleEntities(Entity e)
 	{
 		killerVisibleEntity.remove(e);
+	}
+
+	public ArrayList<Gate> getGates()
+	{
+		ArrayList<Gate> fukinJava = new ArrayList<>();
+		entities.stream().filter(x -> x instanceof Gate).map(x -> (Gate) x).forEach(fukinJava::add);
+		return fukinJava;
 	}
 
 	public void update()

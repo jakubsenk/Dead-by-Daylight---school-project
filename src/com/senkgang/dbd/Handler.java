@@ -63,5 +63,5 @@ public class Handler
 	public String playerID;
 	public String connectIP;
 
-	public int generatorsRemaining;
+	public int generatorsRemaining = -1;
 }

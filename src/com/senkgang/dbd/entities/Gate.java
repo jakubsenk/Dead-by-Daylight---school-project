@@ -48,6 +48,16 @@ public class Gate extends CollidableEntity implements IProgressable
 		return opening;
 	}
 
+	public boolean isOpened()
+	{
+		return finished;
+	}
+
+	public GateOrientation getOrientation()
+	{
+		return gateOrientation;
+	}
+
 	public void setOpening(boolean opening)
 	{
 		this.openingOther = opening;
@@ -59,11 +69,11 @@ public class Gate extends CollidableEntity implements IProgressable
 		if (finished) return null;
 		if (gateOrientation == GateOrientation.North || gateOrientation == GateOrientation.South)
 		{
-			return new Rectangle((int) x - width / 2, (int) y - height / 2, width, height);
+			return new Rectangle(x - width / 2, y - height / 2, width, height);
 		}
 		else if (gateOrientation == GateOrientation.West || gateOrientation == GateOrientation.East)
 		{
-			return new Rectangle((int) x - height / 2, (int) y - width / 2, height, width);
+			return new Rectangle(x - height / 2, y - width / 2, height, width);
 		}
 		else
 		{

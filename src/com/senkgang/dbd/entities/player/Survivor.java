@@ -5,6 +5,7 @@ import com.senkgang.dbd.Launcher;
 import com.senkgang.dbd.display.Display;
 import com.senkgang.dbd.entities.BleedEffect;
 import com.senkgang.dbd.entities.Entity;
+import com.senkgang.dbd.entities.Gate;
 import com.senkgang.dbd.input.MouseManager;
 import com.senkgang.dbd.interfaces.IProgressable;
 import com.senkgang.dbd.interfaces.ISightBlocker;
@@ -300,6 +301,52 @@ public abstract class Survivor extends Player implements IProgressable
 						s.setHealing(false);
 					}
 					s.setHealAvaiable(false);
+				}
+			}
+		}
+
+		if (Game.handler.generatorsRemaining == 0)
+		{
+			ArrayList<Gate> gates = Game.handler.getCurrentMap().getGates();
+			for (Gate g : gates)
+			{
+				if (g.isOpened())
+				{
+					switch (g.getOrientation())
+					{
+						case North:
+							if (g.getY() + 2 >= y && Math.abs(g.getX() - x) < Assets.openGate.getWidth() / 2)
+							{
+								setControllable(false);
+								setPos(x, -150);
+								setAngle(0);
+							}
+							break;
+						case West:
+							if (g.getX() + 2 >= x && Math.abs(g.getY() - y) < Assets.openGate.getWidth() / 2)
+							{
+								setControllable(false);
+								setPos(-150, y);
+								setAngle(Math.PI / 2);
+							}
+							break;
+						case East:
+							if (g.getX() - 2 <= x && Math.abs(g.getY() - y) < Assets.openGate.getWidth() / 2)
+							{
+								setControllable(false);
+								setPos(Game.handler.getCurrentMap().width + 150, y);
+								setAngle(-Math.PI / 2);
+							}
+							break;
+						case South:
+							if (g.getY() - 2 <= y && Math.abs(g.getX() - x) < Assets.openGate.getWidth() / 2)
+							{
+								setControllable(false);
+								setPos(x, Game.handler.getCurrentMap().height + 150);
+								setAngle(Math.PI);
+							}
+							break;
+					}
 				}
 			}
 		}
