@@ -1,14 +1,13 @@
 package com.senkgang.dbd.entities;
 
-import com.senkgang.dbd.Launcher;
 import com.senkgang.dbd.enums.SkillCheckResult;
 import com.senkgang.dbd.input.InputManager;
 import com.senkgang.dbd.resources.Assets;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Arc;
 
 import java.util.Random;
+import java.util.function.Function;
 
 
 public class SkillCheck extends Entity
@@ -21,13 +20,14 @@ public class SkillCheck extends Entity
 	private double angle;
 	private double i = -(Math.PI / 2);
 	private boolean skill = true;
-
+	private Function<SkillCheckResult, Object> callback;
 
 	private SkillCheckResult SCP;
 
-	public SkillCheck(double x, double y)
+	public SkillCheck(double x, double y, Function<SkillCheckResult, Object> onDone)
 	{
 		super(x, y);
+		callback = onDone;
 	}
 
 	@Override
@@ -56,6 +56,7 @@ public class SkillCheck extends Entity
 				SCP = SkillCheckResult.Bad;
 			}
 			i = -(Math.PI / 2);
+			callback.apply(SCP);
 		}
 		else
 		{
@@ -71,8 +72,8 @@ public class SkillCheck extends Entity
 	@Override
 	public void draw(GraphicsContext g, int camX, int camY)
 	{
-
-		g.fillOval((int) x - camX, (int) y - camY, Cwidth , Cheight );
+		g.setFill(Color.BLACK);
+		g.fillOval((int) x - camX, (int) y - camY, Cwidth, Cheight);
 		g.fillOval((int) x - camX + 15, (int) y - camY + 15, Cwidth - 20, Cheight - 20);
 		g.setFill(Color.WHITE);
 		g.fillOval((int) x - camX + 15, (int) y - camY + 15, Cwidth - 30, Cheight - 30);

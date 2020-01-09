@@ -88,6 +88,7 @@ public class Client implements Runnable
 		try
 		{
 			Launcher.logger.Info("Stopping client...");
+			dataToSend.clear();
 			if (thread != null)
 			{
 				thread.join(3000);
@@ -96,9 +97,15 @@ public class Client implements Runnable
 			{
 				Launcher.logger.Info("Client is not running!");
 			}
+			if (socket != null)
+			{
+				socket.close();
+				socket = null;
+			}
+			connectFailed = false;
 			Launcher.logger.Info("Client stopped.");
 		}
-		catch (InterruptedException e)
+		catch (InterruptedException | IOException e)
 		{
 			Launcher.logger.Exception(e);
 		}

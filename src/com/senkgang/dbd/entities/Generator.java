@@ -2,6 +2,7 @@ package com.senkgang.dbd.entities;
 
 import com.senkgang.dbd.Game;
 import com.senkgang.dbd.entities.player.Survivor;
+import com.senkgang.dbd.enums.SkillCheckResult;
 import com.senkgang.dbd.enums.SurvivorState;
 import com.senkgang.dbd.fov.Line;
 import com.senkgang.dbd.input.MouseManager;
@@ -15,6 +16,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.function.Function;
 
 public class Generator extends CollidableEntity implements ISightBlocker, IProgressable
 {
@@ -25,6 +30,7 @@ public class Generator extends CollidableEntity implements ISightBlocker, IProgr
 
 	private double progress = 0;
 	private boolean finished = false;
+	private Timer skillcheckTimer = new Timer();
 
 	private final int id;
 
@@ -51,7 +57,14 @@ public class Generator extends CollidableEntity implements ISightBlocker, IProgr
 
 	public void finish()
 	{
-		if (Game.handler.isKiller) Game.handler.server.addData("Gen sync:" + id + ";" + 100);
+		if (Game.handler.isKiller)
+		{
+			Game.handler.server.addData("Gen sync:" + id + ";" + 100);
+		}
+		else
+		{
+			Game.handler.getCurrentMap().cancelSkillCheck();
+		}
 		progress = 100;
 		finished = true;
 		Game.handler.generatorsRemaining--;
@@ -99,6 +112,7 @@ public class Generator extends CollidableEntity implements ISightBlocker, IProgr
 				{
 					Game.handler.client.addData("Gen repair start:" + id);
 					repairing = true;
+					scheduleSkillCheck();
 				}
 				repairAvailable = false;
 			}
@@ -152,13 +166,42 @@ public class Generator extends CollidableEntity implements ISightBlocker, IProgr
 		return ret;
 	}
 
+	private void scheduleSkillCheck()
+	{
+		Random r = new Random();
+		skillcheckTimer.schedule(new TimerTask()
+		{
+			@Override
+			public void run()
+			{
+				if (repairing) Game.handler.getCurrentMap().createSkillCheck(onSkillCheckDone);
+			}
+		}, r.nextInt(5000) + 500);
+	}
+
+	// Can't return void? Yet another Java's shits
+	private Function<SkillCheckResult, Object> onSkillCheckDone = result ->
+	{
+		switch (result)
+		{
+			case Perfect:
+				Game.handler.client.addData("Gen check:" + getId() + ":+");
+				break;
+			case Bad:
+				Game.handler.client.addData("Gen check:" + getId() + ":-");
+				break;
+		}
+		if (repairing) scheduleSkillCheck();
+		return null;
+	};
+
 	@Override
 	public void onProgress()
 	{
 		progress += 0.1;
 		if (Game.handler.isKiller)
 		{
-			if (progress % 10 == 0)
+			if (progress % 15 == 0)
 			{
 				Game.handler.server.addData("Gen sync:" + id + ";" + progress);
 			}

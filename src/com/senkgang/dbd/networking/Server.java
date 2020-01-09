@@ -16,6 +16,9 @@ public class Server
 
 	private ArrayList<Object> dataToSend = new ArrayList<>();
 
+	private ArrayList<Socket> sockets = new ArrayList<>();
+	private ServerSocket listener;
+
 	public ArrayList<BufferedWriter> connectedSurvivors = new ArrayList<>();
 	public ArrayList<String> connectedSurvivorsNicks = new ArrayList<>();
 	public int playersReady = 0;
@@ -28,12 +31,13 @@ public class Server
 		{
 			try
 			{
-				ServerSocket listener = new ServerSocket(4000);
+				listener = new ServerSocket(4000);
 				try
 				{
 					while (threads.size() < 4)
 					{
 						Socket socket = listener.accept();
+						sockets.add(socket);
 						BufferedWriter writerChannel = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 						connectedSurvivors.add(writerChannel);
 						ServerThread st = new ServerThread(selfRef, socket, connectedSurvivors);
@@ -41,9 +45,9 @@ public class Server
 						st.start();
 					}
 				}
-				finally
+				catch (SocketException e)
 				{
-					listener.close();
+					Launcher.logger.Exception(e);
 				}
 			}
 			catch (IOException e)
@@ -67,6 +71,21 @@ public class Server
 	public void stop()
 	{
 		Launcher.logger.Info("Stopping server...");
+		playersReady = 0;
+
+		for (int i = 0; i < connectedSurvivors.size(); i++)
+		{
+			try
+			{
+				connectedSurvivors.get(i).close();
+			}
+			catch (IOException e)
+			{
+				Launcher.logger.Exception(e);
+			}
+		}
+		connectedSurvivorsNicks.clear();
+		connectedSurvivors.clear();
 		if (threads.size() > 0)
 		{
 			threads.forEach((t) ->
@@ -85,6 +104,29 @@ public class Server
 		{
 			Launcher.logger.Info("Server is not running!");
 		}
+		if (listener != null && !listener.isClosed())
+		{
+			try
+			{
+				listener.close();
+			}
+			catch (IOException e)
+			{
+				Launcher.logger.Exception(e);
+			}
+		}
+		for (int i = 0; i < sockets.size(); i++)
+		{
+			try
+			{
+				sockets.get(i).close();
+			}
+			catch (IOException e)
+			{
+				Launcher.logger.Exception(e);
+			}
+		}
+		sockets.clear();
 		Launcher.logger.Info("Server stopped.");
 	}
 

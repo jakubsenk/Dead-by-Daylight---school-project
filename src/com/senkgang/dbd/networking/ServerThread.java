@@ -86,6 +86,10 @@ public class ServerThread extends Thread
 			Game.handler.getCurrentMap().repairGen(line, false);
 			server.addData(line);
 		}
+		else if (line.contains("Gen check:"))
+		{
+			Game.handler.getCurrentMap().genSkillCheck(line);
+		}
 		else if (line.contains("unhook start:"))
 		{
 			Game.handler.getCurrentMap().unhookSurv(line, true);

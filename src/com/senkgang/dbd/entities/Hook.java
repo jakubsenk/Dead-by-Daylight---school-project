@@ -23,10 +23,12 @@ public class Hook extends CollidableEntity implements ISightBlocker, IProgressab
 	private boolean canRescue = false;
 	private boolean rescuing = false;
 	private boolean rescuingOther = false;
+	private boolean rescueTimer = false;
 	private final int id;
 	private Survivor hookedSurv = null;
 
 	private double progress = 0;
+	private double rescueProgress = 0;
 
 	public Hook(int id, double x, double y)
 	{
@@ -57,36 +59,30 @@ public class Hook extends CollidableEntity implements ISightBlocker, IProgressab
 		k.put();
 		hookedSurv.setPos(x + 15, y);
 		hookedSurv.setState(SurvivorState.Hooked);
-		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 15, y, 1000));
-		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 20 + 15, y, 1000));
-		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 20 + 15, y, 1000));
-		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 15, y + 20, 1000));
-		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 15, y - 20, 1000));
-		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 20 + 15, y + 20, 1000));
-		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 20 + 15, y - 20, 1000));
-		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 20 + 15, y - 20, 1000));
-		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 20 + 15, y + 20, 1000));
+		makeBleeds(20);
 		if (!hookedSurv.isAlive())
 		{
 			hookedSurv.setAngle(Math.PI * 2);
-			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 15, y, 5000));
-			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 30 + 15, y, 5000));
-			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 30 + 15, y, 5000));
-			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 15, y + 30, 5000));
-			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 15, y - 30, 5000));
-			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 30 + 15, y + 30, 5000));
-			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 30 + 15, y - 30, 5000));
-			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 30 + 15, y - 30, 5000));
-			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 30 + 15, y + 30, 5000));
-			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 45 + 15, y, 5000));
-			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 45 + 15, y, 5000));
-			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 15, y + 45, 5000));
-			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 15, y - 45, 5000));
-			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 45 + 15, y + 45, 5000));
-			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 45 + 15, y - 45, 5000));
-			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 45 + 15, y - 45, 5000));
-			Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - 45 + 15, y + 45, 5000));
+			makeBleeds(30);
+			makeBleeds(45);
 		}
+		else
+		{
+			rescueTimer = true;
+		}
+	}
+
+	private void makeBleeds(int offset)
+	{
+		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 15, y, 1000));
+		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + offset + 15, y, 1000));
+		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - offset + 15, y, 1000));
+		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 15, y + offset, 1000));
+		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + 15, y - offset, 1000));
+		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + offset + 15, y + offset, 1000));
+		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - offset + 15, y - offset, 1000));
+		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x + offset + 15, y - offset, 1000));
+		Game.handler.getCurrentMap().addBleedEffect(new BleedEffect(x - offset + 15, y + offset, 1000));
 	}
 
 	public void finish()
@@ -102,6 +98,8 @@ public class Hook extends CollidableEntity implements ISightBlocker, IProgressab
 		rescuingOther = false;
 		canRescue = false;
 		canPut = false;
+		rescueTimer = false;
+		rescueProgress = 0;
 	}
 
 	@Override
@@ -155,7 +153,27 @@ public class Hook extends CollidableEntity implements ISightBlocker, IProgressab
 				}
 			}
 		}
-		if (rescuing || rescuingOther) onProgress();
+		if (rescuing || rescuingOther)
+		{
+			onProgress();
+		}
+		else if (rescueTimer)
+		{
+			rescueProgress += 0.05;
+			if (rescueProgress >= 100)
+			{
+				rescueProgress = 0;
+				hookedSurv.setState(SurvivorState.Hooked);
+				makeBleeds(20);
+				if (!hookedSurv.isAlive())
+				{
+					hookedSurv.setAngle(Math.PI * 2);
+					makeBleeds(30);
+					makeBleeds(45);
+					rescueTimer = false;
+				}
+			}
+		}
 	}
 
 	private double distanceToPlayer()
@@ -175,6 +193,13 @@ public class Hook extends CollidableEntity implements ISightBlocker, IProgressab
 			g.fillRect(x - 100 - camX, y + Assets.hook.getHeight() - camY, progress * 2, 15);
 			g.setStroke(Color.BLACK);
 			g.strokeRect(x - 100 - camX, y + Assets.hook.getHeight() - camY, 200, 15);
+		}
+		if (rescueTimer)
+		{
+			g.setFill(Color.RED);
+			g.fillRect(x - 100 - camX, y + Assets.hook.getHeight() - 20 - camY, rescueProgress * 2, 5);
+			g.setStroke(Color.BLACK);
+			g.strokeRect(x - 100 - camX, y + Assets.hook.getHeight() - 20 - camY, 200, 5);
 		}
 		if (canPut || canRescue)
 		{

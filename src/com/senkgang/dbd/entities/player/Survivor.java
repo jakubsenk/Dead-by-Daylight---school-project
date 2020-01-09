@@ -47,6 +47,7 @@ public abstract class Survivor extends Player implements IProgressable
 	protected double progress = 0;
 
 	private int lives = 3;
+	private boolean escaped = false;
 
 	public Survivor(int playerID, double x, double y, String nick, boolean playerControlled, ArrayList<Entity> entities, ArrayList<ISightBlocker> sightBlockers)
 	{
@@ -76,6 +77,11 @@ public abstract class Survivor extends Player implements IProgressable
 	public boolean isAlive()
 	{
 		return lives > 0;
+	}
+
+	public int getLives()
+	{
+		return lives;
 	}
 
 	@Override
@@ -175,6 +181,7 @@ public abstract class Survivor extends Player implements IProgressable
 			@Override
 			public void run()
 			{
+				if (Game.handler.getCurrentMap() == null || escaped) return;
 				if (state == SurvivorState.Bleeding || state == SurvivorState.Dying)
 				{
 					if ((lastX != x && lastY != y && state == SurvivorState.Dying) || state == SurvivorState.Bleeding)
@@ -305,7 +312,7 @@ public abstract class Survivor extends Player implements IProgressable
 			}
 		}
 
-		if (Game.handler.generatorsRemaining == 0)
+		if (Game.handler.generatorsRemaining == 0 && !escaped)
 		{
 			ArrayList<Gate> gates = Game.handler.getCurrentMap().getGates();
 			for (Gate g : gates)
@@ -320,6 +327,9 @@ public abstract class Survivor extends Player implements IProgressable
 								setControllable(false);
 								setPos(x, -150);
 								setAngle(0);
+								lives = -1;
+								escaped = true;
+								addLabel();
 							}
 							break;
 						case West:
@@ -328,6 +338,9 @@ public abstract class Survivor extends Player implements IProgressable
 								setControllable(false);
 								setPos(-150, y);
 								setAngle(Math.PI / 2);
+								lives = -1;
+								escaped = true;
+								addLabel();
 							}
 							break;
 						case East:
@@ -336,6 +349,9 @@ public abstract class Survivor extends Player implements IProgressable
 								setControllable(false);
 								setPos(Game.handler.getCurrentMap().width + 150, y);
 								setAngle(-Math.PI / 2);
+								lives = -1;
+								escaped = true;
+								addLabel();
 							}
 							break;
 						case South:
@@ -344,6 +360,9 @@ public abstract class Survivor extends Player implements IProgressable
 								setControllable(false);
 								setPos(x, Game.handler.getCurrentMap().height + 150);
 								setAngle(Math.PI);
+								lives = -1;
+								escaped = true;
+								addLabel();
 							}
 							break;
 					}
@@ -352,6 +371,17 @@ public abstract class Survivor extends Player implements IProgressable
 		}
 
 		if (beingHealed) onProgress();
+	}
+
+	private void addLabel()
+	{
+		if (Game.handler.isKiller || getPlayerID() != Integer.parseInt(Game.handler.playerID)) return;
+		Label l = new Label("You have successfully escaped death!");
+		l.setFont(new Font("Segoe UI", 36));
+		l.setStyle("-fx-font-weight: bold");
+		l.setTextFill(Color.RED);
+		Display.addComponentInstant(l);
+		l.relocate(Game.handler.getScreenWidth() / 2 - 270, Game.handler.getScreenHeight() / 2 + 100);
 	}
 
 	private boolean isInSurvivorRange(double x, double y)

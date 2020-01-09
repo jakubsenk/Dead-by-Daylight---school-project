@@ -11,6 +11,7 @@ import com.senkgang.dbd.entities.player.Survivor;
 import com.senkgang.dbd.entities.player.TestKiller;
 import com.senkgang.dbd.entities.player.TestSurvivor;
 import com.senkgang.dbd.enums.GateOrientation;
+import com.senkgang.dbd.enums.SkillCheckResult;
 import com.senkgang.dbd.interfaces.ISightBlocker;
 
 import javafx.scene.canvas.GraphicsContext;
@@ -22,6 +23,7 @@ import javax.swing.*;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.function.Function;
 
 public abstract class Map
 {
@@ -30,6 +32,8 @@ public abstract class Map
 
 	private int objCount = 0;
 	private int maxObjCount = -1;
+
+	private SkillCheck skillCheck;
 
 	protected ArrayList<Entity> entities;
 	protected ArrayList<BleedEffect> bleeds;
@@ -191,6 +195,8 @@ public abstract class Map
 				Game.handler.getGame().stop();
 			}
 		}
+
+		if (skillCheck != null) skillCheck.update();
 	}
 
 	public void draw(GraphicsContext g, int camX, int camY)
@@ -228,6 +234,23 @@ public abstract class Map
 		{
 			(Game.handler.isKiller ? killerVisibleEntity : survivorVisibleEntity).get(i).draw(g, camX, camY);
 		}
+
+		if (skillCheck != null) skillCheck.draw(g, 0, 0);
+	}
+
+	public void createSkillCheck(Function<SkillCheckResult, Object> onDone)
+	{
+		Function<SkillCheckResult, Object> handler = result ->
+		{
+			skillCheck = null;
+			return onDone.apply(result);
+		};
+		skillCheck = new SkillCheck(Game.handler.getScreenWidth() / 2, Game.handler.getScreenHeight() / 2, handler);
+	}
+
+	public void cancelSkillCheck()
+	{
+		skillCheck = null;
 	}
 
 	public abstract String createKiller();
@@ -340,6 +363,21 @@ public abstract class Map
 			return;
 		}
 		if (!g.isRepairing()) g.setRepairing(repair);
+	}
+
+	@ServerSide
+	public void genSkillCheck(String line)
+	{
+		int id = Integer.parseInt(line.split(":")[1]);
+		boolean perfect = line.split(":")[2].equals("+");
+		Generator g = (Generator) entities.stream().filter(x -> x instanceof Generator && ((Generator) x).getId() == id).findFirst().orElse(null);
+		if (g == null)
+		{
+			Launcher.logger.Error("Some shit happend! Generator with id " + id + " not found.");
+			return;
+		}
+		g.setProgress(g.getProgress() + (perfect ? 10 : -10));
+		Game.handler.server.addData("Gen sync:" + id + ";" + g.getProgress());
 	}
 
 	@ServerSide
