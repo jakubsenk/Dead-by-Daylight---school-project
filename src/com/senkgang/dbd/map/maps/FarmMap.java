@@ -12,6 +12,7 @@ import com.senkgang.dbd.map.Map;
 import com.senkgang.dbd.resources.Assets;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -166,8 +167,8 @@ public class FarmMap extends Map
 		g.drawImage(Assets.farm, 0 - camX, 0 - camY);
 		super.draw(g, camX, camY);
 
+		g.setStroke(Color.BLACK);
 		g.strokeText("Generators remaining: " + Game.handler.generatorsRemaining, 0, 25);
-		g.strokeText(MouseManager.getMouseXInWorld() + ":" + MouseManager.getMouseYInWorld(), 0, 45);
 	}
 
 	@Override

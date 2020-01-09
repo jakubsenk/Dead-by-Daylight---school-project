@@ -98,7 +98,7 @@ public class Game
 			Screen.getScreen().draw(gr);
 		}
 
-		gr.setFill(Color.BLACK);
+		gr.setStroke(Color.BLACK);
 		gr.strokeText("FPS: " + fps, 0, 10);
 
 		// #endregion
