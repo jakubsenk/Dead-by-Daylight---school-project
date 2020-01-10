@@ -1,15 +1,19 @@
 package com.senkgang.dbd;
 
+import com.senkgang.dbd.display.Display;
 import com.senkgang.dbd.display.GameCamera;
 import com.senkgang.dbd.input.InputManager;
+import com.senkgang.dbd.input.MouseManager;
 import com.senkgang.dbd.resources.Assets;
 import com.senkgang.dbd.screens.IntroScreen;
 import com.senkgang.dbd.screens.Screen;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -32,11 +36,12 @@ public class Game
 	private GraphicsContext gr;
 
 
-	public Game(int width, int height)
+	public Game(int width, int height, Stage stage)
 	{
 		this.width = width;
 		this.height = height;
 		handler = new Handler(this);
+		gr = Display.createWindow(stage, width, height, this);
 		try
 		{
 			init();
@@ -46,7 +51,6 @@ public class Game
 			Launcher.logger.Exception(e);
 			JOptionPane.showMessageDialog(null, e, "ERROR initializing assets", JOptionPane.ERROR_MESSAGE);
 			stop();
-			return;
 		}
 	}
 
@@ -135,7 +139,7 @@ public class Game
 
 	public void stop()
 	{
-		atimer.stop();
+		if (atimer != null) atimer.stop();
 		handler.server.stop();
 		handler.client.stop();
 		Launcher.logger.Info("Stopping game...");
@@ -144,9 +148,8 @@ public class Game
 		System.exit(0);
 	}
 
-	public void start(GraphicsContext gr)
+	public void start()
 	{
-		this.gr = gr;
 		atimer = new AnimationTimer()
 		{
 			public void handle(long currentNanoTime)

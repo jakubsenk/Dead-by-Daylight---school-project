@@ -5,7 +5,6 @@ import com.senkgang.dbd.input.InputManager;
 import com.senkgang.dbd.input.MouseManager;
 
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -41,16 +40,10 @@ public class Display
 		stage.setScene(s);
 		canvas.setWidth(width);
 		canvas.setHeight(height);
+		stage.setResizable(false);
 		stage.show();
 
-		s.getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, new EventHandler<WindowEvent>()
-		{
-			@Override
-			public void handle(WindowEvent windowEvent)
-			{
-				g.stop();
-			}
-		});
+		s.getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, windowEvent -> g.stop());
 
 		return canvas.getGraphicsContext2D();
 	}
