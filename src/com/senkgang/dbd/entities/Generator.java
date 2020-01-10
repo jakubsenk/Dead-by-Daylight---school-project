@@ -30,6 +30,7 @@ public class Generator extends CollidableEntity implements ISightBlocker, IProgr
 
 	private double progress = 0;
 	private boolean finished = false;
+	private boolean timerScheduled = false;
 	private Timer skillcheckTimer = new Timer();
 
 	private final int id;
@@ -168,15 +169,18 @@ public class Generator extends CollidableEntity implements ISightBlocker, IProgr
 
 	private void scheduleSkillCheck()
 	{
+		if (timerScheduled) return;
 		Random r = new Random();
 		skillcheckTimer.schedule(new TimerTask()
 		{
 			@Override
 			public void run()
 			{
+				timerScheduled = false;
 				if (repairing) Game.handler.getCurrentMap().createSkillCheck(onSkillCheckDone);
 			}
 		}, r.nextInt(5000) + 500);
+		timerScheduled = true;
 	}
 
 	// Can't return void? Yet another Java's shits
