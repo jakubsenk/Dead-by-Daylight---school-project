@@ -4,6 +4,7 @@ import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Launcher;
 import com.senkgang.dbd.entities.*;
 import com.senkgang.dbd.entities.player.TestKiller;
+import com.senkgang.dbd.entities.player.TestSurvivor;
 import com.senkgang.dbd.enums.GateOrientation;
 import com.senkgang.dbd.map.Map;
 
@@ -139,5 +140,16 @@ public class TestMap extends Map
 		controlledPlayer = killer;
 		fow = new FogOfWar(controlledPlayer);
 		return "Spawn data:0;" + Game.handler.playerNick + ";" + spawnX + "," + spawnY;
+	}
+
+	@Override
+	public String addSurvivor(String s, int id)
+	{
+		Random r = new Random();
+		int spawnX = r.nextInt(width);
+		int spawnY = r.nextInt(height);
+		if (survivors.size() >= 4) return "Too many survivors";
+		survivors.add(new TestSurvivor(id, spawnX, spawnY, s, false, entities, sightBlockers));
+		return "Spawn data:" + id + ";" + s + ";" + spawnX + "," + spawnY;
 	}
 }

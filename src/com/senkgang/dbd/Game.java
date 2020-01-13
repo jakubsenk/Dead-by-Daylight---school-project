@@ -3,14 +3,12 @@ package com.senkgang.dbd;
 import com.senkgang.dbd.display.Display;
 import com.senkgang.dbd.display.GameCamera;
 import com.senkgang.dbd.input.InputManager;
-import com.senkgang.dbd.input.MouseManager;
 import com.senkgang.dbd.resources.Assets;
 import com.senkgang.dbd.screens.IntroScreen;
 import com.senkgang.dbd.screens.Screen;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;

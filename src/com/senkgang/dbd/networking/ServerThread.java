@@ -29,7 +29,6 @@ public class ServerThread extends Thread
 		try
 		{
 			BufferedReader readerChannel = new BufferedReader(new InputStreamReader(s.getInputStream()));
-			//writerChannel = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
 
 			while ((line = readerChannel.readLine()) != null)
 			{

@@ -62,7 +62,7 @@ public class Client implements Runnable
 	{
 		try
 		{
-			socket = new Socket(Game.handler.connectIP, 4000);
+			socket = new Socket(Game.handler.connectIP, 33333);
 			writerChannel = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 			readerChannel = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -97,15 +97,10 @@ public class Client implements Runnable
 			{
 				Launcher.logger.Info("Client is not running!");
 			}
-			if (socket != null)
-			{
-				socket.close();
-				socket = null;
-			}
 			connectFailed = false;
 			Launcher.logger.Info("Client stopped.");
 		}
-		catch (InterruptedException | IOException e)
+		catch (InterruptedException e)
 		{
 			Launcher.logger.Exception(e);
 		}

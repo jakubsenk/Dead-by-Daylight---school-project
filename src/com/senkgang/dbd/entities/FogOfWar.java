@@ -4,12 +4,10 @@ import com.senkgang.dbd.Game;
 import com.senkgang.dbd.Launcher;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
 
 public class FogOfWar
 {
 	private Player pl;
-	private Polygon p = new Polygon();
 
 	public FogOfWar(Player p)
 	{
@@ -31,7 +29,6 @@ public class FogOfWar
 		double[] xPol = new double[xPl.length + 6];
 		double[] yPol = new double[xPl.length + 6];
 
-		p = new Polygon();
 		xPol[0] = 0;
 		yPol[0] = 0;
 		xPol[1] = 0;

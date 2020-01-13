@@ -22,7 +22,6 @@ import javafx.scene.text.Font;
 import javax.swing.*;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.function.Function;
 
 public abstract class Map
@@ -256,15 +255,8 @@ public abstract class Map
 	public abstract String createKiller();
 
 	@ServerSide
-	public String addSurvivor(String s, int id)
-	{
-		Random r = new Random();
-		int spawnX = r.nextInt(width);
-		int spawnY = r.nextInt(height);
-		if (survivors.size() >= 4) return "Too many survivors";
-		survivors.add(new TestSurvivor(id, spawnX, spawnY, s, false, entities, sightBlockers));
-		return "Spawn data:" + id + ";" + s + ";" + spawnX + "," + spawnY;
-	}
+	public abstract String addSurvivor(String s, int id);
+
 
 	@ClientSide
 	public void addSurvivor(String spawnData, boolean spawnRequested)

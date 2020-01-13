@@ -16,7 +16,6 @@ public class Server
 
 	private ArrayList<Object> dataToSend = new ArrayList<>();
 
-	private ArrayList<Socket> sockets = new ArrayList<>();
 	private ServerSocket listener;
 
 	public ArrayList<BufferedWriter> connectedSurvivors = new ArrayList<>();
@@ -31,13 +30,12 @@ public class Server
 		{
 			try
 			{
-				listener = new ServerSocket(4000);
+				listener = new ServerSocket(33333);
 				try
 				{
 					while (threads.size() < 4)
 					{
 						Socket socket = listener.accept();
-						sockets.add(socket);
 						BufferedWriter writerChannel = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 						connectedSurvivors.add(writerChannel);
 						ServerThread st = new ServerThread(selfRef, socket, connectedSurvivors);
@@ -48,6 +46,13 @@ public class Server
 				catch (SocketException e)
 				{
 					Launcher.logger.Exception(e);
+				}
+				finally
+				{
+					if (!listener.isClosed())
+					{
+						listener.close();
+					}
 				}
 			}
 			catch (IOException e)
@@ -115,18 +120,6 @@ public class Server
 				Launcher.logger.Exception(e);
 			}
 		}
-		for (int i = 0; i < sockets.size(); i++)
-		{
-			try
-			{
-				sockets.get(i).close();
-			}
-			catch (IOException e)
-			{
-				Launcher.logger.Exception(e);
-			}
-		}
-		sockets.clear();
 		Launcher.logger.Info("Server stopped.");
 	}
 
